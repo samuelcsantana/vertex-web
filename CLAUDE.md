@@ -24,6 +24,15 @@ Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosyste
 - **Edge Interception:** For route interception at the Edge, use the Next.js 16 `proxy.ts` convention instead of the deprecated `middleware.ts`.
 - **Authentication:** There is no standalone `/login` route. Sign-in happens through the `LoginModal` (triggered from the header), which calls the real `loginAction` Server Action. Unauthenticated access to protected routes (`/dashboard/**`, gated by `proxy.ts`) redirects to `/`, not to a login page. `logoutAction` takes an optional `redirectTo`: omit it on public pages so the visitor stays put after signing out; pass a path (e.g. `/`) on admin-only pages that can't be rendered once signed out.
 
+## 🧩 Route Groups & Dual Visual Identity
+The app currently runs **two distinct visual identities** side by side, split across route groups. The true root `src/app/layout.tsx` only sets up fonts, `<html>/<body>`, and `ThemeProvider` — it renders no chrome of its own, so each group below supplies its own Header/Footer:
+- **`(site)`** — the original neutral "Vertex" Shadcn theme (light/dark via `next-themes`). Contains `/projects`, `/dashboard` (hub), `/dashboard/projects`. Chrome: `src/components/layout/Header.tsx` + `Footer.tsx`.
+- **`(blog)`** — the public "samuel.dev" identity (fixed dark, emerald/cyan accents, glass header). Contains `/` (the blog home/listing — **this is the site's main entry point now**, not `(site)`'s old hero page). Chrome + shared pieces live in `src/components/blog-identity/`.
+- **`(blog-admin)`** — same samuel.dev identity, for real authenticated post management. Contains `/dashboard/posts` and `/dashboard/posts/[id]/edit`. Its header shows a real "Sair" (logout) instead of the public "Login" trigger, since these routes are already gated by `proxy.ts`.
+- **`blog/`** (no parentheses, a real path segment) — `/blog/[slug]`, the individual post reading page. Same samuel.dev identity/chrome as `(blog)`, kept as a plain segment (not a group) because it needs the literal `/blog` URL prefix; `blog/page.tsx` is just a `redirect("/")` for the old `/blog` index.
+
+When adding a new route, decide which identity it belongs to before picking a folder — don't assume `(site)`'s Header/Footer apply everywhere.
+
 ## 🌿 Version Control & Git Strategy
 - **Branching Model:** Gitflow standard (`main`, `develop`, `feature/*`, `bugfix/*`).
 - **Semantic Commits:** ALL commit messages MUST follow the Conventional Commits specification strictly in English (e.g., `feat:`, `fix:`, `chore:`, `refactor:`).
