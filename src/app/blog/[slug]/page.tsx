@@ -1,4 +1,8 @@
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 import { getPostBySlug } from "@/features/posts/api/post-service";
 
@@ -18,10 +22,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="text-4xl font-bold">{post.title}</h1>
 
-      {/* Plain text for now; MDX rendering will be wired up in a follow-up. */}
-      <p className="mt-8 whitespace-pre-wrap text-foreground">
-        {post.content}
-      </p>
+      <div className="prose prose-neutral dark:prose-invert mt-8 max-w-none">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+          {post.content}
+        </ReactMarkdown>
+      </div>
     </div>
   );
 }
