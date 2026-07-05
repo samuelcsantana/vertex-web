@@ -22,6 +22,7 @@ Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosyste
 - **Performance:** Optimize for Core Web Vitals. Utilize `next/image`, `next/font`, and dynamic imports for heavy interactive MDX components.
 - **Security:** Do not expose sensitive API logic. Trust HttpOnly cookies for auth state integration with `vertex-api`.
 - **Edge Interception:** For route interception at the Edge, use the Next.js 16 `proxy.ts` convention instead of the deprecated `middleware.ts`.
+- **Authentication:** There is no standalone `/login` route. Sign-in happens through the `LoginModal` (triggered from the header), which calls the real `loginAction` Server Action. Unauthenticated access to protected routes (`/dashboard/**`, gated by `proxy.ts`) redirects to `/`, not to a login page. `logoutAction` takes an optional `redirectTo`: omit it on public pages so the visitor stays put after signing out; pass a path (e.g. `/`) on admin-only pages that can't be rendered once signed out.
 
 ## 🌿 Version Control & Git Strategy
 - **Branching Model:** Gitflow standard (`main`, `develop`, `feature/*`, `bugfix/*`).

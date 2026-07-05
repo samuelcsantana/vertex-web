@@ -18,13 +18,13 @@ export default async function DashboardPage() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/login");
+    redirect("/");
   }
 
   const profile = await getProfile(accessToken);
 
   if (!profile) {
-    redirect("/login");
+    redirect("/");
   }
 
   return (
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form action={logoutAction.bind(null, "/login")}>
+          <form action={logoutAction.bind(null, "/")}>
             <Button type="submit" variant="outline" className="w-fit">
               Logout
             </Button>

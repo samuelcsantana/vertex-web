@@ -25,7 +25,7 @@ export function UserMenu({ isAuthenticated }: UserMenuProps) {
         variant="outline"
         size="sm"
         nativeButton={false}
-        render={<Link href="/login" />}
+        render={<Link href="/" />}
       >
         Login
       </Button>
@@ -50,7 +50,7 @@ export function UserMenu({ isAuthenticated }: UserMenuProps) {
         <DropdownMenuItem
           variant="destructive"
           onClick={() => {
-            logoutAction("/login");
+            logoutAction("/");
           }}
         >
           Sair

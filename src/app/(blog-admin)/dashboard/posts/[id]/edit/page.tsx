@@ -17,7 +17,7 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/login");
+    redirect("/");
   }
 
   const posts = await getDashboardPosts(accessToken);
