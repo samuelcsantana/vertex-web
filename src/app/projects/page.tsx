@@ -6,9 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PROJECTS } from "@/features/projects/data/projects-seed";
+import { getProjects } from "@/features/projects/api/project-service";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+
   return (
     <div className="container max-w-5xl py-12">
       <h1 className="text-4xl font-bold">Meus Projetos</h1>
@@ -17,25 +19,31 @@ export default function ProjectsPage() {
         plataformas escaláveis.
       </p>
 
-      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {PROJECTS.map((project) => (
-          <Card key={project.id}>
-            <CardHeader>
-              <CardTitle>{project.title}</CardTitle>
-              <CardDescription>{project.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {project.techStack.map((tech) => (
-                  <Badge key={tech} variant="secondary">
-                    {tech}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {projects.length === 0 ? (
+        <p className="mt-10 text-muted-foreground">
+          Nenhum projeto publicado ainda.
+        </p>
+      ) : (
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <Card key={project.id}>
+              <CardHeader>
+                <CardTitle>{project.title}</CardTitle>
+                <CardDescription>{project.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {project.techStack.map((tech) => (
+                    <Badge key={tech} variant="secondary">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
