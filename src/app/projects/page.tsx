@@ -26,7 +26,10 @@ export default async function ProjectsPage() {
       ) : (
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <Card key={project.id}>
+            <Card
+              key={project.id}
+              className="transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md"
+            >
               <CardHeader>
                 <CardTitle>{project.title}</CardTitle>
                 <CardDescription>{project.description}</CardDescription>
