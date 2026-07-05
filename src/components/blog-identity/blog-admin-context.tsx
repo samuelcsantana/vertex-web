@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+
+const MOCK_SESSION_KEY = "vertex-blog-mock-admin";
 
 interface BlogAdminContextValue {
   isAdmin: boolean;
@@ -17,16 +25,29 @@ export function BlogAdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
+  // The initial render must match the server (isAdmin: false), so the
+  // mock session is only restored from sessionStorage after mount.
+  useEffect(() => {
+    if (sessionStorage.getItem(MOCK_SESSION_KEY) === "true") {
+      setIsAdmin(true);
+    }
+  }, []);
+
+  function persist(next: boolean) {
+    setIsAdmin(next);
+    sessionStorage.setItem(MOCK_SESSION_KEY, String(next));
+  }
+
   const value: BlogAdminContextValue = {
     isAdmin,
     isLoginOpen,
     openLogin: () => setIsLoginOpen(true),
     closeLogin: () => setIsLoginOpen(false),
     login: () => {
-      setIsAdmin(true);
+      persist(true);
       setIsLoginOpen(false);
     },
-    logout: () => setIsAdmin(false),
+    logout: () => persist(false),
   };
 
   return (
