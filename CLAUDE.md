@@ -11,7 +11,7 @@ Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosyste
 - **Framework:** Next.js (App Router)
 - **Language:** TypeScript (Strict Mode)
 - **Styling:** Tailwind CSS
-- **UI Components:** Shadcn UI (Radix primitives)
+- **UI Components:** Shadcn UI (Base UI primitives)
 - **Content:** MDX for dynamic and interactive blog posts.
 - **Data Fetching:** React Server Components (RSC) by default.
 
