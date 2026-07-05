@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { format, parseISO } from "date-fns";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPosts } from "@/features/posts/api/post-service";
 
 export default async function BlogPage() {
   const posts = await getPosts();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <h1 className="text-4xl font-bold">Blog</h1>
       <p className="mt-2 text-muted-foreground">
         Technical deep dives on architecture, performance, and engineering.
@@ -17,18 +19,26 @@ export default async function BlogPage() {
           Nenhum artigo publicado ainda.
         </p>
       ) : (
-        <ul className="mt-10 flex flex-col gap-4">
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <li
-              key={post.id}
-              className="rounded-lg border border-border p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md"
-            >
-              <Link href={`/blog/${post.slug}`}>
-                <h2 className="text-xl font-semibold">{post.title}</h2>
-              </Link>
-            </li>
+            <Link key={post.id} href={`/blog/${post.slug}`} className="block h-full">
+              <Card className="h-full transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+                <div className="-mx-4 -mt-4 mb-4 h-40 rounded-t-xl bg-gradient-to-br from-primary/10 to-primary/5 dark:from-neutral-800 dark:to-neutral-900" />
+                <CardHeader>
+                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <time
+                    dateTime={post.createdAt}
+                    className="text-sm text-muted-foreground"
+                  >
+                    {format(parseISO(post.createdAt), "MMMM d, yyyy")}
+                  </time>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

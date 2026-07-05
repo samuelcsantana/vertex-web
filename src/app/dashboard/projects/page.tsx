@@ -1,3 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteProjectAction } from "@/features/projects/actions/project-actions";
 import { CreateProjectForm } from "@/features/projects/components/CreateProjectForm";
@@ -40,11 +51,37 @@ export default async function DashboardProjectsPage() {
                 >
                   <td className="px-4 py-3">{project.title}</td>
                   <td className="px-4 py-3 text-right">
-                    <form action={deleteProjectAction.bind(null, project.id)}>
-                      <Button type="submit" variant="destructive" size="sm">
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        render={<Button variant="destructive" size="sm" />}
+                      >
                         Excluir
-                      </Button>
-                    </form>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Tem certeza absoluta?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta ação não pode ser desfeita e removerá os
+                            dados permanentemente.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <form
+                            action={deleteProjectAction.bind(null, project.id)}
+                          >
+                            <AlertDialogAction
+                              type="submit"
+                              variant="destructive"
+                            >
+                              Continuar
+                            </AlertDialogAction>
+                          </form>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </td>
                 </tr>
               ))

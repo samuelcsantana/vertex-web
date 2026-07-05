@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 const navLinks = [
   { href: "/blog", label: "Blog" },
@@ -45,14 +46,7 @@ export async function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
 
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={isAuthenticated ? "/dashboard" : "/login"} />}
-          >
-            {isAuthenticated ? "Painel" : "Login"}
-          </Button>
+          <UserMenu isAuthenticated={isAuthenticated} />
 
           <Sheet>
             <SheetTrigger
