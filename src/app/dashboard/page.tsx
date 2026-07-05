@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { logoutAction } from "@/features/auth/actions/auth-actions";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -33,9 +34,11 @@ export default async function DashboardPage() {
             </code>
           </p>
 
-          <Button variant="outline" className="w-fit">
-            Logout
-          </Button>
+          <form action={logoutAction}>
+            <Button type="submit" variant="outline" className="w-fit">
+              Logout
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

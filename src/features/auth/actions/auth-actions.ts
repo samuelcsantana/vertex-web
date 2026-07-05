@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
 
@@ -106,4 +107,10 @@ export async function loginAction(
   });
 
   return { success: true };
+}
+
+export async function logoutAction(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(AUTH_COOKIE_NAME);
+  redirect("/login");
 }

@@ -21,6 +21,7 @@ Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosyste
 - **State Management:** Prefer URL Search Params and Next.js Server Actions. Minimize global client state.
 - **Performance:** Optimize for Core Web Vitals. Utilize `next/image`, `next/font`, and dynamic imports for heavy interactive MDX components.
 - **Security:** Do not expose sensitive API logic. Trust HttpOnly cookies for auth state integration with `vertex-api`.
+- **Edge Interception:** For route interception at the Edge, use the Next.js 16 `proxy.ts` convention instead of the deprecated `middleware.ts`.
 
 ## 🌿 Version Control & Git Strategy
 - **Branching Model:** Gitflow standard (`main`, `develop`, `feature/*`, `bugfix/*`).
