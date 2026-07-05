@@ -4,7 +4,7 @@ import { BlogHeader } from "@/components/blog-identity/BlogHeader";
 import { BlogFooter } from "@/components/blog-identity/BlogFooter";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
 
-export default function BlogLayout({
+export default function BlogHomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

@@ -15,7 +15,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/layout/UserMenu";
 
 const navLinks = [
-  { href: "/blog", label: "Blog" },
+  { href: "/", label: "Blog" },
   { href: "/projects", label: "Projects" },
   { href: "/about", label: "About" },
 ];

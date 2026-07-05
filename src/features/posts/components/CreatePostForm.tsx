@@ -1,21 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 import { createPostAction } from "@/features/posts/actions/post-actions";
 import {
@@ -23,12 +10,14 @@ import {
   type CreatePostFormValues,
 } from "@/features/posts/schemas/post-schema";
 
+const inputClasses =
+  "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
+
 export function CreatePostForm() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
-    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -53,72 +42,79 @@ export function CreatePostForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>New post</CardTitle>
-        <CardDescription>Publish a new article to the blog.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <FieldGroup>
-            <Field data-invalid={!!errors.title}>
-              <FieldLabel htmlFor="title">Title</FieldLabel>
-              <Input id="title" {...register("title")} />
-              <FieldError errors={errors.title ? [errors.title] : undefined} />
-            </Field>
+    <div className="rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+      <h2 className="text-lg font-bold text-white">Novo artigo</h2>
+      <p className="mt-1 text-sm text-slate-400">
+        Publique um novo artigo no blog.
+      </p>
 
-            <Field data-invalid={!!errors.slug}>
-              <FieldLabel htmlFor="slug">Slug</FieldLabel>
-              <Input
-                id="slug"
-                placeholder="my-post-slug"
-                {...register("slug")}
-              />
-              <FieldError errors={errors.slug ? [errors.slug] : undefined} />
-            </Field>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="mt-6 flex flex-col gap-4"
+      >
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="title" className="text-sm font-medium text-slate-300">
+            Título
+          </label>
+          <input id="title" className={inputClasses} {...register("title")} />
+          {errors.title && (
+            <p className="text-sm text-red-400">{errors.title.message}</p>
+          )}
+        </div>
 
-            <Field data-invalid={!!errors.content}>
-              <FieldLabel htmlFor="content">Conteúdo (Markdown)</FieldLabel>
-              <Textarea
-                id="content"
-                rows={15}
-                className="field-sizing-fixed"
-                {...register("content")}
-              />
-              <FieldError
-                errors={errors.content ? [errors.content] : undefined}
-              />
-            </Field>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="slug" className="text-sm font-medium text-slate-300">
+            Slug
+          </label>
+          <input
+            id="slug"
+            placeholder="meu-artigo"
+            className={inputClasses}
+            {...register("slug")}
+          />
+          {errors.slug && (
+            <p className="text-sm text-red-400">{errors.slug.message}</p>
+          )}
+        </div>
 
-            <Field orientation="horizontal">
-              <Controller
-                control={control}
-                name="isPublished"
-                render={({ field }) => (
-                  <Checkbox
-                    id="isPublished"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <FieldLabel htmlFor="isPublished">
-                Publish immediately
-              </FieldLabel>
-            </Field>
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="content"
+            className="text-sm font-medium text-slate-300"
+          >
+            Conteúdo (Markdown)
+          </label>
+          <textarea
+            id="content"
+            rows={12}
+            className={`${inputClasses} resize-y`}
+            {...register("content")}
+          />
+          {errors.content && (
+            <p className="text-sm text-red-400">{errors.content.message}</p>
+          )}
+        </div>
 
-            {serverError && (
-              <p role="alert" className="text-sm font-medium text-destructive">
-                {serverError}
-              </p>
-            )}
+        <label className="flex items-center gap-2 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
+            {...register("isPublished")}
+          />
+          Publicar imediatamente
+        </label>
 
-            <Button type="submit" disabled={isSubmitting} className="w-fit">
-              {isSubmitting ? "Creating..." : "Create post"}
-            </Button>
-          </FieldGroup>
-        </form>
-      </CardContent>
-    </Card>
+        {serverError && <p className="text-sm text-red-400">{serverError}</p>}
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
+        >
+          {isSubmitting ? "Criando..." : "Criar artigo"}
+        </button>
+      </form>
+    </div>
   );
 }

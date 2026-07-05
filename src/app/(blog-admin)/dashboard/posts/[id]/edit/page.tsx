@@ -31,13 +31,13 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Link
         href="/dashboard/posts"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
       >
         <ArrowLeft className="size-4" />
         Voltar para o Painel
       </Link>
 
-      <h1 className="text-4xl font-bold">Editar Artigo</h1>
+      <h1 className="text-4xl font-bold text-white">Editar Artigo</h1>
 
       <div className="mt-8">
         <EditPostForm initialData={post} />
