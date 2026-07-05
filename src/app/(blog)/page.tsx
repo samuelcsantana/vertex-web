@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { Pencil, Plus, Sparkles, Trash2, User } from "lucide-react";
 
@@ -48,13 +49,13 @@ export default function BlogPage() {
             <p className="text-sm font-medium text-white">
               Painel de Administração Ativo
             </p>
-            <button
-              type="button"
+            <Link
+              href="/dashboard/posts"
               className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
             >
               <Plus className="size-3.5" />
               Novo Artigo
-            </button>
+            </Link>
           </div>
           <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
             <User className="size-5" />
