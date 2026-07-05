@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
 import { createPostAction } from "@/features/posts/actions/post-actions";
 import {
   createPostFormSchema,
@@ -15,16 +16,51 @@ const inputClasses =
 
 export function CreatePostForm() {
   const [serverError, setServerError] = useState<string | null>(null);
+  const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
     defaultValues: { isPublished: false },
   });
+
+  const { ref: contentRegisterRef, ...contentRegisterRest } =
+    register("content");
+
+  function insertImageMarkdown(markdown: string) {
+    const textarea = contentTextareaRef.current;
+    const currentValue = getValues("content") ?? "";
+
+    if (!textarea) {
+      setValue("content", `${currentValue}${markdown}`, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    const start = textarea.selectionStart ?? currentValue.length;
+    const end = textarea.selectionEnd ?? currentValue.length;
+    const nextValue =
+      currentValue.slice(0, start) + markdown + currentValue.slice(end);
+
+    setValue("content", nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    requestAnimationFrame(() => {
+      const cursorPosition = start + markdown.length;
+      textarea.focus();
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
+    });
+  }
 
   async function onSubmit(values: CreatePostFormValues) {
     setServerError(null);
@@ -79,17 +115,24 @@ export function CreatePostForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="content"
-            className="text-sm font-medium text-slate-300"
-          >
-            Conteúdo (Markdown)
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="content"
+              className="text-sm font-medium text-slate-300"
+            >
+              Conteúdo (Markdown)
+            </label>
+            <AttachImageButton onUploaded={insertImageMarkdown} />
+          </div>
           <textarea
             id="content"
             rows={12}
             className={`${inputClasses} resize-y`}
-            {...register("content")}
+            {...contentRegisterRest}
+            ref={(element) => {
+              contentRegisterRef(element);
+              contentTextareaRef.current = element;
+            }}
           />
           {errors.content && (
             <p className="text-sm text-red-400">{errors.content.message}</p>
