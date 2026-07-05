@@ -28,7 +28,7 @@ export function AttachImageButton({ onUploaded }: AttachImageButtonProps) {
 
     try {
       const publicUrl = await uploadImage(file);
-      onUploaded(`![Descrição da imagem](${publicUrl})`);
+      onUploaded(`\n![Imagem](${publicUrl})\n`);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Falha ao enviar a imagem."
