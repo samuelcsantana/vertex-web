@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import type { CreatePostInput } from "@/features/posts/types";
 
@@ -43,6 +44,39 @@ export async function createPostAction(
   revalidatePath("/dashboard/posts");
 
   return { success: true };
+}
+
+export async function updatePostAction(
+  id: string,
+  data: Partial<CreatePostInput>
+): Promise<PostActionResult> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    return {
+      success: false,
+      error: "You must be signed in to update a post.",
+    };
+  }
+
+  const response = await fetch(`${API_URL}/posts/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `access_token=${accessToken}`,
+    },
+    body: JSON.stringify(data),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return { success: false, error: "Failed to update post." };
+  }
+
+  revalidatePath("/blog");
+  revalidatePath("/dashboard/posts");
+  redirect("/dashboard/posts");
 }
 
 export async function deletePostAction(id: string): Promise<void> {

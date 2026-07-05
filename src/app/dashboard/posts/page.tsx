@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -56,12 +57,22 @@ export default async function DashboardPostsPage() {
                       {post.isPublished ? "Publicado" : "Rascunho"}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <form action={deletePostAction.bind(null, post.id)}>
-                      <Button type="submit" variant="destructive" size="sm">
-                        Excluir
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        nativeButton={false}
+                        render={<Link href={`/dashboard/posts/${post.id}/edit`} />}
+                      >
+                        Editar
                       </Button>
-                    </form>
+                      <form action={deletePostAction.bind(null, post.id)}>
+                        <Button type="submit" variant="destructive" size="sm">
+                          Excluir
+                        </Button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))
