@@ -2,37 +2,33 @@
 
 import { Code2, X } from "lucide-react";
 
-interface LoginModalProps {
-  open: boolean;
-  onClose: () => void;
-  onLogin: () => void;
-}
+import { useBlogAdmin } from "./blog-admin-context";
 
-export function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
-  if (!open) {
+export function LoginModal() {
+  const { isLoginOpen, closeLogin, login } = useBlogAdmin();
+
+  if (!isLoginOpen) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/20 p-4 backdrop-blur-sm dark:bg-slate-950/80">
-      <div className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeLogin}
           aria-label="Fechar"
-          className="absolute top-6 right-6 text-slate-400 transition-colors hover:text-slate-700 dark:hover:text-slate-200"
+          className="absolute top-6 right-6 text-slate-400 transition-colors hover:text-slate-200"
         >
           <X className="size-5" />
         </button>
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+          <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
             <Code2 className="size-6" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            Acesso Admin
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h2 className="text-xl font-bold text-white">Acesso Admin</h2>
+          <p className="text-sm text-slate-400">
             Entre para gerenciar os artigos do blog.
           </p>
         </div>
@@ -40,7 +36,7 @@ export function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
         <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -67,7 +63,7 @@ export function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
           </button>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -80,31 +76,29 @@ export function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
         </div>
 
         <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-          <span className="text-xs text-slate-400 dark:text-slate-500">
-            ou com email
-          </span>
-          <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+          <div className="h-px flex-1 bg-slate-800" />
+          <span className="text-xs text-slate-500">ou com email</span>
+          <div className="h-px flex-1 bg-slate-800" />
         </div>
 
         <form
           className="flex flex-col gap-3"
           onSubmit={(event) => {
             event.preventDefault();
-            onLogin();
+            login();
           }}
         >
           <input
             type="email"
             required
             placeholder="Email"
-            className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
           <input
             type="password"
             required
             placeholder="Senha"
-            className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
           <button
             type="submit"
