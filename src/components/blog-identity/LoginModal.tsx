@@ -1,14 +1,45 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Code2, X } from "lucide-react";
 
-import { useBlogAdmin } from "./blog-admin-context";
+import { loginAction } from "@/features/auth/actions/auth-actions";
 
-export function LoginModal() {
-  const { isLoginOpen, closeLogin, login } = useBlogAdmin();
+interface LoginModalProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-  if (!isLoginOpen) {
+export function LoginModal({ open, onClose }: LoginModalProps) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!open) {
     return null;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const result = await loginAction({
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
+    });
+
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error ?? "Não foi possível entrar.");
+      return;
+    }
+
+    onClose();
+    router.refresh();
   }
 
   return (
@@ -16,7 +47,7 @@ export function LoginModal() {
       <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
         <button
           type="button"
-          onClick={closeLogin}
+          onClick={onClose}
           aria-label="Fechar"
           className="absolute top-6 right-6 text-slate-400 transition-colors hover:text-slate-200"
         >
@@ -36,7 +67,9 @@ export function LoginModal() {
         <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
+            disabled
+            title="Em breve"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 opacity-50 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -63,7 +96,9 @@ export function LoginModal() {
           </button>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
+            disabled
+            title="Em breve"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 opacity-50 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -81,30 +116,30 @@ export function LoginModal() {
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
-        <form
-          className="flex flex-col gap-3"
-          onSubmit={(event) => {
-            event.preventDefault();
-            login();
-          }}
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
           <input
             type="email"
+            name="email"
             required
             placeholder="Email"
             className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
           <input
             type="password"
+            name="password"
             required
             placeholder="Senha"
             className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
+
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
           <button
             type="submit"
-            className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+            disabled={isSubmitting}
+            className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
           >
-            Entrar
+            {isSubmitting ? "Entrando..." : "Entrar"}
           </button>
         </form>
       </div>
