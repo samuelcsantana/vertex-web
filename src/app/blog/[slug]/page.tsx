@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -20,6 +22,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <Link
+        href="/blog"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Voltar para o Blog
+      </Link>
+
       <h1 className="text-4xl font-bold">{post.title}</h1>
 
       <div className="prose prose-neutral dark:prose-invert mt-8 max-w-none">

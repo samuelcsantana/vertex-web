@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -34,7 +37,7 @@ export default async function ProjectsPage() {
                 <CardTitle>{project.title}</CardTitle>
                 <CardDescription>{project.description}</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col gap-4">
                 <div className="flex flex-wrap gap-2">
                   {project.techStack.map((tech) => (
                     <Badge key={tech} variant="secondary">
@@ -42,6 +45,18 @@ export default async function ProjectsPage() {
                     </Badge>
                   ))}
                 </div>
+
+                {project.link && (
+                  <Link
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:underline"
+                  >
+                    Ver projeto
+                    <ExternalLink className="size-3.5" />
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ))}

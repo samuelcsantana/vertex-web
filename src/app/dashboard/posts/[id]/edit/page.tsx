@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { EditPostForm } from "@/features/posts/components/EditPostForm";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
@@ -27,6 +29,14 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <Link
+        href="/dashboard/posts"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Voltar para o Painel
+      </Link>
+
       <h1 className="text-4xl font-bold">Editar Artigo</h1>
 
       <div className="mt-8">
