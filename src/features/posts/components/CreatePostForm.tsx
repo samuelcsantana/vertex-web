@@ -78,8 +78,13 @@ export function CreatePostForm() {
             </Field>
 
             <Field data-invalid={!!errors.content}>
-              <FieldLabel htmlFor="content">Content</FieldLabel>
-              <Textarea id="content" rows={6} {...register("content")} />
+              <FieldLabel htmlFor="content">Conteúdo (Markdown)</FieldLabel>
+              <Textarea
+                id="content"
+                rows={15}
+                className="field-sizing-fixed"
+                {...register("content")}
+              />
               <FieldError
                 errors={errors.content ? [errors.content] : undefined}
               />
