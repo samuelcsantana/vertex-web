@@ -39,7 +39,7 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form action={logoutAction}>
+          <form action={logoutAction.bind(null, "/login")}>
             <Button type="submit" variant="outline" className="w-fit">
               Logout
             </Button>

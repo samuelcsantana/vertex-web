@@ -11,7 +11,7 @@ export default function BlogAdminLayout({
   return (
     <div className="relative flex min-h-screen flex-col text-slate-300">
       <BlogBackground />
-      <BlogHeaderShell rightSlot={<AdminHeaderActions />} />
+      <BlogHeaderShell rightSlot={<AdminHeaderActions redirectTo="/" />} />
       <main className="flex-1">{children}</main>
       <BlogFooter />
     </div>

@@ -50,7 +50,7 @@ export function UserMenu({ isAuthenticated }: UserMenuProps) {
         <DropdownMenuItem
           variant="destructive"
           onClick={() => {
-            logoutAction();
+            logoutAction("/login");
           }}
         >
           Sair

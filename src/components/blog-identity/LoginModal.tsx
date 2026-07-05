@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Code2, X } from "lucide-react";
 
@@ -42,7 +43,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     router.refresh();
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
         <button
@@ -143,6 +144,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

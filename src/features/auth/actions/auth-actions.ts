@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
@@ -109,8 +110,16 @@ export async function loginAction(
   return { success: true };
 }
 
-export async function logoutAction(): Promise<void> {
+export async function logoutAction(redirectTo?: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE_NAME);
-  redirect("/login");
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
+
+  // No redirect means the visitor stays on whatever page they logged out
+  // from; force it to re-render so the header drops out of admin state
+  // instead of showing stale, still-authenticated markup.
+  revalidatePath("/", "layout");
 }
