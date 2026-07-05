@@ -1,36 +1,35 @@
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
 
-import { getPosts } from "@/features/blog/api/post-service";
+import { getPosts } from "@/features/posts/api/post-service";
 
-export default function BlogPage() {
-  const posts = getPosts();
+export default async function BlogPage() {
+  const posts = await getPosts();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="text-4xl font-bold">Blog</h1>
       <p className="mt-2 text-muted-foreground">
         Technical deep dives on architecture, performance, and engineering.
       </p>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
-        {posts.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="flex flex-col gap-2 rounded-lg border border-border p-6 transition-colors hover:bg-muted/50"
-          >
-            <time
-              dateTime={post.date}
-              className="text-sm text-muted-foreground"
+      {posts.length === 0 ? (
+        <p className="mt-10 text-muted-foreground">
+          Nenhum artigo publicado ainda.
+        </p>
+      ) : (
+        <ul className="mt-10 flex flex-col gap-4">
+          {posts.map((post) => (
+            <li
+              key={post.id}
+              className="rounded-lg border border-border p-6 transition-colors hover:bg-muted/50"
             >
-              {format(parseISO(post.date), "MMMM d, yyyy")}
-            </time>
-            <h2 className="text-xl font-semibold">{post.title}</h2>
-            <p className="text-sm text-muted-foreground">{post.summary}</p>
-          </Link>
-        ))}
-      </div>
+              <Link href={`/blog/${post.slug}`}>
+                <h2 className="text-xl font-semibold">{post.title}</h2>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
