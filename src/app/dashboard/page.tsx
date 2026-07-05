@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -45,6 +46,40 @@ export default async function DashboardPage() {
           </form>
         </CardContent>
       </Card>
+
+      <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Blog & Artigos</CardTitle>
+            <CardDescription>Escreva e publique novos artigos.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              nativeButton={false}
+              render={<Link href="/dashboard/posts" />}
+            >
+              Gerenciar posts
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Portfólio & Projetos</CardTitle>
+            <CardDescription>
+              Cadastre novos cases de arquitetura.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              nativeButton={false}
+              render={<Link href="/dashboard/projects" />}
+            >
+              Gerenciar projetos
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
