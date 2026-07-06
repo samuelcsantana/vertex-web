@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
+import { redirect } from "@/i18n/routing";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { LinkGithubButton } from "@/features/auth/components/LinkGithubButton";
 
@@ -10,13 +10,13 @@ export default async function ProfilePage() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/");
+    throw redirect({ href: "/", locale: await getLocale() });
   }
 
   const profile = await getProfile(accessToken);
 
   if (!profile) {
-    redirect("/");
+    throw redirect({ href: "/", locale: await getLocale() });
   }
 
   const t = await getTranslations("Profile");

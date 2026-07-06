@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Pencil, Trash2 } from "lucide-react";
 
+import { Link, redirect } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { CreatePostForm } from "@/features/posts/components/CreatePostForm";
@@ -16,7 +15,7 @@ export default async function DashboardPostsPage() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/");
+    throw redirect({ href: "/", locale: await getLocale() });
   }
 
   const [posts, topics] = await Promise.all([

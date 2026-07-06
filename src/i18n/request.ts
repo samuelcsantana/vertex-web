@@ -1,14 +1,16 @@
-import { cookies } from "next/headers";
+import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 
-import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME, isValidLocale } from "@/i18n/config";
+import { routing } from "@/i18n/routing";
 
-export default getRequestConfig(async () => {
-  const cookieStore = await cookies();
-  const cookieValue = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
-  // A stale/tampered/garbage cookie value would otherwise crash the dynamic
-  // import below instead of just falling back to the default locale.
-  const locale = isValidLocale(cookieValue) ? cookieValue : DEFAULT_LOCALE;
+export default getRequestConfig(async ({ requestLocale }) => {
+  const requested = await requestLocale;
+  // A missing/garbage locale segment (or a request that bypassed the
+  // routing middleware) would otherwise crash the dynamic import below
+  // instead of just falling back to the default locale.
+  const locale = hasLocale(routing.locales, requested)
+    ? requested
+    : routing.defaultLocale;
 
   return {
     locale,

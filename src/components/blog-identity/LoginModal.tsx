@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Code2, X } from "lucide-react";
 
+import { useRouter } from "@/i18n/routing";
 import { checkSessionAction, loginAction } from "@/features/auth/actions/auth-actions";
 
 interface LoginModalProps {

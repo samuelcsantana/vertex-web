@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { Link, redirect } from "@/i18n/routing";
 import { CreateTopicForm } from "@/features/topics/components/CreateTopicForm";
 import { TopicRow } from "@/features/topics/components/TopicRow";
 import { getTopics } from "@/features/topics/api/topic-service";
@@ -13,7 +12,7 @@ export default async function DashboardTopicsPage() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/");
+    throw redirect({ href: "/", locale: await getLocale() });
   }
 
   const topics = await getTopics();

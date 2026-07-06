@@ -2,8 +2,9 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
+import { redirect } from "@/i18n/routing";
 import type { CreatePostInput } from "@/features/posts/types";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
@@ -104,7 +105,7 @@ export async function updatePostAction(
 
   revalidatePath("/");
   revalidatePath("/dashboard/posts");
-  redirect("/dashboard/posts");
+  throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
 }
 
 export async function deletePostAction(id: string): Promise<void> {

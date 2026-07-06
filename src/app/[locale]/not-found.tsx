@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Compass } from "lucide-react";
 
+import { Link } from "@/i18n/routing";
 import { BlogBackground } from "@/components/blog-identity/BlogBackground";
 import { BlogHeader } from "@/components/blog-identity/BlogHeader";
 import { BlogFooter } from "@/components/blog-identity/BlogFooter";

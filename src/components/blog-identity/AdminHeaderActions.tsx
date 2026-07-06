@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ChevronDown, LogOut } from "lucide-react";
 
+import { Link, useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
 
 interface AdminHeaderActionsProfile {

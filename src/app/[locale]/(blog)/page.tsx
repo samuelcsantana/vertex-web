@@ -1,21 +1,32 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { getLocale, getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { hasLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
 import { FileText, Hash, Pencil, Plus, Trash2, User } from "lucide-react";
 
+import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { getLocalizedTitle } from "@/features/posts/utils/localized-content";
 
-export default async function BlogPage() {
+interface BlogPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function BlogPage({ params }: BlogPageProps) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
   const cookieStore = await cookies();
   const isAdmin = cookieStore.has("access_token");
   const posts = await getPosts();
-  const locale = await getLocale();
   const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
   const tPost = await getTranslations("Post");

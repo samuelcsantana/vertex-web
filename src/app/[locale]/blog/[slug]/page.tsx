@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -9,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
+import { Link, getPathname } from "@/i18n/routing";
 import { getPostBySlug } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
@@ -48,17 +48,18 @@ export async function generateMetadata({
   const content = getLocalizedContent(post, locale);
   const description = `${stripMarkdown(content).slice(0, 100)}...`;
   const images = post.coverUrl ? [{ url: post.coverUrl }] : [];
+  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${post.slug}`, locale })}`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${SITE_URL}/blog/${post.slug}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/blog/${post.slug}`,
+      url: canonicalUrl,
       type: "article",
       images,
     },
@@ -122,17 +123,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       {
         "@type": "Person",
         name: post.author?.name ?? "Samuel Santana",
-        url: `${SITE_URL}/about`,
+        url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
       },
     ],
-    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+    mainEntityOfPage: `${SITE_URL}${getPathname({ href: `/blog/${post.slug}`, locale })}`,
   };
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:px-0">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger -- JSON-LD structured data must be injected as raw text for Google's Rich Results to parse it
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 

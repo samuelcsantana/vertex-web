@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 
-import { LOCALE_COOKIE_NAME } from "@/i18n/config";
+import { usePathname, useRouter } from "@/i18n/routing";
 
 // Endonyms (each language's own name for itself) — shown as the accessible
 // name regardless of the current UI language, since that's the convention
@@ -19,16 +19,14 @@ const LOCALES = [
 export function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations("Locale");
+  const router = useRouter();
+  const pathname = usePathname();
 
-  function handleSelect(code: string) {
-    document.cookie = `${LOCALE_COOKIE_NAME}=${code}; path=/; max-age=31536000`;
-    // A hard reload (not router.refresh()) is deliberate here: this is what
-    // makes the server re-render <html lang> for real, which is what
-    // triggers the browser's own native-translate prompt for visitors — a
-    // soft client-side refresh leaves stale DOM around that can conflict
-    // with in-place mutations from browser/extension translators, which
-    // React's reconciliation then trips over on the next re-render.
-    window.location.reload();
+  function handleSelect(code: (typeof LOCALES)[number]["code"]) {
+    // A real navigation to the locale-prefixed URL (not a cookie flip), so
+    // the [locale] segment re-renders end to end — <html lang>, messages,
+    // and everything under it — instead of relying on a manual reload.
+    router.replace(pathname, { locale: code });
   }
 
   return (

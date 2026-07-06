@@ -2,8 +2,9 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
+import { redirect } from "@/i18n/routing";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
 import { getProfile } from "@/features/auth/api/profile-service";
 
@@ -159,7 +160,7 @@ export async function logoutAction(redirectTo?: string): Promise<void> {
   cookieStore.delete(AUTH_COOKIE_NAME);
 
   if (redirectTo) {
-    redirect(redirectTo);
+    throw redirect({ href: redirectTo, locale: await getLocale() });
   }
 
   // No redirect means the visitor stays on whatever page they logged out

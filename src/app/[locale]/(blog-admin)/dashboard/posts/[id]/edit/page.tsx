@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { Link, redirect } from "@/i18n/routing";
 import { EditPostForm } from "@/features/posts/components/EditPostForm";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
 import { getTopics } from "@/features/topics/api/topic-service";
@@ -19,7 +19,8 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/");
+    const locale = await getLocale();
+    throw redirect({ href: "/", locale });
   }
 
   const [posts, topics] = await Promise.all([

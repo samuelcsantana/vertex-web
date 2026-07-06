@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
+import { Link, redirect } from "@/i18n/routing";
 import { EditAboutForm } from "@/features/about/components/EditAboutForm";
 import { getAboutContent } from "@/features/about/api/about-service";
 
@@ -12,7 +11,7 @@ export default async function DashboardAboutPage() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    redirect("/");
+    throw redirect({ href: "/", locale: await getLocale() });
   }
 
   const about = await getAboutContent();
