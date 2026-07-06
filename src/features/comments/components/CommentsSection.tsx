@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { LoginModal } from "@/components/blog-identity/LoginModal";
 import {
@@ -35,6 +36,7 @@ export function CommentsSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const t = useTranslations("Post");
 
   useEffect(() => {
     if (!allowComments) {
@@ -107,7 +109,7 @@ export function CommentsSection({
 
   return (
     <div className="mt-12">
-      <h2 className="text-lg font-bold text-white">Comentários</h2>
+      <h2 className="text-lg font-bold text-white">{t("comments")}</h2>
 
       <div className="mt-4 flex flex-col gap-4">
         {isLoading ? (
