@@ -6,7 +6,7 @@ interface TopicPillsProps {
 }
 
 export function TopicPills({ topics, className }: TopicPillsProps) {
-  if (topics.length === 0) {
+  if (!topics || topics.length === 0) {
     return null;
   }
 
