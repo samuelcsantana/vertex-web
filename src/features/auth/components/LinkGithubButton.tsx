@@ -6,6 +6,8 @@ import { CheckCircle2 } from "lucide-react";
 
 import { checkGithubLinkedAction } from "@/features/auth/actions/auth-actions";
 
+const API_URL = process.env.NEXT_PUBLIC_VERTEX_API_URL ?? "http://localhost:3333";
+
 interface LinkGithubButtonProps {
   githubLinked: boolean;
 }
@@ -20,7 +22,7 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
     }
 
     const popup = window.open(
-      "http://localhost:3333/auth/github/link",
+      `${API_URL}/auth/github/link`,
       "Link GitHub",
       "width=500,height=600,left=200,top=200"
     );

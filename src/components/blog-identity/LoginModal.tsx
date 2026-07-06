@@ -8,6 +8,8 @@ import { Code2, X } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { checkSessionAction, loginAction } from "@/features/auth/actions/auth-actions";
 
+const API_URL = process.env.NEXT_PUBLIC_VERTEX_API_URL ?? "http://localhost:3333";
+
 interface LoginModalProps {
   open: boolean;
   onClose: () => void;
@@ -83,7 +85,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     const popup = window.open(
-      "http://localhost:3333/auth/google",
+      `${API_URL}/auth/google`,
       "Google OAuth",
       "width=500,height=600,left=200,top=200"
     );
@@ -102,7 +104,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     const popup = window.open(
-      "http://localhost:3333/auth/github",
+      `${API_URL}/auth/github`,
       "GitHub OAuth",
       "width=500,height=600,left=200,top=200"
     );
