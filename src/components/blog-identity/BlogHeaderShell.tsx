@@ -15,10 +15,10 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
 
   return (
     <header className="sticky top-4 z-50 mx-auto w-full max-w-6xl px-4 sm:px-6">
-      <div className="flex h-16 items-center justify-between gap-2 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:px-6">
+      <div className="flex h-16 items-center justify-between gap-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:gap-2 sm:px-6">
         <Link
           href="/"
-          className="shrink-0 font-mono text-lg font-bold tracking-tight"
+          className="shrink-0 font-mono text-base font-bold tracking-tight sm:text-lg"
         >
           <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
             {"< "}
@@ -41,7 +41,7 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
           <LanguageSwitcher />
           {rightSlot}
           <BlogMobileNav navLinks={NAV_LINKS} />

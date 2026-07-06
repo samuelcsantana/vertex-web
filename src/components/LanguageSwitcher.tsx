@@ -32,7 +32,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-0.5 rounded-full border border-slate-700 bg-slate-800/60 p-0.5 sm:gap-1 sm:p-1">
+    <div className="flex shrink-0 items-center gap-0.5 rounded-full border border-slate-700 bg-slate-800/60 p-0.5 sm:gap-1 sm:p-1">
       {LOCALES.map((item) => (
         <button
           key={item.code}
@@ -41,7 +41,7 @@ export function LanguageSwitcher() {
           aria-label={item.label}
           title={t(item.code)}
           aria-pressed={locale === item.code}
-          className={`flex size-6 items-center justify-center rounded-full text-sm transition-colors sm:size-7 ${
+          className={`flex size-5 shrink-0 items-center justify-center rounded-full text-sm transition-colors sm:size-7 ${
             locale === item.code
               ? "bg-emerald-500/20 ring-1 ring-emerald-500/40"
               : "opacity-50 hover:opacity-100"
