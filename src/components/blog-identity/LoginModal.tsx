@@ -66,7 +66,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         }
         setIsConnectingGoogle(false);
         onClose();
-        router.refresh();
+        window.location.reload();
         return;
       }
 
