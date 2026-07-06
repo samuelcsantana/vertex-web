@@ -81,6 +81,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
           <img
             src={profile.avatarUrl}
             alt=""
+            referrerPolicy="no-referrer"
             className="size-7 rounded-full object-cover"
           />
         ) : (
