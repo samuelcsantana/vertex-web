@@ -136,11 +136,11 @@ export function CommentsSection({
                     {initial}
                   </span>
                 )}
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-100">
                     {comment.author.name ?? t("anonymousUser")}
                   </p>
-                  <p className="mt-1 text-sm whitespace-pre-wrap text-slate-300">
+                  <p className="mt-1 text-sm break-words whitespace-pre-wrap text-slate-300">
                     {comment.content}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export function CommentsSection({
             <button
               type="submit"
               disabled={isSubmitting || !content.trim()}
-              className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
+              className="w-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50 sm:w-fit"
             >
               {isSubmitting ? t("sending") : t("sendComment")}
             </button>
@@ -174,7 +174,7 @@ export function CommentsSection({
             <button
               type="button"
               onClick={() => setIsLoginOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03]"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03] sm:w-fit"
             >
               {t("loginToComment")}
             </button>

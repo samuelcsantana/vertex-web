@@ -34,8 +34,8 @@ export default async function DashboardPostsPage() {
         <CreatePostForm availableTopics={topics} />
       </div>
 
-      <div className="mt-10 overflow-hidden rounded-2xl border border-slate-800">
-        <table className="w-full text-left text-sm">
+      <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
+        <table className="w-full min-w-[36rem] text-left text-sm">
           <thead className="border-b border-slate-800 bg-slate-900/60">
             <tr>
               <th className="px-4 py-3 font-medium text-slate-300">

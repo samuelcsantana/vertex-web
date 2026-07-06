@@ -91,8 +91,8 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
             {initial}
           </span>
         )}
-        <span className="max-w-[10rem] truncate">{displayName}</span>
-        <ChevronDown className="size-3.5 text-slate-400" />
+        <span className="hidden max-w-[10rem] truncate sm:inline">{displayName}</span>
+        <ChevronDown className="hidden size-3.5 text-slate-400 sm:block" />
       </button>
 
       {isMenuOpen && (

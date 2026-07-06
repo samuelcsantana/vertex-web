@@ -109,7 +109,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const t = await getTranslations("Post");
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:px-0">
       <Link
         href="/blog"
         className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
@@ -130,7 +130,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
 
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-400">
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
         {post.author && (
           <div className="flex items-center gap-2">
             {post.author.avatarUrl ? (
@@ -156,12 +156,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 md:gap-4">
         <TopicPills topics={post.topics} />
         <ShareButton title={displayTitle} />
       </div>
 
-      <div className="prose prose-invert mt-8 max-w-none">
+      <div className="prose prose-invert prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
           {displayContent}
         </ReactMarkdown>

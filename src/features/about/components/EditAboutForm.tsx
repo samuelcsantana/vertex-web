@@ -41,33 +41,35 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-sm font-medium text-slate-300">
           {tAbout("contentLabel")}
         </span>
-        <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
-          <button
-            type="button"
-            onClick={() => setViewMode("write")}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              viewMode === "write"
-                ? "bg-emerald-500/10 text-emerald-400"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            {t("write")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("preview")}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              viewMode === "preview"
-                ? "bg-emerald-500/10 text-emerald-400"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            {t("preview")}
-          </button>
+        <div className="overflow-x-auto">
+          <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("write")}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                viewMode === "write"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {t("write")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("preview")}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                viewMode === "preview"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {t("preview")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -92,7 +94,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !content.trim()}
-        className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
+        className="w-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50 sm:w-fit"
       >
         {isSubmitting ? t("saving") : t("saveChanges")}
       </button>

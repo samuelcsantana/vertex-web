@@ -67,7 +67,7 @@ export default async function BlogPage() {
         </div>
       )}
 
-      <section className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
         {posts.length === 0 ? (
           <p className="col-span-full text-slate-500">{t("noPostsYet")}</p>
         ) : (
@@ -85,7 +85,7 @@ export default async function BlogPage() {
                     src={post.coverUrl}
                     alt=""
                     referrerPolicy="no-referrer"
-                    className="pointer-events-none h-40 w-full object-cover"
+                    className="pointer-events-none aspect-video w-full object-cover"
                   />
                 )}
 
