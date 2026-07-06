@@ -56,6 +56,53 @@ export async function createTopicAction(
   return { success: true };
 }
 
+export async function updateTopicAction(
+  id: string,
+  name: string
+): Promise<TopicActionResult> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    return {
+      success: false,
+      error: "You must be signed in to update a topic.",
+    };
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/topics/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `access_token=${accessToken}`,
+      },
+      body: JSON.stringify({ name }),
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please try again.",
+    };
+  }
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    return {
+      success: false,
+      error: body?.message ?? "Failed to update topic.",
+    };
+  }
+
+  revalidatePath("/dashboard/topics");
+  revalidatePath("/dashboard/posts");
+
+  return { success: true };
+}
+
 export async function deleteTopicAction(id: string): Promise<void> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;

@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { CreateTopicForm } from "@/features/topics/components/CreateTopicForm";
-import { deleteTopicAction } from "@/features/topics/actions/topic-actions";
+import { TopicRow } from "@/features/topics/components/TopicRow";
 import { getTopics } from "@/features/topics/api/topic-service";
 
 export default async function DashboardTopicsPage() {
@@ -41,30 +40,7 @@ export default async function DashboardTopicsPage() {
         {topics.length === 0 ? (
           <p className="text-slate-500">Nenhum tópico cadastrado ainda.</p>
         ) : (
-          topics.map((topic) => (
-            <div
-              key={topic.id}
-              className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/30 px-4 py-3"
-            >
-              <span className="text-sm text-slate-100">{topic.name}</span>
-              <ConfirmDialog
-                title="Remover tópico?"
-                description={`"${topic.name}" será removido de todos os artigos vinculados a ele.`}
-                confirmLabel="Remover"
-                action={deleteTopicAction.bind(null, topic.id)}
-                trigger={
-                  <button
-                    type="button"
-                    aria-label="Remover tópico"
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
-                  >
-                    <Trash2 className="size-3.5" />
-                    Remover
-                  </button>
-                }
-              />
-            </div>
-          ))
+          topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
         )}
       </div>
     </div>
