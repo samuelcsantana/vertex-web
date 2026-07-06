@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
+import { getProfile } from "@/features/auth/api/profile-service";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -126,6 +127,28 @@ export async function checkSessionAction(): Promise<boolean> {
   // of any Server Action, so nothing has revalidated the layout's cached
   // auth state yet — mirror logoutAction's approach so the header picks up
   // the new session instead of only refreshing on the next hard navigation.
+  revalidatePath("/", "layout");
+
+  return true;
+}
+
+export async function checkGithubLinkedAction(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+
+  if (!accessToken) {
+    return false;
+  }
+
+  // Unlike checkSessionAction, this needs a validated profile fetch: the
+  // link flow doesn't reissue the session cookie, so githubId can only be
+  // observed by asking the API for the current DB state.
+  const profile = await getProfile(accessToken);
+
+  if (!profile?.githubId) {
+    return false;
+  }
+
   revalidatePath("/", "layout");
 
   return true;

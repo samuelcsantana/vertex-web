@@ -3,6 +3,7 @@ const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 export interface UserProfile {
   sub: string;
   email: string;
+  githubId: string | null;
   iat: number;
   exp: number;
 }
