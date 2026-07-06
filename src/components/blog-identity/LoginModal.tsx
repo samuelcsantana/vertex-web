@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Code2, X } from "lucide-react";
 
-import { loginAction } from "@/features/auth/actions/auth-actions";
+import { checkSessionAction, loginAction } from "@/features/auth/actions/auth-actions";
 
 interface LoginModalProps {
   open: boolean;
@@ -37,21 +37,44 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       return;
     }
 
-    // Google's own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
-    // which permanently severs window.opener the moment the popup navigates
-    // there — no header we (or the backend) control can prevent that. So
-    // instead of postMessage, poll for the popup closing itself once the
-    // backend finishes the flow and refresh to pick up the new session.
     setIsConnectingGoogle(true);
 
-    const pollTimer = window.setInterval(() => {
-      if (popup.closed) {
+    let attempts = 0;
+    const maxAttempts = 120; // give up after ~2 minutes of polling
+    let checking = false;
+
+    // Google's own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
+    // which permanently severs the popup's browsing context group — even
+    // after it closes itself back on our own origin, popup.closed can get
+    // stuck reporting false forever, so it can't be trusted as the signal.
+    // Poll our own backend for whether the cookie the popup set is valid
+    // instead; popup.closed is only used as a secondary "give up" signal.
+    const pollTimer = window.setInterval(async () => {
+      attempts += 1;
+
+      if (checking) {
+        return;
+      }
+      checking = true;
+      const authenticated = await checkSessionAction();
+      checking = false;
+
+      if (authenticated) {
         window.clearInterval(pollTimer);
+        if (!popup.closed) {
+          popup.close();
+        }
         setIsConnectingGoogle(false);
         onClose();
         router.refresh();
+        return;
       }
-    }, 500);
+
+      if (popup.closed || attempts >= maxAttempts) {
+        window.clearInterval(pollTimer);
+        setIsConnectingGoogle(false);
+      }
+    }, 1000);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
