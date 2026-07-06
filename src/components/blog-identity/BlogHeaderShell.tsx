@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const NAV_LINKS = [
   { href: "/", label: "Artigos" },
-  { href: "#", label: "Sobre" },
+  { href: "/about", label: "Sobre" },
 ];
 
 export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
