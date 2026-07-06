@@ -66,11 +66,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <button
-            type="button"
-            disabled
-            title="Em breve"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 opacity-50 transition-colors hover:bg-slate-700"
+          <a
+            href="http://localhost:3333/auth/google"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -94,7 +92,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               />
             </svg>
             Continuar com Google
-          </button>
+          </a>
           <button
             type="button"
             disabled
