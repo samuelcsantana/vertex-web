@@ -11,6 +11,7 @@ import { getPostBySlug } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
 import { getProfile } from "@/features/auth/api/profile-service";
+import { ShareButton } from "@/components/blog-identity/ShareButton";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -47,7 +48,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <h1 className="text-4xl font-bold text-white">{post.title}</h1>
 
-      <TopicPills topics={post.topics} className="mt-4" />
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <TopicPills topics={post.topics} />
+        <ShareButton title={post.title} />
+      </div>
 
       <div className="prose prose-invert mt-8 max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
