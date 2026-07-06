@@ -17,6 +17,13 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const formatDate = (dateString: string) =>
+  new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(dateString));
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
@@ -24,6 +31,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) {
     notFound();
   }
+
+  // GET /posts/:slug didn't used to join the author at all (posts.authorId
+  // was the only thing on the row) — vertex-api's postsRelations/
+  // postWithTopicsQuery now eager-load it (author: { id, name, avatarUrl }),
+  // but keep this guard rather than crash the page if that regresses.
+  if (!post.author) {
+    console.warn(
+      `Post "${post.slug}" has no author join — check vertex-api's posts.service.ts postWithTopicsQuery (with: { author: ... }) and the posts<->users relation in schema.ts.`
+    );
+  }
+
+  const wasEdited =
+    new Date(post.updatedAt).getTime() - new Date(post.createdAt).getTime() >
+      60_000 ||
+    new Date(post.createdAt).toDateString() !==
+      new Date(post.updatedAt).toDateString();
 
   // access_token is HttpOnly, so CommentsSection (a client component) can't
   // check auth itself — resolve it here, same pattern as BlogHeader/
@@ -48,7 +71,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <h1 className="text-4xl font-bold text-white">{post.title}</h1>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-400">
+        {post.author && (
+          <div className="flex items-center gap-2">
+            {post.author.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
+              <img
+                src={post.author.avatarUrl}
+                alt=""
+                referrerPolicy="no-referrer"
+                className="size-7 shrink-0 rounded-full object-cover"
+              />
+            ) : (
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
+                {(post.author.name?.trim()?.[0] ?? "?").toUpperCase()}
+              </span>
+            )}
+            <span className="font-medium text-slate-300">{post.author.name}</span>
+          </div>
+        )}
+
+        <span>Publicado em {formatDate(post.createdAt)}</span>
+        {wasEdited && <span>(Editado em {formatDate(post.updatedAt)})</span>}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <TopicPills topics={post.topics} />
         <ShareButton title={post.title} />
       </div>

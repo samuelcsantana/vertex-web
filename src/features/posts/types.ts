@@ -1,5 +1,11 @@
 import type { Topic } from "@/features/topics/types";
 
+export interface PostAuthor {
+  id: string;
+  name: string | null;
+  avatarUrl: string | null;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -8,6 +14,7 @@ export interface Post {
   isPublished: boolean;
   allowComments: boolean;
   authorId: string;
+  author: PostAuthor;
   createdAt: string;
   updatedAt: string;
   topics: Topic[];
