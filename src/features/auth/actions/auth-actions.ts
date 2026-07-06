@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
-import { getProfile } from "@/features/auth/api/profile-service";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -113,15 +112,13 @@ export async function loginAction(
 
 export async function checkSessionAction(): Promise<boolean> {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
-  if (!accessToken) {
-    return false;
-  }
+  // Matches BlogHeader's own check (cookie presence, not a validated
+  // profile fetch) so this can't disagree with what the header is about
+  // to render once revalidated.
+  const hasSession = cookieStore.has(AUTH_COOKIE_NAME);
 
-  const profile = await getProfile(accessToken);
-
-  if (!profile) {
+  if (!hasSession) {
     return false;
   }
 
