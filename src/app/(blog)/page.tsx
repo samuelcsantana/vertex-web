@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { format, parseISO } from "date-fns";
-import { Pencil, Plus, Sparkles, Trash2, User } from "lucide-react";
+import { Hash, Pencil, Plus, Trash2, User } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
@@ -36,13 +36,22 @@ export default async function BlogPage() {
             <p className="text-sm font-medium text-white">
               Painel de Administração Ativo
             </p>
-            <Link
-              href="/dashboard/posts"
-              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
-            >
-              <Plus className="size-3.5" />
-              Novo Artigo
-            </Link>
+            <div className="mt-2 flex items-center gap-2">
+              <Link
+                href="/dashboard/posts"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
+              >
+                <Plus className="size-3.5" />
+                Novo Artigo
+              </Link>
+              <Link
+                href="/dashboard/topics"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+              >
+                <Hash className="size-3.5" />
+                Tópicos
+              </Link>
+            </div>
           </div>
           <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
             <User className="size-5" />
@@ -113,8 +122,6 @@ export default async function BlogPage() {
           ))
         )}
       </section>
-
-      <Sparkles className="pointer-events-none absolute right-8 bottom-8 size-6 text-slate-700" />
     </div>
   );
 }
