@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 
 import { logoutAction } from "@/features/auth/actions/auth-actions";
@@ -26,6 +27,7 @@ interface AdminHeaderActionsProps {
 
 export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsProps) {
   const router = useRouter();
+  const t = useTranslations("Auth");
   const [isPending, startTransition] = useTransition();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,7 +63,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
         disabled={isPending}
         className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
       >
-        Sair
+        {t("signOut")}
       </button>
     );
   }
@@ -100,7 +102,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
             onClick={() => setIsMenuOpen(false)}
             className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
           >
-            Perfil
+            {t("profile")}
           </Link>
           <button
             type="button"
@@ -108,7 +110,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
             disabled={isPending}
             className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
           >
-            Sair
+            {t("signOut")}
           </button>
         </div>
       )}

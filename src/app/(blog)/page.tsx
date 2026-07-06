@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
+import { enUS, ptBR } from "date-fns/locale";
 import { FileText, Hash, Pencil, Plus, Trash2, User } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -15,51 +16,48 @@ export default async function BlogPage() {
   const isAdmin = cookieStore.has("access_token");
   const posts = await getPosts();
   const locale = await getLocale();
+  const dateLocale = locale === "en" ? enUS : ptBR;
+  const t = await getTranslations("Home");
+  const tPost = await getTranslations("Post");
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <section className="flex flex-col items-start gap-4">
         <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-7xl">
-          Engenharia de Software,
+          {t("heroTitleLine1")}
           <br />
           <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-500 bg-clip-text text-transparent">
-            Arquitetura & Código.
+            {t("heroTitleLine2")}
           </span>
         </h1>
-        <p className="max-w-2xl text-lg text-slate-400">
-          samuel.dev é um blog pessoal sobre engenharia de software,
-          arquitetura e código — anotações de quem constrói produtos reais no
-          dia a dia.
-        </p>
+        <p className="max-w-2xl text-lg text-slate-400">{t("heroDescription")}</p>
       </section>
 
       {isAdmin && (
         <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-xl items-center justify-between gap-4 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
           <div>
-            <p className="text-sm font-medium text-white">
-              Painel de Administração Ativo
-            </p>
+            <p className="text-sm font-medium text-white">{t("adminPanelActive")}</p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <Link
                 href="/dashboard/posts"
                 className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
               >
                 <Plus className="size-3.5" />
-                Novo Artigo
+                {t("newArticle")}
               </Link>
               <Link
                 href="/dashboard/topics"
                 className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
               >
                 <Hash className="size-3.5" />
-                Tópicos
+                {t("topics")}
               </Link>
               <Link
                 href="/dashboard/about"
                 className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
               >
                 <FileText className="size-3.5" />
-                Editar Sobre
+                {t("editAbout")}
               </Link>
             </div>
           </div>
@@ -71,79 +69,81 @@ export default async function BlogPage() {
 
       <section className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {posts.length === 0 ? (
-          <p className="col-span-full text-slate-500">
-            Nenhum artigo publicado ainda.
-          </p>
+          <p className="col-span-full text-slate-500">{t("noPostsYet")}</p>
         ) : (
           posts.map((post) => {
             const displayTitle = getLocalizedTitle(post, locale);
 
             return (
-            <div
-              key={post.id}
-              className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
-            >
-              {post.coverUrl && (
-                // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
-                <img
-                  src={post.coverUrl}
-                  alt=""
-                  referrerPolicy="no-referrer"
-                  className="pointer-events-none h-40 w-full object-cover"
-                />
-              )}
-
-              <div className="p-6">
-                {isAdmin && (
-                  <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <Link
-                      href={`/dashboard/posts/${post.id}/edit`}
-                      aria-label="Editar artigo"
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
-                    >
-                      <Pencil className="size-3.5" />
-                      Editar
-                    </Link>
-                    <ConfirmDialog
-                      title="Tem certeza absoluta?"
-                      description="Esta ação não pode ser desfeita e removerá os dados permanentemente."
-                      confirmLabel="Continuar"
-                      action={deletePostAction.bind(null, post.id)}
-                      trigger={
-                        <button
-                          type="button"
-                          aria-label="Excluir artigo"
-                          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
-                        >
-                          <Trash2 className="size-3.5" />
-                          Excluir
-                        </button>
-                      }
-                    />
-                  </div>
+              <div
+                key={post.id}
+                className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
+              >
+                {post.coverUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
+                  <img
+                    src={post.coverUrl}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    className="pointer-events-none h-40 w-full object-cover"
+                  />
                 )}
 
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="absolute inset-0 rounded-3xl"
-                >
-                  <span className="sr-only">Ler {displayTitle}</span>
-                </Link>
+                <div className="p-6">
+                  {isAdmin && (
+                    <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <Link
+                        href={`/dashboard/posts/${post.id}/edit`}
+                        aria-label={t("editArticle")}
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+                      >
+                        <Pencil className="size-3.5" />
+                        {t("editArticle")}
+                      </Link>
+                      <ConfirmDialog
+                        title={t("confirmDeleteTitle")}
+                        description={t("confirmDeleteDescription")}
+                        confirmLabel={t("confirmContinue")}
+                        action={deletePostAction.bind(null, post.id)}
+                        trigger={
+                          <button
+                            type="button"
+                            aria-label={t("deleteArticle")}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
+                          >
+                            <Trash2 className="size-3.5" />
+                            {t("deleteArticle")}
+                          </button>
+                        }
+                      />
+                    </div>
+                  )}
 
-                <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
-                  {displayTitle}
-                </h2>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="absolute inset-0 rounded-3xl"
+                  >
+                    <span className="sr-only">
+                      {tPost("readPost", { title: displayTitle })}
+                    </span>
+                  </Link>
 
-                <time
-                  dateTime={post.createdAt}
-                  className="pointer-events-none mt-2 block text-sm text-slate-500"
-                >
-                  {format(parseISO(post.createdAt), "MMMM d, yyyy")}
-                </time>
+                  <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
+                    {displayTitle}
+                  </h2>
 
-                <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
+                  <time
+                    dateTime={post.createdAt}
+                    className="pointer-events-none mt-2 block text-sm text-slate-500"
+                  >
+                    {format(parseISO(post.createdAt), "MMMM d, yyyy", {
+                      locale: dateLocale,
+                    })}
+                  </time>
+
+                  <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
+                </div>
               </div>
-            </div>
             );
           })
         )}

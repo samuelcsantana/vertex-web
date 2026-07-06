@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -16,6 +17,9 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const t = useTranslations("PostForm");
+  const tAbout = useTranslations("About");
+  const tCommon = useTranslations("Common");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,7 +32,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong. Please try again.");
+      setError(result.error ?? tCommon("genericFormError"));
       return;
     }
 
@@ -39,7 +43,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-slate-300">
-          Conteúdo (Markdown)
+          {tAbout("contentLabel")}
         </span>
         <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
           <button
@@ -51,7 +55,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            Escrever
+            {t("write")}
           </button>
           <button
             type="button"
@@ -62,7 +66,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            Visualizar
+            {t("preview")}
           </button>
         </div>
       </div>
@@ -82,7 +86,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
       {success && (
-        <p className="text-sm text-emerald-400">Conteúdo salvo com sucesso.</p>
+        <p className="text-sm text-emerald-400">{tAbout("contentSaved")}</p>
       )}
 
       <button
@@ -90,7 +94,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
         disabled={isSubmitting || !content.trim()}
         className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
       >
-        {isSubmitting ? "Salvando..." : "Salvar alterações"}
+        {isSubmitting ? t("saving") : t("saveChanges")}
       </button>
     </form>
   );

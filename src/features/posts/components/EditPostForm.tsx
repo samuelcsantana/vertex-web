@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -31,6 +32,8 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
   const [viewMode, setViewMode] = useState<"write" | "preview">("write");
   const [activeLanguage, setActiveLanguage] = useState<"pt" | "en">("pt");
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const t = useTranslations("PostForm");
+  const tCommon = useTranslations("Common");
 
   const {
     register,
@@ -98,18 +101,14 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     const result = await updatePostAction(initialData.id, values);
 
     if (result && !result.success) {
-      setServerError(
-        result.error ?? "Something went wrong. Please try again."
-      );
+      setServerError(result.error ?? tCommon("genericFormError"));
     }
   }
 
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
-      <h2 className="text-lg font-bold text-white">Editar artigo</h2>
-      <p className="mt-1 text-sm text-slate-400">
-        Atualize o conteúdo e o status de publicação.
-      </p>
+      <h2 className="text-lg font-bold text-white">{t("editArticleHeading")}</h2>
+      <p className="mt-1 text-sm text-slate-400">{t("editArticleDescription")}</p>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -157,7 +156,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="slug" className="text-sm font-medium text-slate-300">
-            Slug
+            {t("slugLabel")}
           </label>
           <input id="slug" className={inputClasses} {...register("slug")} />
           {errors.slug && (
@@ -188,7 +187,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Escrever
+              {t("write")}
             </button>
             <button
               type="button"
@@ -199,7 +198,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Visualizar
+              {t("preview")}
             </button>
           </div>
 
@@ -227,7 +226,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
                   {content}
                 </ReactMarkdown>
               ) : (
-                <p className="text-slate-500">Nada para visualizar ainda.</p>
+                <p className="text-slate-500">{t("nothingToPreview")}</p>
               )}
             </div>
           )}
@@ -238,7 +237,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="coverUrl" className="text-sm font-medium text-slate-300">
-            Imagem de Capa (URL)
+            {t("coverUrlLabel")}
           </label>
           <input
             id="coverUrl"
@@ -259,7 +258,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
             className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
             {...register("isPublished")}
           />
-          Publicado
+          {t("published")}
         </label>
 
         <label className="flex items-center gap-2 text-sm text-slate-300">
@@ -268,7 +267,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
             className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
             {...register("allowComments")}
           />
-          Habilitar Comentários
+          {t("enableComments")}
         </label>
 
         {serverError && <p className="text-sm text-red-400">{serverError}</p>}
@@ -278,7 +277,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
           disabled={isSubmitting}
           className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
         >
-          {isSubmitting ? "Salvando..." : "Salvar alterações"}
+          {isSubmitting ? t("saving") : t("saveChanges")}
         </button>
       </form>
     </div>

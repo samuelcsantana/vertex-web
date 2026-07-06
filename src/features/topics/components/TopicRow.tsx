@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -19,6 +20,8 @@ export function TopicRow({ topic }: TopicRowProps) {
   const [name, setName] = useState(topic.name);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("Dashboard");
+  const tCommon = useTranslations("Common");
 
   async function handleSave() {
     if (!name.trim() || name.trim() === topic.name) {
@@ -35,7 +38,7 @@ export function TopicRow({ topic }: TopicRowProps) {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong. Please try again.");
+      setError(result.error ?? tCommon("genericFormError"));
       return;
     }
 
@@ -72,13 +75,13 @@ export function TopicRow({ topic }: TopicRowProps) {
                 className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
               >
                 <Check className="size-3.5" />
-                Salvar
+                {t("save")}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                aria-label="Cancelar edição"
+                aria-label={t("cancelEdit")}
                 className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 disabled:opacity-50"
               >
                 <X className="size-3.5" />
@@ -89,25 +92,25 @@ export function TopicRow({ topic }: TopicRowProps) {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                aria-label="Editar tópico"
+                aria-label={t("editTopic")}
                 className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
               >
                 <Pencil className="size-3.5" />
-                Editar
+                {t("edit")}
               </button>
               <ConfirmDialog
-                title="Remover tópico?"
-                description={`"${topic.name}" será removido de todos os artigos vinculados a ele.`}
-                confirmLabel="Remover"
+                title={t("confirmDeleteTopicTitle")}
+                description={t("confirmDeleteTopicDescription", { name: topic.name })}
+                confirmLabel={t("removeTopic")}
                 action={deleteTopicAction.bind(null, topic.id)}
                 trigger={
                   <button
                     type="button"
-                    aria-label="Remover tópico"
+                    aria-label={t("deleteTopic")}
                     className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
                   >
                     <Trash2 className="size-3.5" />
-                    Remover
+                    {t("removeTopic")}
                   </button>
                 }
               />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CheckCircle2 } from "lucide-react";
 
 import { checkGithubLinkedAction } from "@/features/auth/actions/auth-actions";
@@ -11,6 +12,7 @@ interface LinkGithubButtonProps {
 
 export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
   const [isConnecting, setIsConnecting] = useState(false);
+  const t = useTranslations("Profile");
 
   function handleLinkGithub() {
     if (isConnecting) {
@@ -76,7 +78,7 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
     return (
       <div className="flex w-fit items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-400">
         <CheckCircle2 className="size-4" />
-        GitHub Conectado
+        {t("githubConnected")}
       </div>
     );
   }
@@ -88,7 +90,7 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
       disabled={isConnecting}
       className="flex w-fit items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
     >
-      {isConnecting ? "A conectar..." : "Conectar Conta do GitHub"}
+      {isConnecting ? t("connecting") : t("connectGithub")}
     </button>
   );
 }

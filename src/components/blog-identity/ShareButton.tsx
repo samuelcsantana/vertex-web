@@ -43,7 +43,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
       {copied ? (
         <>
           <Check className="size-3.5 text-emerald-400" />
-          Link copiado!
+          {t("linkCopied")}
         </>
       ) : (
         <>

@@ -1,4 +1,5 @@
 import { Controller, type Control } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 import type { Topic } from "@/features/topics/types";
 import type { CreatePostFormValues } from "@/features/posts/schemas/post-schema";
@@ -12,9 +13,12 @@ export function TopicCheckboxGroup({
   control,
   availableTopics,
 }: TopicCheckboxGroupProps) {
+  const t = useTranslations("Home");
+  const tDashboard = useTranslations("Dashboard");
+
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-slate-300">Tópicos</span>
+      <span className="text-sm font-medium text-slate-300">{t("topics")}</span>
       <Controller
         control={control}
         name="topicIds"
@@ -22,7 +26,7 @@ export function TopicCheckboxGroup({
           <div className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-950 p-3">
             {availableTopics.length === 0 ? (
               <p className="text-sm text-slate-500">
-                Nenhum tópico cadastrado.
+                {tDashboard("noTopicsRegistered")}
               </p>
             ) : (
               availableTopics.map((topic) => {

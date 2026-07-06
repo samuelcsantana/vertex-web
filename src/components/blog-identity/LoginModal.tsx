@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Code2, X } from "lucide-react";
 
 import { checkSessionAction, loginAction } from "@/features/auth/actions/auth-actions";
@@ -14,6 +15,8 @@ interface LoginModalProps {
 
 export function LoginModal({ open, onClose }: LoginModalProps) {
   const router = useRouter();
+  const t = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
@@ -126,7 +129,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Não foi possível entrar.");
+      setError(result.error ?? t("genericLoginError"));
       return;
     }
 
@@ -140,7 +143,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fechar"
+          aria-label={tCommon("close")}
           className="absolute top-6 right-6 text-slate-400 transition-colors hover:text-slate-200"
         >
           <X className="size-5" />
@@ -150,10 +153,8 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
             <Code2 className="size-6" />
           </div>
-          <h2 className="text-xl font-bold text-white">Acesso Admin</h2>
-          <p className="text-sm text-slate-400">
-            Entre para gerenciar os artigos do blog.
-          </p>
+          <h2 className="text-xl font-bold text-white">{t("loginTitle")}</h2>
+          <p className="text-sm text-slate-400">{t("loginSubtitle")}</p>
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
@@ -184,7 +185,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            {isConnectingGoogle ? "Aguardando o Google..." : "Continuar com Google"}
+            {isConnectingGoogle ? t("waitingGoogle") : t("continueWithGoogle")}
           </button>
           <button
             type="button"
@@ -198,13 +199,13 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
                 d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.2.66.79.55A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"
               />
             </svg>
-            {isConnectingGithub ? "Aguardando o GitHub..." : "Continuar com GitHub"}
+            {isConnectingGithub ? t("waitingGithub") : t("continueWithGithub")}
           </button>
         </div>
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-800" />
-          <span className="text-xs text-slate-500">ou com email</span>
+          <span className="text-xs text-slate-500">{t("orWithEmail")}</span>
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
@@ -213,14 +214,14 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             type="email"
             name="email"
             required
-            placeholder="Email"
+            placeholder={t("emailPlaceholder")}
             className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
           <input
             type="password"
             name="password"
             required
-            placeholder="Senha"
+            placeholder={t("passwordPlaceholder")}
             className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
 
@@ -231,7 +232,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             disabled={isSubmitting}
             className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
           >
-            {isSubmitting ? "Entrando..." : "Entrar"}
+            {isSubmitting ? t("signingIn") : t("signIn")}
           </button>
         </form>
       </div>

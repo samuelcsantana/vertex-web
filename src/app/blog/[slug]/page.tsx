@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -26,8 +26,8 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-const formatDate = (dateString: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
+const formatDate = (dateString: string, locale: string) =>
+  new Intl.DateTimeFormat(locale === "en" ? "en-US" : "pt-BR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -106,6 +106,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const locale = await getLocale();
   const displayTitle = getLocalizedTitle(post, locale);
   const displayContent = getLocalizedContent(post, locale);
+  const t = await getTranslations("Post");
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -114,7 +115,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
       >
         <ArrowLeft className="size-4" />
-        Voltar para o Blog
+        {t("backToBlog")}
       </Link>
 
       {post.coverUrl && (
@@ -149,8 +150,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         )}
 
-        <span>Publicado em {formatDate(post.createdAt)}</span>
-        {wasEdited && <span>(Editado em {formatDate(post.updatedAt)})</span>}
+        <span>{t("publishedOn", { date: formatDate(post.createdAt, locale) })}</span>
+        {wasEdited && (
+          <span>{t("editedOn", { date: formatDate(post.updatedAt, locale) })}</span>
+        )}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">

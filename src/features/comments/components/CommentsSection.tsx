@@ -60,9 +60,7 @@ export function CommentsSection({
   if (!allowComments) {
     return (
       <div className="mt-12 rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-center">
-        <p className="text-sm text-slate-400">
-          Os comentários estão desativados para este artigo.
-        </p>
+        <p className="text-sm text-slate-400">{t("commentsDisabled")}</p>
       </div>
     );
   }
@@ -82,7 +80,7 @@ export function CommentsSection({
     setIsSubmitting(false);
 
     if (!result.success || !result.comment) {
-      setError(result.error ?? "Não foi possível enviar o comentário.");
+      setError(result.error ?? t("genericCommentError"));
       return;
     }
 
@@ -113,9 +111,9 @@ export function CommentsSection({
 
       <div className="mt-4 flex flex-col gap-4">
         {isLoading ? (
-          <p className="text-sm text-slate-500">Carregando comentários...</p>
+          <p className="text-sm text-slate-500">{t("loadingComments")}</p>
         ) : comments.length === 0 ? (
-          <p className="text-sm text-slate-500">Seja o primeiro a comentar.</p>
+          <p className="text-sm text-slate-500">{t("beFirstToComment")}</p>
         ) : (
           comments.map((comment) => {
             const initial = (comment.author.name?.trim()?.[0] ?? "?").toUpperCase();
@@ -140,7 +138,7 @@ export function CommentsSection({
                 )}
                 <div>
                   <p className="text-sm font-medium text-slate-100">
-                    {comment.author.name ?? "Usuário"}
+                    {comment.author.name ?? t("anonymousUser")}
                   </p>
                   <p className="mt-1 text-sm whitespace-pre-wrap text-slate-300">
                     {comment.content}
@@ -159,7 +157,7 @@ export function CommentsSection({
               value={content}
               onChange={(event) => setContent(event.target.value)}
               rows={3}
-              placeholder="Escreva um comentário..."
+              placeholder={t("commentPlaceholder")}
               className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
             />
             {error && <p className="text-sm text-red-400">{error}</p>}
@@ -168,7 +166,7 @@ export function CommentsSection({
               disabled={isSubmitting || !content.trim()}
               className="w-fit rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50"
             >
-              {isSubmitting ? "Enviando..." : "Enviar Comentário"}
+              {isSubmitting ? t("sending") : t("sendComment")}
             </button>
           </form>
         ) : (
@@ -178,7 +176,7 @@ export function CommentsSection({
               onClick={() => setIsLoginOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03]"
             >
-              Faça login para comentar
+              {t("loginToComment")}
             </button>
             <LoginModal open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
           </>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 interface ConfirmDialogProps {
   trigger: ReactNode;
@@ -18,6 +19,7 @@ export function ConfirmDialog({
   action,
 }: ConfirmDialogProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("Common");
 
   return (
     <>
@@ -35,7 +37,7 @@ export function ConfirmDialog({
                 onClick={() => setOpen(false)}
                 className="rounded-full border border-slate-700 bg-slate-800 px-4 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
               >
-                Cancelar
+                {t("cancel")}
               </button>
               <button
                 type="button"

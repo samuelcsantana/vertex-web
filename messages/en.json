@@ -1,10 +1,137 @@
 {
+  "Common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "genericFormError": "Something went wrong. Please try again."
+  },
   "Navigation": {
     "about": "About",
     "home": "Home"
   },
+  "Auth": {
+    "loginButton": "Login",
+    "loginTitle": "Admin Access",
+    "loginSubtitle": "Sign in to manage the blog's articles.",
+    "continueWithGoogle": "Continue with Google",
+    "waitingGoogle": "Waiting for Google...",
+    "continueWithGithub": "Continue with GitHub",
+    "waitingGithub": "Waiting for GitHub...",
+    "orWithEmail": "or with email",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "genericLoginError": "Unable to sign in.",
+    "signOut": "Sign out",
+    "profile": "Profile"
+  },
   "Post": {
     "share": "Share",
-    "comments": "Comments"
+    "linkCopied": "Link copied!",
+    "comments": "Comments",
+    "commentsDisabled": "Comments are disabled for this article.",
+    "loadingComments": "Loading comments...",
+    "beFirstToComment": "Be the first to comment.",
+    "commentPlaceholder": "Write a comment...",
+    "sendComment": "Send Comment",
+    "sending": "Sending...",
+    "loginToComment": "Sign in to comment",
+    "genericCommentError": "Unable to post the comment.",
+    "anonymousUser": "User",
+    "publishedOn": "Published on {date}",
+    "editedOn": "(Edited on {date})",
+    "backToBlog": "Back to the Blog",
+    "readPost": "Read {title}"
+  },
+  "Home": {
+    "heroTitleLine1": "Software Engineering,",
+    "heroTitleLine2": "Architecture & Code.",
+    "heroDescription": "samuel.dev is a personal blog about software engineering, architecture, and code — notes from someone who builds real products day to day.",
+    "adminPanelActive": "Admin Panel Active",
+    "newArticle": "New Article",
+    "topics": "Topics",
+    "editAbout": "Edit About",
+    "noPostsYet": "No articles published yet.",
+    "editArticle": "Edit article",
+    "deleteArticle": "Delete article",
+    "confirmDeleteTitle": "Are you absolutely sure?",
+    "confirmDeleteDescription": "This action cannot be undone and will permanently remove the data.",
+    "confirmContinue": "Continue"
+  },
+  "Dashboard": {
+    "managePosts": "Manage Posts",
+    "noPostsPublished": "No posts published yet.",
+    "tableTitle": "Title",
+    "tableTopics": "Topics",
+    "tableStatus": "Status",
+    "published": "Published",
+    "draft": "Draft",
+    "edit": "Edit",
+    "delete": "Delete",
+    "backToPanel": "Back to the Panel",
+    "editArticleHeading": "Edit Article",
+    "manageTopics": "Topics",
+    "topicsDescription": "Manage the topics available for articles.",
+    "noTopicsYet": "No topics registered yet.",
+    "noTopicsRegistered": "No topics registered.",
+    "topicNamePlaceholder": "Topic name",
+    "addTopic": "Add",
+    "adding": "Adding...",
+    "save": "Save",
+    "cancelEdit": "Cancel edit",
+    "editTopic": "Edit topic",
+    "deleteTopic": "Remove topic",
+    "removeTopic": "Remove",
+    "confirmDeleteTopicTitle": "Remove topic?",
+    "confirmDeleteTopicDescription": "\"{name}\" will be removed from every article linked to it."
+  },
+  "PostForm": {
+    "newArticleHeading": "New article",
+    "newArticleDescription": "Publish a new article on the blog.",
+    "editArticleHeading": "Edit article",
+    "editArticleDescription": "Update the content and publish status.",
+    "slugLabel": "Slug",
+    "write": "Write",
+    "preview": "Preview",
+    "nothingToPreview": "Nothing to preview yet.",
+    "coverUrlLabel": "Cover Image (URL)",
+    "publishNow": "Publish immediately",
+    "published": "Published",
+    "enableComments": "Enable Comments",
+    "creating": "Creating...",
+    "createArticle": "Create article",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "attachImage": "Attach Image",
+    "uploading": "Uploading...",
+    "uploadError": "Failed to upload the image."
+  },
+  "Profile": {
+    "heading": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "userType": "User Type",
+    "admin": "Admin",
+    "user": "User",
+    "linkedAccounts": "Linked Accounts",
+    "linkedAccountsDescription": "Connect external accounts to sign in faster.",
+    "connectGithub": "Connect GitHub Account",
+    "connecting": "Connecting...",
+    "githubConnected": "GitHub Connected"
+  },
+  "About": {
+    "editHeading": "Edit About",
+    "editDescription": "Update the content shown at /about.",
+    "contentLabel": "Content (Markdown)",
+    "contentSaved": "Content saved successfully."
+  },
+  "NotFound": {
+    "errorLabel": "Error 404",
+    "title": "Page not found",
+    "description": "The link you followed may be broken, or the page may have been removed.",
+    "goToBlog": "Go to the blog"
+  },
+  "Footer": {
+    "copyright": "© {year} Samuel. Built with Next.js & Tailwind CSS."
   }
 }
