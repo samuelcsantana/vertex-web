@@ -5,21 +5,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
+import { TopicCheckboxGroup } from "@/features/posts/components/TopicCheckboxGroup";
 import { updatePostAction } from "@/features/posts/actions/post-actions";
 import {
   createPostFormSchema,
   type CreatePostFormValues,
 } from "@/features/posts/schemas/post-schema";
 import type { Post } from "@/features/posts/types";
+import type { Topic } from "@/features/topics/types";
 
 interface EditPostFormProps {
   initialData: Post;
+  availableTopics: Topic[];
 }
 
 const inputClasses =
   "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
 
-export function EditPostForm({ initialData }: EditPostFormProps) {
+export function EditPostForm({ initialData, availableTopics }: EditPostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -28,6 +31,7 @@ export function EditPostForm({ initialData }: EditPostFormProps) {
     handleSubmit,
     getValues,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
@@ -36,6 +40,7 @@ export function EditPostForm({ initialData }: EditPostFormProps) {
       slug: initialData.slug,
       content: initialData.content,
       isPublished: initialData.isPublished,
+      topicIds: initialData.topics.map((topic) => topic.id),
     },
   });
 
@@ -139,6 +144,8 @@ export function EditPostForm({ initialData }: EditPostFormProps) {
             <p className="text-sm text-red-400">{errors.content.message}</p>
           )}
         </div>
+
+        <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
         <label className="flex items-center gap-2 text-sm text-slate-300">
           <input

@@ -5,16 +5,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
+import { TopicCheckboxGroup } from "@/features/posts/components/TopicCheckboxGroup";
 import { createPostAction } from "@/features/posts/actions/post-actions";
 import {
   createPostFormSchema,
   type CreatePostFormValues,
 } from "@/features/posts/schemas/post-schema";
+import type { Topic } from "@/features/topics/types";
+
+interface CreatePostFormProps {
+  availableTopics: Topic[];
+}
 
 const inputClasses =
   "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
 
-export function CreatePostForm() {
+export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -23,11 +29,12 @@ export function CreatePostForm() {
     handleSubmit,
     getValues,
     setValue,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
-    defaultValues: { isPublished: false },
+    defaultValues: { isPublished: false, topicIds: [] },
   });
 
   const { ref: contentRegisterRef, ...contentRegisterRest } =
@@ -138,6 +145,8 @@ export function CreatePostForm() {
             <p className="text-sm text-red-400">{errors.content.message}</p>
           )}
         </div>
+
+        <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
         <label className="flex items-center gap-2 text-sm text-slate-300">
           <input

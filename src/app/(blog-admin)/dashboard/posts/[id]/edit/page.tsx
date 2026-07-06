@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { EditPostForm } from "@/features/posts/components/EditPostForm";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
+import { getTopics } from "@/features/topics/api/topic-service";
 
 interface EditPostPageProps {
   params: Promise<{ id: string }>;
@@ -20,7 +21,10 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
     redirect("/");
   }
 
-  const posts = await getDashboardPosts(accessToken);
+  const [posts, topics] = await Promise.all([
+    getDashboardPosts(accessToken),
+    getTopics(),
+  ]);
   const post = posts.find((p) => p.id === id);
 
   if (!post) {
@@ -40,7 +44,7 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
       <h1 className="text-4xl font-bold text-white">Editar Artigo</h1>
 
       <div className="mt-8">
-        <EditPostForm initialData={post} />
+        <EditPostForm initialData={post} availableTopics={topics} />
       </div>
     </div>
   );

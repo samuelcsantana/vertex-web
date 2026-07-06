@@ -7,6 +7,8 @@ import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { CreatePostForm } from "@/features/posts/components/CreatePostForm";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
+import { TopicPills } from "@/features/posts/components/TopicPills";
+import { getTopics } from "@/features/topics/api/topic-service";
 
 export default async function DashboardPostsPage() {
   const cookieStore = await cookies();
@@ -16,14 +18,17 @@ export default async function DashboardPostsPage() {
     redirect("/");
   }
 
-  const posts = await getDashboardPosts(accessToken);
+  const [posts, topics] = await Promise.all([
+    getDashboardPosts(accessToken),
+    getTopics(),
+  ]);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="text-4xl font-bold text-white">Gerenciar Posts</h1>
 
       <div className="mt-8">
-        <CreatePostForm />
+        <CreatePostForm availableTopics={topics} />
       </div>
 
       <div className="mt-10 overflow-hidden rounded-2xl border border-slate-800">
@@ -31,6 +36,7 @@ export default async function DashboardPostsPage() {
           <thead className="border-b border-slate-800 bg-slate-900/60">
             <tr>
               <th className="px-4 py-3 font-medium text-slate-300">Título</th>
+              <th className="px-4 py-3 font-medium text-slate-300">Tópicos</th>
               <th className="px-4 py-3 font-medium text-slate-300">Status</th>
               <th className="w-px px-4 py-3" />
             </tr>
@@ -38,7 +44,7 @@ export default async function DashboardPostsPage() {
           <tbody>
             {posts.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-slate-500">
                   Nenhum post publicado ainda.
                 </td>
               </tr>
@@ -49,6 +55,9 @@ export default async function DashboardPostsPage() {
                   className="border-b border-slate-800 bg-slate-900/30 last:border-0"
                 >
                   <td className="px-4 py-3 text-slate-100">{post.title}</td>
+                  <td className="px-4 py-3">
+                    <TopicPills topics={post.topics} />
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={

@@ -7,6 +7,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
 import { getPostBySlug } from "@/features/posts/api/post-service";
+import { TopicPills } from "@/features/posts/components/TopicPills";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </Link>
 
       <h1 className="text-4xl font-bold text-white">{post.title}</h1>
+
+      <TopicPills topics={post.topics} className="mt-4" />
 
       <div className="prose prose-invert mt-8 max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>

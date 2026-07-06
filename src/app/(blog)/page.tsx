@@ -6,6 +6,7 @@ import { Pencil, Plus, Sparkles, Trash2, User } from "lucide-react";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
+import { TopicPills } from "@/features/posts/components/TopicPills";
 
 export default async function BlogPage() {
   const cookieStore = await cookies();
@@ -106,6 +107,8 @@ export default async function BlogPage() {
               >
                 {format(parseISO(post.createdAt), "MMMM d, yyyy")}
               </time>
+
+              <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
             </div>
           ))
         )}

@@ -1,3 +1,5 @@
+import type { Topic } from "@/features/topics/types";
+
 export interface Post {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export interface Post {
   authorId: string;
   createdAt: string;
   updatedAt: string;
+  topics: Topic[];
 }
 
 export interface CreatePostInput {
@@ -14,4 +17,5 @@ export interface CreatePostInput {
   slug: string;
   content: string;
   isPublished: boolean;
+  topicIds: string[];
 }

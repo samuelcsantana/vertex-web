@@ -11,6 +11,7 @@ export const createPostFormSchema = z.object({
     ),
   content: z.string().min(1, "Content is required"),
   isPublished: z.boolean(),
+  topicIds: z.array(z.string()),
 });
 
 export type CreatePostFormValues = z.infer<typeof createPostFormSchema>;
