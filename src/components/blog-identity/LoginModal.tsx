@@ -40,7 +40,12 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     setIsConnectingGoogle(true);
 
     let attempts = 0;
-    const maxAttempts = 120; // give up after ~2 minutes of polling
+    // Real Google sign-in (account picker, 2FA, "verify it's you") routinely
+    // runs past a couple of minutes; this cap is a backstop for an abandoned
+    // tab, not a normal-flow limit, so it needs to be generous — a session
+    // that lands after the old 2-minute cap was previously lost for good,
+    // with the tab silently stuck until a manual reload.
+    const maxAttempts = 900; // give up after ~15 minutes of polling
     let checking = false;
 
     // Google's own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
@@ -61,8 +66,15 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
 
       if (authenticated) {
         window.clearInterval(pollTimer);
-        if (!popup.closed) {
-          popup.close();
+        try {
+          // COOP severs the popup from this window once it's visited
+          // Google's own pages, so close() can silently no-op — never let
+          // that stop us from finishing the login on our side.
+          if (!popup.closed) {
+            popup.close();
+          }
+        } catch {
+          // Ignored: same COOP severance as above.
         }
         setIsConnectingGoogle(false);
         onClose();
@@ -73,6 +85,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       if (popup.closed || attempts >= maxAttempts) {
         window.clearInterval(pollTimer);
         setIsConnectingGoogle(false);
+        console.warn(
+          "Google OAuth polling gave up without detecting a session; reload the page if login actually succeeded."
+        );
       }
     }, 1000);
   }
