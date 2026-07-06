@@ -1,26 +1,34 @@
 "use client";
 
-import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 import { LOCALE_COOKIE_NAME } from "@/i18n/config";
 
+// Endonyms (each language's own name for itself) — shown as the accessible
+// name regardless of the current UI language, since that's the convention
+// users expect from a language picker (recognizable even if you can't read
+// the currently active language). The Locale message namespace still gets
+// used below for the tooltip, translated into whatever the current UI
+// language is.
 const LOCALES = [
   { code: "pt", flag: "🇧🇷", label: "Português" },
   { code: "en", flag: "🇺🇸", label: "English" },
+  { code: "es", flag: "🇪🇸", label: "Español" },
 ] as const;
 
 export function LanguageSwitcher() {
   const locale = useLocale();
-  const router = useRouter();
+  const t = useTranslations("Locale");
 
   function handleSelect(code: string) {
-    // Deliberately no "already selected" bail-out: `locale` here comes from
-    // context and only updates once router.refresh() below resolves, so a
-    // quick second click (different locale, before the first refresh
-    // settles) would compare against a stale value and silently no-op.
     document.cookie = `${LOCALE_COOKIE_NAME}=${code}; path=/; max-age=31536000`;
-    router.refresh();
+    // A hard reload (not router.refresh()) is deliberate here: this is what
+    // makes the server re-render <html lang> for real, which is what
+    // triggers the browser's own native-translate prompt for visitors — a
+    // soft client-side refresh leaves stale DOM around that can conflict
+    // with in-place mutations from browser/extension translators, which
+    // React's reconciliation then trips over on the next re-render.
+    window.location.reload();
   }
 
   return (
@@ -31,6 +39,7 @@ export function LanguageSwitcher() {
           type="button"
           onClick={() => handleSelect(item.code)}
           aria-label={item.label}
+          title={t(item.code)}
           aria-pressed={locale === item.code}
           className={`flex size-7 items-center justify-center rounded-full text-sm transition-colors ${
             locale === item.code

@@ -8,6 +8,11 @@
     "about": "Sobre",
     "home": "Início"
   },
+  "Locale": {
+    "pt": "Português",
+    "en": "Inglês",
+    "es": "Espanhol"
+  },
   "Auth": {
     "loginButton": "Login",
     "loginTitle": "Acesso Admin",

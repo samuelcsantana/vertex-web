@@ -8,6 +8,11 @@
     "about": "About",
     "home": "Home"
   },
+  "Locale": {
+    "pt": "Portuguese",
+    "en": "English",
+    "es": "Spanish"
+  },
   "Auth": {
     "loginButton": "Login",
     "loginTitle": "Admin Access",
