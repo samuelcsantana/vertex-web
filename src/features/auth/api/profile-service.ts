@@ -10,10 +10,16 @@ export interface UserProfile {
 export async function getProfile(
   accessToken: string
 ): Promise<UserProfile | null> {
-  const response = await fetch(`${API_URL}/auth/profile`, {
-    headers: { Cookie: `access_token=${accessToken}` },
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/auth/profile`, {
+      headers: { Cookie: `access_token=${accessToken}` },
+      cache: "no-store",
+    });
+  } catch {
+    return null;
+  }
 
   if (!response.ok) {
     return null;

@@ -27,15 +27,24 @@ export async function getPresignedUploadUrlAction(
     };
   }
 
-  const response = await fetch(`${API_URL}/uploads/presigned-url`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify({ fileName, contentType }),
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/uploads/presigned-url`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `access_token=${accessToken}`,
+      },
+      body: JSON.stringify({ fileName, contentType }),
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please try again.",
+    };
+  }
 
   if (!response.ok) {
     return { success: false, error: "Failed to request an upload URL." };

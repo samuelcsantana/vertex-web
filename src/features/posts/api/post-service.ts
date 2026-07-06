@@ -3,9 +3,15 @@ import type { Post } from "@/features/posts/types";
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
 export async function getPosts(): Promise<Post[]> {
-  const response = await fetch(`${API_URL}/posts`, {
-    next: { revalidate: 60 },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/posts`, {
+      next: { revalidate: 60 },
+    });
+  } catch {
+    return [];
+  }
 
   if (!response.ok) {
     return [];
@@ -15,9 +21,15 @@ export async function getPosts(): Promise<Post[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const response = await fetch(`${API_URL}/posts/${slug}`, {
-    next: { revalidate: 60 },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/posts/${slug}`, {
+      next: { revalidate: 60 },
+    });
+  } catch {
+    return null;
+  }
 
   if (!response.ok) {
     return null;
@@ -29,10 +41,16 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 export async function getDashboardPosts(
   accessToken: string
 ): Promise<Post[]> {
-  const response = await fetch(`${API_URL}/dashboard/posts`, {
-    headers: { Cookie: `access_token=${accessToken}` },
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/dashboard/posts`, {
+      headers: { Cookie: `access_token=${accessToken}` },
+      cache: "no-store",
+    });
+  } catch {
+    return [];
+  }
 
   if (!response.ok) {
     return [];

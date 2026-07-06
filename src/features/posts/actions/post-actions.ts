@@ -26,15 +26,24 @@ export async function createPostAction(
     };
   }
 
-  const response = await fetch(`${API_URL}/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify(data),
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/posts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `access_token=${accessToken}`,
+      },
+      body: JSON.stringify(data),
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please try again.",
+    };
+  }
 
   if (!response.ok) {
     return { success: false, error: "Failed to create post." };
@@ -60,15 +69,24 @@ export async function updatePostAction(
     };
   }
 
-  const response = await fetch(`${API_URL}/posts/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify(data),
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/posts/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `access_token=${accessToken}`,
+      },
+      body: JSON.stringify(data),
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please try again.",
+    };
+  }
 
   if (!response.ok) {
     return { success: false, error: "Failed to update post." };
@@ -87,11 +105,15 @@ export async function deletePostAction(id: string): Promise<void> {
     return;
   }
 
-  await fetch(`${API_URL}/posts/${id}`, {
-    method: "DELETE",
-    headers: { Cookie: `access_token=${accessToken}` },
-    cache: "no-store",
-  });
+  try {
+    await fetch(`${API_URL}/posts/${id}`, {
+      method: "DELETE",
+      headers: { Cookie: `access_token=${accessToken}` },
+      cache: "no-store",
+    });
+  } catch {
+    return;
+  }
 
   revalidatePath("/blog");
   revalidatePath("/dashboard/posts");
