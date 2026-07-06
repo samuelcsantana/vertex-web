@@ -49,7 +49,10 @@ export async function createPostAction(
     return { success: false, error: "Failed to create post." };
   }
 
-  revalidatePath("/blog");
+  // The blog listing lives at "/" now ((blog)/page.tsx) — "/blog" is just a
+  // redirect("/") stub left over from the samuel.dev identity restructuring,
+  // so revalidating it never actually busted the home page's cache.
+  revalidatePath("/");
   revalidatePath("/dashboard/posts");
 
   return { success: true };
@@ -92,7 +95,7 @@ export async function updatePostAction(
     return { success: false, error: "Failed to update post." };
   }
 
-  revalidatePath("/blog");
+  revalidatePath("/");
   revalidatePath("/dashboard/posts");
   redirect("/dashboard/posts");
 }
@@ -115,6 +118,6 @@ export async function deletePostAction(id: string): Promise<void> {
     return;
   }
 
-  revalidatePath("/blog");
+  revalidatePath("/");
   revalidatePath("/dashboard/posts");
 }
