@@ -3,6 +3,10 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
 import { TopicCheckboxGroup } from "@/features/posts/components/TopicCheckboxGroup";
@@ -24,6 +28,7 @@ const inputClasses =
 
 export function EditPostForm({ initialData, availableTopics }: EditPostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"write" | "preview">("write");
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const {
@@ -31,6 +36,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     handleSubmit,
     getValues,
     setValue,
+    watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
@@ -43,6 +49,8 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
       topicIds: initialData.topics.map((topic) => topic.id),
     },
   });
+
+  const content = watch("content");
 
   const { ref: contentRegisterRef, ...contentRegisterRest } =
     register("content");
@@ -128,18 +136,64 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
             >
               Conteúdo (Markdown)
             </label>
-            <AttachImageButton onUploaded={insertImageMarkdown} />
+            {viewMode === "write" && (
+              <AttachImageButton onUploaded={insertImageMarkdown} />
+            )}
           </div>
-          <textarea
-            id="content"
-            rows={12}
-            className={`${inputClasses} resize-y`}
-            {...contentRegisterRest}
-            ref={(element) => {
-              contentRegisterRef(element);
-              contentTextareaRef.current = element;
-            }}
-          />
+
+          <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("write")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                viewMode === "write"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              Escrever
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("preview")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                viewMode === "preview"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              Visualizar
+            </button>
+          </div>
+
+          {viewMode === "write" ? (
+            <textarea
+              id="content"
+              rows={12}
+              className={`${inputClasses} resize-y`}
+              {...contentRegisterRest}
+              ref={(element) => {
+                contentRegisterRef(element);
+                contentTextareaRef.current = element;
+              }}
+            />
+          ) : (
+            <div
+              id="content"
+              className="prose prose-invert min-h-[19rem] max-w-none rounded-xl border border-slate-800 bg-slate-950 p-4"
+            >
+              {content ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                >
+                  {content}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-slate-500">Nada para visualizar ainda.</p>
+              )}
+            </div>
+          )}
           {errors.content && (
             <p className="text-sm text-red-400">{errors.content.message}</p>
           )}
