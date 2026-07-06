@@ -82,17 +82,17 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Definições</CardTitle>
+            <CardTitle>Perfil</CardTitle>
             <CardDescription>
-              Vincule contas externas ao seu perfil.
+              Veja seus dados e vincule contas externas.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button
               nativeButton={false}
-              render={<Link href="/dashboard/settings" />}
+              render={<Link href="/profile" />}
             >
-              Ver definições
+              Ver perfil
             </Button>
           </CardContent>
         </Card>

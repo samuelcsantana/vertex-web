@@ -1,8 +1,11 @@
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
+export type UserRole = "user" | "admin";
+
 export interface UserProfile {
   sub: string;
   email: string;
+  role: UserRole;
   name: string | null;
   avatarUrl: string | null;
   githubId: string | null;

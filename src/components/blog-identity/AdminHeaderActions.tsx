@@ -96,7 +96,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
       {isMenuOpen && (
         <div className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl">
           <Link
-            href="/dashboard/settings"
+            href="/profile"
             onClick={() => setIsMenuOpen(false)}
             className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
           >
