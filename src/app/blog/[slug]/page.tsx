@@ -52,6 +52,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `${SITE_URL}/blog/${post.slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -108,8 +111,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const displayContent = getLocalizedContent(post, locale);
   const t = await getTranslations("Post");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: displayTitle,
+    image: post.coverUrl ? [post.coverUrl] : [],
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt,
+    author: [
+      {
+        "@type": "Person",
+        name: post.author?.name ?? "Samuel Santana",
+        url: `${SITE_URL}/about`,
+      },
+    ],
+    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+  };
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:px-0">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger -- JSON-LD structured data must be injected as raw text for Google's Rich Results to parse it
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Link
         href="/blog"
         className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"

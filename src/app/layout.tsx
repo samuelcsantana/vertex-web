@@ -16,9 +16,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Vertex",
-  description: "Software architecture, web performance, and engineering depth.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "samuel.dev — Engenharia de Software, Performance e Arquitetura",
+    template: "%s | samuel.dev",
+  },
+  description:
+    "Blog técnico de Samuel Santana sobre arquitetura de software, performance web e engenharia frontend.",
+  openGraph: {
+    siteName: "samuel.dev",
+    type: "website",
+    url: SITE_URL,
+  },
 };
 
 export default async function RootLayout({
