@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +9,8 @@ import "highlight.js/styles/github-dark.css";
 
 import { getPostBySlug } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
+import { CommentsSection } from "@/features/comments/components/CommentsSection";
+import { getProfile } from "@/features/auth/api/profile-service";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -20,6 +23,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) {
     notFound();
   }
+
+  // access_token is HttpOnly, so CommentsSection (a client component) can't
+  // check auth itself — resolve it here, same pattern as BlogHeader/
+  // AdminHeaderActions, and pass down the pieces it needs to render an
+  // optimistic comment (the create endpoint doesn't return an author join).
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const profile = accessToken ? await getProfile(accessToken) : null;
+  const currentUser = profile
+    ? { id: profile.sub, name: profile.name, avatarUrl: profile.avatarUrl }
+    : null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -40,6 +54,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.content}
         </ReactMarkdown>
       </div>
+
+      <CommentsSection
+        postId={post.id}
+        allowComments={post.allowComments}
+        currentUser={currentUser}
+      />
     </div>
   );
 }

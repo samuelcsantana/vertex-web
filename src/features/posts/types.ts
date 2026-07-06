@@ -6,6 +6,7 @@ export interface Post {
   slug: string;
   content: string;
   isPublished: boolean;
+  allowComments: boolean;
   authorId: string;
   createdAt: string;
   updatedAt: string;
@@ -17,5 +18,6 @@ export interface CreatePostInput {
   slug: string;
   content: string;
   isPublished: boolean;
+  allowComments: boolean;
   topicIds: string[];
 }

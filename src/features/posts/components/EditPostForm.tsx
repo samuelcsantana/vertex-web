@@ -46,6 +46,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
       slug: initialData.slug,
       content: initialData.content,
       isPublished: initialData.isPublished,
+      allowComments: initialData.allowComments,
       topicIds: initialData.topics.map((topic) => topic.id),
     },
   });
@@ -208,6 +209,15 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
             {...register("isPublished")}
           />
           Publicado
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
+            {...register("allowComments")}
+          />
+          Habilitar Comentários
         </label>
 
         {serverError && <p className="text-sm text-red-400">{serverError}</p>}

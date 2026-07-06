@@ -40,7 +40,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
-    defaultValues: { isPublished: false, topicIds: [] },
+    defaultValues: { isPublished: false, allowComments: true, topicIds: [] },
   });
 
   const content = watch("content");
@@ -209,6 +209,15 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
             {...register("isPublished")}
           />
           Publicar imediatamente
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
+            {...register("allowComments")}
+          />
+          Habilitar Comentários
         </label>
 
         {serverError && <p className="text-sm text-red-400">{serverError}</p>}
