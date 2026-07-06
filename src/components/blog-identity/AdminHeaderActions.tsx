@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 
 import { logoutAction } from "@/features/auth/actions/auth-actions";
 
@@ -61,9 +61,10 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
+        className="flex items-center gap-2 rounded-full bg-slate-800 px-2.5 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50 sm:px-4"
       >
-        {t("signOut")}
+        <LogOut className="size-4" />
+        <span className="hidden sm:inline">{t("signOut")}</span>
       </button>
     );
   }
