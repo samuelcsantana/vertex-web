@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { getLocale } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { FileText, Hash, Pencil, Plus, Trash2, User } from "lucide-react";
 
@@ -7,11 +8,13 @@ import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
+import { getLocalizedTitle } from "@/features/posts/utils/localized-content";
 
 export default async function BlogPage() {
   const cookieStore = await cookies();
   const isAdmin = cookieStore.has("access_token");
   const posts = await getPosts();
+  const locale = await getLocale();
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -72,7 +75,10 @@ export default async function BlogPage() {
             Nenhum artigo publicado ainda.
           </p>
         ) : (
-          posts.map((post) => (
+          posts.map((post) => {
+            const displayTitle = getLocalizedTitle(post, locale);
+
+            return (
             <div
               key={post.id}
               className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
@@ -121,11 +127,11 @@ export default async function BlogPage() {
                   href={`/blog/${post.slug}`}
                   className="absolute inset-0 rounded-3xl"
                 >
-                  <span className="sr-only">Ler {post.title}</span>
+                  <span className="sr-only">Ler {displayTitle}</span>
                 </Link>
 
                 <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
-                  {post.title}
+                  {displayTitle}
                 </h2>
 
                 <time
@@ -138,7 +144,8 @@ export default async function BlogPage() {
                 <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </section>
     </div>

@@ -1,0 +1,10 @@
+{
+  "Navigation": {
+    "about": "About",
+    "home": "Home"
+  },
+  "Post": {
+    "share": "Share",
+    "comments": "Comments"
+  }
+}

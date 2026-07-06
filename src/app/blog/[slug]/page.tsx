@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -14,6 +15,10 @@ import { CommentsSection } from "@/features/comments/components/CommentsSection"
 import { getProfile } from "@/features/auth/api/profile-service";
 import { ShareButton } from "@/components/blog-identity/ShareButton";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
+import {
+  getLocalizedContent,
+  getLocalizedTitle,
+} from "@/features/posts/utils/localized-content";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -38,14 +43,17 @@ export async function generateMetadata({
     return {};
   }
 
-  const description = `${stripMarkdown(post.content).slice(0, 100)}...`;
+  const locale = await getLocale();
+  const title = getLocalizedTitle(post, locale);
+  const content = getLocalizedContent(post, locale);
+  const description = `${stripMarkdown(content).slice(0, 100)}...`;
   const images = post.coverUrl ? [{ url: post.coverUrl }] : [];
 
   return {
-    title: post.title,
+    title,
     description,
     openGraph: {
-      title: post.title,
+      title,
       description,
       url: `${SITE_URL}/blog/${post.slug}`,
       type: "article",
@@ -53,7 +61,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
+      title,
       description,
       images: post.coverUrl ? [post.coverUrl] : [],
     },
@@ -95,6 +103,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     ? { id: profile.sub, name: profile.name, avatarUrl: profile.avatarUrl }
     : null;
 
+  const locale = await getLocale();
+  const displayTitle = getLocalizedTitle(post, locale);
+  const displayContent = getLocalizedContent(post, locale);
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Link
@@ -115,7 +127,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
       )}
 
-      <h1 className="text-4xl font-bold text-white">{post.title}</h1>
+      <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-400">
         {post.author && (
@@ -143,12 +155,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <TopicPills topics={post.topics} />
-        <ShareButton title={post.title} />
+        <ShareButton title={displayTitle} />
       </div>
 
       <div className="prose prose-invert mt-8 max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-          {post.content}
+          {displayContent}
         </ReactMarkdown>
       </div>
 

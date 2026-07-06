@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+
 const NAV_LINKS = [
   { href: "/", label: "Artigos" },
   { href: "/about", label: "Sobre" },
@@ -35,7 +37,10 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
           ))}
         </nav>
 
-        {rightSlot}
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          {rightSlot}
+        </div>
       </div>
     </header>
   );

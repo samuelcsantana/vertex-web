@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createPostFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
+  titleEn: z.string().optional(),
   slug: z
     .string()
     .min(1, "Slug is required")
@@ -10,6 +11,7 @@ export const createPostFormSchema = z.object({
       "Use lowercase letters, numbers, and hyphens only"
     ),
   content: z.string().min(1, "Content is required"),
+  contentEn: z.string().optional(),
   isPublished: z.boolean(),
   allowComments: z.boolean(),
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),

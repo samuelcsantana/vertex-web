@@ -29,6 +29,7 @@ const inputClasses =
 export function EditPostForm({ initialData, availableTopics }: EditPostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"write" | "preview">("write");
+  const [activeLanguage, setActiveLanguage] = useState<"pt" | "en">("pt");
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const {
@@ -43,8 +44,10 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     resolver: zodResolver(createPostFormSchema),
     defaultValues: {
       title: initialData.title,
+      titleEn: initialData.titleEn ?? "",
       slug: initialData.slug,
       content: initialData.content,
+      contentEn: initialData.contentEn ?? "",
       isPublished: initialData.isPublished,
       allowComments: initialData.allowComments,
       coverUrl: initialData.coverUrl ?? "",
@@ -52,17 +55,20 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     },
   });
 
-  const content = watch("content");
+  const titleField = activeLanguage === "en" ? "titleEn" : "title";
+  const contentField = activeLanguage === "en" ? "contentEn" : "content";
+
+  const content = watch(contentField);
 
   const { ref: contentRegisterRef, ...contentRegisterRest } =
-    register("content");
+    register(contentField);
 
   function insertImageMarkdown(markdown: string) {
     const textarea = contentTextareaRef.current;
-    const currentValue = getValues("content") ?? "";
+    const currentValue = getValues(contentField) ?? "";
 
     if (!textarea) {
-      setValue("content", `${currentValue}${markdown}`, {
+      setValue(contentField, `${currentValue}${markdown}`, {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -74,7 +80,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     const nextValue =
       currentValue.slice(0, start) + markdown + currentValue.slice(end);
 
-    setValue("content", nextValue, {
+    setValue(contentField, nextValue, {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -110,13 +116,42 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
         noValidate
         className="mt-6 flex flex-col gap-4"
       >
+        <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
+          <button
+            type="button"
+            onClick={() => setActiveLanguage("pt")}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              activeLanguage === "pt"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            Português
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveLanguage("en")}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              activeLanguage === "en"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            English
+          </button>
+        </div>
+
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="title" className="text-sm font-medium text-slate-300">
-            Título
+          <label htmlFor={titleField} className="text-sm font-medium text-slate-300">
+            {activeLanguage === "en" ? "Title" : "Título"}
           </label>
-          <input id="title" className={inputClasses} {...register("title")} />
-          {errors.title && (
-            <p className="text-sm text-red-400">{errors.title.message}</p>
+          <input
+            id={titleField}
+            className={inputClasses}
+            {...register(titleField)}
+          />
+          {errors[titleField] && (
+            <p className="text-sm text-red-400">{errors[titleField]?.message}</p>
           )}
         </div>
 
@@ -133,10 +168,10 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <label
-              htmlFor="content"
+              htmlFor={contentField}
               className="text-sm font-medium text-slate-300"
             >
-              Conteúdo (Markdown)
+              {activeLanguage === "en" ? "Content (Markdown)" : "Conteúdo (Markdown)"}
             </label>
             {viewMode === "write" && (
               <AttachImageButton onUploaded={insertImageMarkdown} />
@@ -170,7 +205,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
 
           {viewMode === "write" ? (
             <textarea
-              id="content"
+              id={contentField}
               rows={12}
               className={`${inputClasses} resize-y`}
               {...contentRegisterRest}
@@ -181,7 +216,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
             />
           ) : (
             <div
-              id="content"
+              id={contentField}
               className="prose prose-invert min-h-[19rem] max-w-none rounded-xl border border-slate-800 bg-slate-950 p-4"
             >
               {content ? (
@@ -196,8 +231,8 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
               )}
             </div>
           )}
-          {errors.content && (
-            <p className="text-sm text-red-400">{errors.content.message}</p>
+          {errors[contentField] && (
+            <p className="text-sm text-red-400">{errors[contentField]?.message}</p>
           )}
         </div>
 

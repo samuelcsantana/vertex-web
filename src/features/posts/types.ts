@@ -9,8 +9,10 @@ export interface PostAuthor {
 export interface Post {
   id: string;
   title: string;
+  titleEn: string | null;
   slug: string;
   content: string;
+  contentEn: string | null;
   isPublished: boolean;
   allowComments: boolean;
   coverUrl: string | null;
@@ -23,8 +25,10 @@ export interface Post {
 
 export interface CreatePostInput {
   title: string;
+  titleEn?: string;
   slug: string;
   content: string;
+  contentEn?: string;
   isPublished: boolean;
   allowComments: boolean;
   coverUrl?: string;
