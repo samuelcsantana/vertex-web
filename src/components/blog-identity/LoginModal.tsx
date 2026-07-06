@@ -49,11 +49,13 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     let checking = false;
 
     // Google's own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
-    // which permanently severs the popup's browsing context group — even
-    // after it closes itself back on our own origin, popup.closed can get
-    // stuck reporting false forever, so it can't be trusted as the signal.
-    // Poll our own backend for whether the cookie the popup set is valid
-    // instead; popup.closed is only used as a secondary "give up" signal.
+    // which severs the popup's browsing context group from ours — and in
+    // Chromium that makes popup.closed read back `true` from our side
+    // *immediately* on the very next check, even though the popup is
+    // genuinely still open (verified with Playwright). So popup.closed is
+    // not just unreliable, it's actively wrong here — it can never be used
+    // as a give-up signal, only the elapsed-time backstop below can.
+    // Poll our own backend for whether the cookie the popup set is valid.
     const pollTimer = window.setInterval(async () => {
       attempts += 1;
 
@@ -67,12 +69,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       if (authenticated) {
         window.clearInterval(pollTimer);
         try {
-          // COOP severs the popup from this window once it's visited
-          // Google's own pages, so close() can silently no-op — never let
-          // that stop us from finishing the login on our side.
-          if (!popup.closed) {
-            popup.close();
-          }
+          // Best-effort: this reliably no-ops once COOP has severed the
+          // popup, so it can't be relied on to ever actually close it.
+          popup.close();
         } catch {
           // Ignored: same COOP severance as above.
         }
@@ -82,7 +81,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         return;
       }
 
-      if (popup.closed || attempts >= maxAttempts) {
+      if (attempts >= maxAttempts) {
         window.clearInterval(pollTimer);
         setIsConnectingGoogle(false);
         console.warn(
