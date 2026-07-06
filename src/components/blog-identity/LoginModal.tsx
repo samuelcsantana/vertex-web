@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Code2, X } from "lucide-react";
@@ -17,8 +17,30 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "http://localhost:3333") return;
+
+      if (event.data === "oauth-success") {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [router]);
+
   if (!open) {
     return null;
+  }
+
+  function handleGoogleLogin() {
+    window.open(
+      "http://localhost:3333/auth/google",
+      "Google OAuth",
+      "width=500,height=600,left=200,top=200"
+    );
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -66,8 +88,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <a
-            href="http://localhost:3333/auth/google"
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
             className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -92,7 +115,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               />
             </svg>
             Continuar com Google
-          </a>
+          </button>
           <button
             type="button"
             disabled
