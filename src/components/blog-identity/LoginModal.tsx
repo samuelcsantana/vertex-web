@@ -17,45 +17,28 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
+  const [isConnectingGithub, setIsConnectingGithub] = useState(false);
 
   if (!open) {
     return null;
   }
 
-  function handleGoogleLogin() {
-    if (isConnectingGoogle) {
-      return;
-    }
-
-    const popup = window.open(
-      "http://localhost:3333/auth/google",
-      "Google OAuth",
-      "width=500,height=600,left=200,top=200"
-    );
-
-    if (!popup) {
-      return;
-    }
-
-    setIsConnectingGoogle(true);
-
+  // Shared by every OAuth provider popup (Google, GitHub, ...): poll our own
+  // backend for the session cookie instead of trusting the popup's own
+  // state. Real sign-in (account picker, 2FA, "verify it's you") routinely
+  // runs past a couple of minutes, so the give-up cap is a backstop for an
+  // abandoned tab, not a normal-flow limit — it needs to be generous.
+  // Providers' own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
+  // which severs the popup's browsing context group from ours — in Chromium
+  // that makes popup.closed read back `true` from our side *immediately*,
+  // even though the popup is genuinely still open (verified with
+  // Playwright). So popup.closed is never used as a give-up signal, only
+  // the elapsed-time backstop below can trigger it.
+  function pollForOAuthSession(popup: Window, setConnecting: (value: boolean) => void) {
     let attempts = 0;
-    // Real Google sign-in (account picker, 2FA, "verify it's you") routinely
-    // runs past a couple of minutes; this cap is a backstop for an abandoned
-    // tab, not a normal-flow limit, so it needs to be generous — a session
-    // that lands after the old 2-minute cap was previously lost for good,
-    // with the tab silently stuck until a manual reload.
     const maxAttempts = 900; // give up after ~15 minutes of polling
     let checking = false;
 
-    // Google's own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
-    // which severs the popup's browsing context group from ours — and in
-    // Chromium that makes popup.closed read back `true` from our side
-    // *immediately* on the very next check, even though the popup is
-    // genuinely still open (verified with Playwright). So popup.closed is
-    // not just unreliable, it's actively wrong here — it can never be used
-    // as a give-up signal, only the elapsed-time backstop below can.
-    // Poll our own backend for whether the cookie the popup set is valid.
     const pollTimer = window.setInterval(async () => {
       attempts += 1;
 
@@ -75,7 +58,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         } catch {
           // Ignored: same COOP severance as above.
         }
-        setIsConnectingGoogle(false);
+        setConnecting(false);
         onClose();
         window.location.reload();
         return;
@@ -83,12 +66,50 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
 
       if (attempts >= maxAttempts) {
         window.clearInterval(pollTimer);
-        setIsConnectingGoogle(false);
+        setConnecting(false);
         console.warn(
-          "Google OAuth polling gave up without detecting a session; reload the page if login actually succeeded."
+          "OAuth polling gave up without detecting a session; reload the page if login actually succeeded."
         );
       }
     }, 1000);
+  }
+
+  function handleGoogleLogin() {
+    if (isConnectingGoogle) {
+      return;
+    }
+
+    const popup = window.open(
+      "http://localhost:3333/auth/google",
+      "Google OAuth",
+      "width=500,height=600,left=200,top=200"
+    );
+
+    if (!popup) {
+      return;
+    }
+
+    setIsConnectingGoogle(true);
+    pollForOAuthSession(popup, setIsConnectingGoogle);
+  }
+
+  function handleGithubLogin() {
+    if (isConnectingGithub) {
+      return;
+    }
+
+    const popup = window.open(
+      "http://localhost:3333/auth/github",
+      "GitHub OAuth",
+      "width=500,height=600,left=200,top=200"
+    );
+
+    if (!popup) {
+      return;
+    }
+
+    setIsConnectingGithub(true);
+    pollForOAuthSession(popup, setIsConnectingGithub);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -167,9 +188,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           </button>
           <button
             type="button"
-            disabled
-            title="Em breve"
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 opacity-50 transition-colors hover:bg-slate-700"
+            onClick={handleGithubLogin}
+            disabled={isConnectingGithub}
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -177,7 +198,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
                 d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.2.66.79.55A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"
               />
             </svg>
-            Continuar com Github
+            {isConnectingGithub ? "Aguardando o GitHub..." : "Continuar com GitHub"}
           </button>
         </div>
 
