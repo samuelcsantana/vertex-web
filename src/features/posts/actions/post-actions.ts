@@ -13,6 +13,13 @@ interface PostActionResult {
   error?: string;
 }
 
+// The form field defaults to "" (no cover set), but the backend's
+// coverUrl is z.string().url().optional() — an empty string would fail
+// that validation, so it needs to become "not sent" instead.
+function normalizeCoverUrl<T extends { coverUrl?: string }>(data: T) {
+  return { ...data, coverUrl: data.coverUrl || undefined };
+}
+
 export async function createPostAction(
   data: CreatePostInput
 ): Promise<PostActionResult> {
@@ -35,7 +42,7 @@ export async function createPostAction(
         "Content-Type": "application/json",
         Cookie: `access_token=${accessToken}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalizeCoverUrl(data)),
       cache: "no-store",
     });
   } catch {
@@ -81,7 +88,7 @@ export async function updatePostAction(
         "Content-Type": "application/json",
         Cookie: `access_token=${accessToken}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalizeCoverUrl(data)),
       cache: "no-store",
     });
   } catch {

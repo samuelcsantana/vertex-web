@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,6 +13,9 @@ import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { ShareButton } from "@/components/blog-identity/ShareButton";
+import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -23,6 +27,38 @@ const formatDate = (dateString: string) =>
     month: "long",
     year: "numeric",
   }).format(new Date(dateString));
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    return {};
+  }
+
+  const description = `${stripMarkdown(post.content).slice(0, 100)}...`;
+  const images = post.coverUrl ? [{ url: post.coverUrl }] : [];
+
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      url: `${SITE_URL}/blog/${post.slug}`,
+      type: "article",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: post.coverUrl ? [post.coverUrl] : [],
+    },
+  };
+}
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
@@ -68,6 +104,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <ArrowLeft className="size-4" />
         Voltar para o Blog
       </Link>
+
+      {post.coverUrl && (
+        // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
+        <img
+          src={post.coverUrl}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
+        />
+      )}
 
       <h1 className="text-4xl font-bold text-white">{post.title}</h1>
 

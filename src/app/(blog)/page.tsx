@@ -68,56 +68,68 @@ export default async function BlogPage() {
           posts.map((post) => (
             <div
               key={post.id}
-              className="group relative rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
+              className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
             >
-              {isAdmin && (
-                <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <Link
-                    href={`/dashboard/posts/${post.id}/edit`}
-                    aria-label="Editar artigo"
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
-                  >
-                    <Pencil className="size-3.5" />
-                    Editar
-                  </Link>
-                  <ConfirmDialog
-                    title="Tem certeza absoluta?"
-                    description="Esta ação não pode ser desfeita e removerá os dados permanentemente."
-                    confirmLabel="Continuar"
-                    action={deletePostAction.bind(null, post.id)}
-                    trigger={
-                      <button
-                        type="button"
-                        aria-label="Excluir artigo"
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
-                      >
-                        <Trash2 className="size-3.5" />
-                        Excluir
-                      </button>
-                    }
-                  />
-                </div>
+              {post.coverUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
+                <img
+                  src={post.coverUrl}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="pointer-events-none h-40 w-full object-cover"
+                />
               )}
 
-              <Link
-                href={`/blog/${post.slug}`}
-                className="absolute inset-0 rounded-3xl"
-              >
-                <span className="sr-only">Ler {post.title}</span>
-              </Link>
+              <div className="p-6">
+                {isAdmin && (
+                  <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <Link
+                      href={`/dashboard/posts/${post.id}/edit`}
+                      aria-label="Editar artigo"
+                      className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+                    >
+                      <Pencil className="size-3.5" />
+                      Editar
+                    </Link>
+                    <ConfirmDialog
+                      title="Tem certeza absoluta?"
+                      description="Esta ação não pode ser desfeita e removerá os dados permanentemente."
+                      confirmLabel="Continuar"
+                      action={deletePostAction.bind(null, post.id)}
+                      trigger={
+                        <button
+                          type="button"
+                          aria-label="Excluir artigo"
+                          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
+                        >
+                          <Trash2 className="size-3.5" />
+                          Excluir
+                        </button>
+                      }
+                    />
+                  </div>
+                )}
 
-              <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
-                {post.title}
-              </h2>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="absolute inset-0 rounded-3xl"
+                >
+                  <span className="sr-only">Ler {post.title}</span>
+                </Link>
 
-              <time
-                dateTime={post.createdAt}
-                className="pointer-events-none mt-2 block text-sm text-slate-500"
-              >
-                {format(parseISO(post.createdAt), "MMMM d, yyyy")}
-              </time>
+                <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
+                  {post.title}
+                </h2>
 
-              <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
+                <time
+                  dateTime={post.createdAt}
+                  className="pointer-events-none mt-2 block text-sm text-slate-500"
+                >
+                  {format(parseISO(post.createdAt), "MMMM d, yyyy")}
+                </time>
+
+                <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
+              </div>
             </div>
           ))
         )}

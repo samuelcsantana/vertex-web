@@ -47,6 +47,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
       content: initialData.content,
       isPublished: initialData.isPublished,
       allowComments: initialData.allowComments,
+      coverUrl: initialData.coverUrl ?? "",
       topicIds: initialData.topics.map((topic) => topic.id),
     },
   });
@@ -197,6 +198,21 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
           )}
           {errors.content && (
             <p className="text-sm text-red-400">{errors.content.message}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="coverUrl" className="text-sm font-medium text-slate-300">
+            Imagem de Capa (URL)
+          </label>
+          <input
+            id="coverUrl"
+            placeholder="https://exemplo.com/imagem.jpg"
+            className={inputClasses}
+            {...register("coverUrl")}
+          />
+          {errors.coverUrl && (
+            <p className="text-sm text-red-400">{errors.coverUrl.message}</p>
           )}
         </div>
 

@@ -12,6 +12,7 @@ export const createPostFormSchema = z.object({
   content: z.string().min(1, "Content is required"),
   isPublished: z.boolean(),
   allowComments: z.boolean(),
+  coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),
   topicIds: z.array(z.string()),
 });
 

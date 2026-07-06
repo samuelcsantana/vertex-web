@@ -40,7 +40,12 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
-    defaultValues: { isPublished: false, allowComments: true, topicIds: [] },
+    defaultValues: {
+      isPublished: false,
+      allowComments: true,
+      coverUrl: "",
+      topicIds: [],
+    },
   });
 
   const content = watch("content");
@@ -197,6 +202,21 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           )}
           {errors.content && (
             <p className="text-sm text-red-400">{errors.content.message}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="coverUrl" className="text-sm font-medium text-slate-300">
+            Imagem de Capa (URL)
+          </label>
+          <input
+            id="coverUrl"
+            placeholder="https://exemplo.com/imagem.jpg"
+            className={inputClasses}
+            {...register("coverUrl")}
+          />
+          {errors.coverUrl && (
+            <p className="text-sm text-red-400">{errors.coverUrl.message}</p>
           )}
         </div>
 
