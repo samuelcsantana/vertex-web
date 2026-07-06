@@ -22,7 +22,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       if (event.origin !== "http://localhost:3333") return;
 
       if (event.data === "oauth-success") {
-        router.push("/dashboard");
+        router.push("/");
         router.refresh();
       }
     };
