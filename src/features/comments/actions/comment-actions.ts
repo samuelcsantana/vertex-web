@@ -12,6 +12,11 @@ interface CreateCommentResult {
   comment?: { id: string; content: string; createdAt: string };
 }
 
+interface DeleteCommentResult {
+  success: boolean;
+  error?: string;
+}
+
 export async function getCommentsAction(postId: string): Promise<Comment[]> {
   let response: Response;
 
@@ -71,4 +76,44 @@ export async function createCommentAction(
   const comment = await response.json();
 
   return { success: true, comment };
+}
+
+// The comment list is fetched client-side into useState (see
+// CommentsSection), not server-rendered/cached, so there's no
+// revalidatePath to call here — the caller removes the row from local
+// state itself once this resolves successfully.
+export async function deleteCommentAction(
+  commentId: string
+): Promise<DeleteCommentResult> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    return { success: false, error: "You must be signed in to do that." };
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: { Cookie: `access_token=${accessToken}` },
+      cache: "no-store",
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please try again.",
+    };
+  }
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    return {
+      success: false,
+      error: body?.message ?? "Failed to delete comment.",
+    };
+  }
+
+  return { success: true };
 }
