@@ -1,6 +1,7 @@
 # vertex-web
 
 [![CI](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml)
+[![Tests](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml)
 [![Security](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml)
 
 The Next.js frontend for **[samuel.dev](https://vertex-web-zeta.vercel.app)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
@@ -45,9 +46,20 @@ Visit [http://localhost:3000](http://localhost:3000). The default locale (pt) se
 ### Other scripts
 
 ```bash
-npm run build   # production build
-npm run lint    # eslint
+npm run build          # production build
+npm run lint            # eslint
+npm test                 # unit/component tests (vitest)
+npm run test:watch       # vitest in watch mode
+npm run test:coverage    # vitest with a coverage report
+npm run test:e2e         # playwright — needs a running dev server *and* vertex-api
 ```
+
+## Testing
+
+Two layers, deliberately not one:
+
+- **Unit/component (Vitest + React Testing Library)** — pure logic (`src/features/*/utils`, `src/features/*/schemas`) and small components with real branching behavior worth locking in (e.g. `TopicPills`'s guard against a missing `topics` array). Fully self-contained, no backend needed, wired into CI (`tests.yml`). As of this writing this covers a handful of well-chosen files completely rather than the whole codebase shallowly — most of `src/features/**/actions` and `**/api` are Server Actions that just forward to vertex-api, and most components are thin composition over those; the better ROI for that code is the E2E layer below, not mocking every `fetch` call.
+- **E2E (Playwright)** — `e2e/`, covering locale routing, the language switcher, dashboard gating, and mobile layout, run against a **real** vertex-api instance (no mocking, matching how this app was actually verified throughout development). **Not wired into CI**: that would mean standing up Postgres + a seeded vertex-api as CI services, which is real, separate infrastructure work, not a config tweak. Run it locally with both `vertex-web`'s dev server and `vertex-api` up.
 
 ## Environment variables
 
