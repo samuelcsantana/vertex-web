@@ -18,6 +18,16 @@ const topics = [
   },
 ];
 
+const threeTopics = [
+  ...topics,
+  {
+    id: "3",
+    name: "RPGs",
+    slug: "rpgs",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+];
+
 describe("TopicPills", () => {
   it("renders a pill for each topic", () => {
     render(<TopicPills topics={topics} />);
@@ -37,5 +47,24 @@ describe("TopicPills", () => {
     // real-world case (a stale API response) the guard clause protects against
     const { container } = render(<TopicPills topics={undefined} />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("shows every topic when there is no limit", () => {
+    render(<TopicPills topics={threeTopics} />);
+    expect(screen.getByText("RPGs")).toBeInTheDocument();
+    expect(screen.queryByText("+1")).not.toBeInTheDocument();
+  });
+
+  it("caps visible pills at the limit and shows a +N pill for the rest", () => {
+    render(<TopicPills topics={threeTopics} limit={2} />);
+    expect(screen.getByText("Engenharia de Software")).toBeInTheDocument();
+    expect(screen.getByText("Cafés Especiais")).toBeInTheDocument();
+    expect(screen.queryByText("RPGs")).not.toBeInTheDocument();
+    expect(screen.getByText("+1")).toBeInTheDocument();
+  });
+
+  it("doesn't show a +N pill when the topic count is within the limit", () => {
+    render(<TopicPills topics={topics} limit={2} />);
+    expect(screen.queryByText(/^\+\d+$/)).not.toBeInTheDocument();
   });
 });
