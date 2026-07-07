@@ -3,6 +3,7 @@
 [![CI](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml)
 [![Tests](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml)
 [![Security](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 The Next.js frontend for **[samuel.dev](https://vertex-web-zeta.vercel.app)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
 
