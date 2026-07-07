@@ -1,5 +1,7 @@
 # Vertex Web - System Context & AI Agent Rules
 
+@../AGENTS.md
+
 ## 🎯 Project Objective
 Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosystem. It is designed to showcase high-level software architecture, web performance, and technical depth for international Senior/Tech Lead engineering roles.
 
