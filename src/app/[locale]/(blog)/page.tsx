@@ -166,7 +166,11 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     })}
                   </time>
 
-                  <TopicPills topics={post.topics} className="pointer-events-none mt-3" />
+                  <TopicPills
+                    topics={post.topics}
+                    limit={2}
+                    className="pointer-events-none mt-3"
+                  />
                 </div>
               </div>
             );
