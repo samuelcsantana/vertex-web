@@ -59,9 +59,11 @@ When adding a new route, it inherits the `(blog)` or `(blog-admin)` chrome depen
 
 ## 🌿 Version Control & Git Strategy
 - **Branching Model:** Gitflow standard (`main`, `develop`, `feature/*`, `bugfix/*`).
-- **Semantic Commits:** ALL commit messages MUST follow the Conventional Commits specification strictly in English (e.g., `feat:`, `fix:`, `chore:`, `refactor:`).
-- **Atomic Commits:** Commits MUST be atomic, representing a single logical change.
-- **AI Git Execution:** When asked to commit, analyze staged files, craft an appropriate Semantic Commit in English.
+- **`main` is branch-protected — there is no direct push, not even for admins.** `enforce_admins` is on, force-push and branch deletion are off, and the repo only allows Squash and Merge (merge commits and rebase merges are disabled at the repo level). Every change reaches `main` through a PR from a `feature/*`/`bugfix/*` branch: `git checkout -b feat/x`, commit freely (draft commits don't need to be clean — they get squashed away), `git push -u origin feat/x`, `gh pr create`, then `gh pr merge --squash --delete-branch`, using the PR title/body as the final, professional Conventional Commit message. After merging, sync `develop` (`git checkout develop && git merge origin/main && git push origin develop && git checkout main && git pull`) — `develop` itself isn't protected, so this fast-forward push works directly.
+- **Semantic Commits:** ALL commit messages MUST follow the Conventional Commits specification strictly in English (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). This applies above all to the final squash-merge commit that actually lands on `main` — the throwaway commits on a feature branch don't need to individually satisfy this.
+- **Atomic Commits:** Each squash-merged PR should represent a single logical change.
+- **AI Git Execution:** When asked to commit, branch off first (never commit directly to `main`), craft an appropriate Semantic Commit in English for the eventual squash-merge, and ensure the PR is atomic.
+- **Releases:** Tag stable milestones with SemVer (`git tag vX.Y.Z && git push origin vX.Y.Z`) and publish a real GitHub Release from that tag (`gh release create vX.Y.Z --generate-notes`, then hand-edit the body — GitHub's auto-generated notes are only useful once there's real merged-PR history to summarize from).
 
 ## 🤖 AI Assistant Directives
 1. **Always read this file** when starting a new session or generating UI components.
