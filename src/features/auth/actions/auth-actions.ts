@@ -114,12 +114,46 @@ export async function loginAction(
 
 const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
 
-// Called from the /auth/callback page after Google/GitHub OAuth: vertex-api
-// can't set this cookie itself anymore (it redirects here with the token in
-// the URL instead), since it and vertex-web are on different domains — a
-// cookie set by vertex-api's own response would be scoped to its domain,
-// which this app's own cookies() calls could never see.
-export async function setCookieAction(token: string): Promise<void> {
+interface ExchangeActionResult {
+  success: boolean;
+}
+
+// Called from the /auth/callback page after Google/GitHub OAuth. vertex-api
+// redirects there with a short-lived, single-use exchange code — never the
+// real access token, since a URL can end up in browser history, a Referer
+// header, or a proxy's access log — rather than setting the session cookie
+// itself, since it and vertex-web are on different domains and a cookie set
+// by vertex-api's own response would be scoped to its domain, which this
+// app's own cookies() calls could never see. This trades the code for the
+// real token server-to-server (invalidating it in the same call, on the API
+// side), then sets it as this app's own cookie.
+export async function exchangeOAuthCodeAction(
+  code: string
+): Promise<ExchangeActionResult> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/auth/exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+      cache: "no-store",
+    });
+  } catch {
+    return { success: false };
+  }
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  const body = await response.json().catch(() => null);
+  const token = body?.access_token;
+
+  if (!token) {
+    return { success: false };
+  }
+
   const cookieStore = await cookies();
 
   cookieStore.set(AUTH_COOKIE_NAME, token, {
@@ -131,6 +165,8 @@ export async function setCookieAction(token: string): Promise<void> {
   });
 
   revalidatePath("/", "layout");
+
+  return { success: true };
 }
 
 export async function checkGithubLinkedAction(): Promise<boolean> {
@@ -141,9 +177,10 @@ export async function checkGithubLinkedAction(): Promise<boolean> {
     return false;
   }
 
-  // Unlike setCookieAction's login flow, linking doesn't reissue the session
-  // cookie, so githubId can only be observed by asking the API for the
-  // current DB state — a validated profile fetch, not just cookie presence.
+  // Unlike exchangeOAuthCodeAction's login flow, linking doesn't reissue the
+  // session cookie, so githubId can only be observed by asking the API for
+  // the current DB state — a validated profile fetch, not just cookie
+  // presence.
   const profile = await getProfile(accessToken);
 
   if (!profile?.githubId) {

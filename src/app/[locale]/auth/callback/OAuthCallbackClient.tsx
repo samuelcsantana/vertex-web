@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { setCookieAction } from "@/features/auth/actions/auth-actions";
+import { exchangeOAuthCodeAction } from "@/features/auth/actions/auth-actions";
 import {
   OAUTH_BROADCAST_CHANNEL_NAME,
   OAUTH_SUCCESS_MESSAGE,
@@ -13,16 +13,27 @@ import {
 export function OAuthCallbackClient() {
   const searchParams = useSearchParams();
   const t = useTranslations("Auth");
-  const token = searchParams.get("token");
+  const code = searchParams.get("code");
   const [actionFailed, setActionFailed] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    if (!code) {
       return;
     }
 
-    setCookieAction(token)
-      .then(() => {
+    // Strip the code from the URL/history immediately, before the exchange
+    // request even goes out: it's single-use and expires within a minute,
+    // but there's no reason to leave it sitting in the address bar or a
+    // back-button history entry a moment longer than necessary.
+    window.history.replaceState(null, "", window.location.pathname);
+
+    exchangeOAuthCodeAction(code)
+      .then((result) => {
+        if (!result.success) {
+          setActionFailed(true);
+          return;
+        }
+
         new BroadcastChannel(OAUTH_BROADCAST_CHANNEL_NAME).postMessage(
           OAUTH_SUCCESS_MESSAGE
         );
@@ -41,9 +52,9 @@ export function OAuthCallbackClient() {
         window.close();
       })
       .catch(() => setActionFailed(true));
-  }, [token]);
+  }, [code]);
 
-  const failed = !token || actionFailed;
+  const failed = !code || actionFailed;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-center text-sm text-slate-400">
