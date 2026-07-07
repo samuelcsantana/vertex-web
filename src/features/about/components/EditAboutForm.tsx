@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,6 +12,7 @@ interface EditAboutFormProps {
 }
 
 export function EditAboutForm({ initialContent }: EditAboutFormProps) {
+  const contentId = useId();
   const [content, setContent] = useState(initialContent);
   const [viewMode, setViewMode] = useState<"write" | "preview">("write");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,9 +43,9 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm font-medium text-slate-300">
+        <label htmlFor={contentId} className="text-sm font-medium text-slate-300">
           {tAbout("contentLabel")}
-        </span>
+        </label>
         <div className="overflow-x-auto">
           <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
             <button
@@ -75,6 +76,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
 
       {viewMode === "write" ? (
         <textarea
+          id={contentId}
           value={content}
           onChange={(event) => setContent(event.target.value)}
           rows={20}
@@ -86,9 +88,15 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
         </div>
       )}
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-red-400">
+          {error}
+        </p>
+      )}
       {success && (
-        <p className="text-sm text-emerald-400">{tAbout("contentSaved")}</p>
+        <p role="status" className="text-sm text-emerald-400">
+          {tAbout("contentSaved")}
+        </p>
       )}
 
       <button

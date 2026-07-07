@@ -82,7 +82,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
                 </span>
               )}
             </div>
-            <p className="truncate text-xs text-slate-500">
+            <p className="truncate text-xs text-slate-400">
               {user.email} ·{" "}
               {t("userCreatedOn", {
                 date: format.dateTime(new Date(user.createdAt), {
@@ -95,7 +95,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
 
         <div className="flex shrink-0 items-center gap-2">
           {isSelf ? (
-            <span className="text-xs text-slate-500">{t("thatsYou")}</span>
+            <span className="text-xs text-slate-400">{t("thatsYou")}</span>
           ) : (
             <>
               <button
@@ -137,7 +137,11 @@ export function UserRow({ user, isSelf }: UserRowProps) {
           )}
         </div>
       </div>
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

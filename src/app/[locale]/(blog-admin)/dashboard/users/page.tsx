@@ -35,7 +35,7 @@ export default async function DashboardUsersPage() {
 
       <div className="mt-8 flex flex-col gap-2">
         {users.length === 0 ? (
-          <p className="text-slate-500">{t("noUsersYet")}</p>
+          <p className="text-slate-400">{t("noUsersYet")}</p>
         ) : (
           users.map((user) => (
             <UserRow key={user.id} user={user} isSelf={user.id === profile?.sub} />

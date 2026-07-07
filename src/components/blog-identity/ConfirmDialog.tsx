@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
+
+import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 
 interface ConfirmDialogProps {
   trigger: ReactNode;
@@ -20,15 +22,29 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("Common");
+  const titleId = useId();
+  const dialogRef = useDialogBehavior(open, () => setOpen(false));
 
   return (
     <>
       <span onClick={() => setOpen(true)}>{trigger}</span>
 
       {open && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl">
-            <h2 className="text-base font-semibold text-white">{title}</h2>
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            onClick={(event) => event.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
+          >
+            <h2 id={titleId} className="text-base font-semibold text-white">
+              {title}
+            </h2>
             <p className="mt-2 text-sm text-slate-400">{description}</p>
 
             <div className="mt-6 flex justify-end gap-2">

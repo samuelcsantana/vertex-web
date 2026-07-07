@@ -23,7 +23,7 @@ interface CreatePostFormProps {
 }
 
 const inputClasses =
-  "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
+  "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
 
 export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -145,11 +145,15 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           </label>
           <input
             id={titleField}
+            aria-invalid={!!errors[titleField]}
+            aria-describedby={errors[titleField] ? `${titleField}-error` : undefined}
             className={inputClasses}
             {...register(titleField)}
           />
           {errors[titleField] && (
-            <p className="text-sm text-red-400">{errors[titleField]?.message}</p>
+            <p id={`${titleField}-error`} role="alert" className="text-sm text-red-400">
+              {errors[titleField]?.message}
+            </p>
           )}
         </div>
 
@@ -160,11 +164,15 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <input
             id="slug"
             placeholder="meu-artigo"
+            aria-invalid={!!errors.slug}
+            aria-describedby={errors.slug ? "slug-error" : undefined}
             className={inputClasses}
             {...register("slug")}
           />
           {errors.slug && (
-            <p className="text-sm text-red-400">{errors.slug.message}</p>
+            <p id="slug-error" role="alert" className="text-sm text-red-400">
+              {errors.slug.message}
+            </p>
           )}
         </div>
 
@@ -212,6 +220,10 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
             <textarea
               id={contentField}
               rows={12}
+              aria-invalid={!!errors[contentField]}
+              aria-describedby={
+                errors[contentField] ? `${contentField}-error` : undefined
+              }
               className={`${inputClasses} resize-y`}
               {...contentRegisterRest}
               ref={(element) => {
@@ -232,12 +244,18 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
                   {content}
                 </ReactMarkdown>
               ) : (
-                <p className="text-slate-500">{t("nothingToPreview")}</p>
+                <p className="text-slate-400">{t("nothingToPreview")}</p>
               )}
             </div>
           )}
           {errors[contentField] && (
-            <p className="text-sm text-red-400">{errors[contentField]?.message}</p>
+            <p
+              id={`${contentField}-error`}
+              role="alert"
+              className="text-sm text-red-400"
+            >
+              {errors[contentField]?.message}
+            </p>
           )}
         </div>
 
@@ -248,11 +266,15 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <input
             id="coverUrl"
             placeholder="https://exemplo.com/imagem.jpg"
+            aria-invalid={!!errors.coverUrl}
+            aria-describedby={errors.coverUrl ? "coverUrl-error" : undefined}
             className={inputClasses}
             {...register("coverUrl")}
           />
           {errors.coverUrl && (
-            <p className="text-sm text-red-400">{errors.coverUrl.message}</p>
+            <p id="coverUrl-error" role="alert" className="text-sm text-red-400">
+              {errors.coverUrl.message}
+            </p>
           )}
         </div>
 
@@ -276,7 +298,11 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           {t("enableComments")}
         </label>
 
-        {serverError && <p className="text-sm text-red-400">{serverError}</p>}
+        {serverError && (
+          <p role="alert" className="text-sm text-red-400">
+            {serverError}
+          </p>
+        )}
 
         <button
           type="submit"
