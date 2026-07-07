@@ -36,20 +36,20 @@ export default async function ProfilePage() {
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {profile.name && (
             <div>
-              <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">
+              <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">
                 {t("name")}
               </dt>
               <dd className="mt-1 text-sm text-slate-100">{profile.name}</dd>
             </div>
           )}
           <div>
-            <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">
+            <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">
               {t("email")}
             </dt>
             <dd className="mt-1 text-sm text-slate-100">{profile.email}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">
+            <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">
               {t("userType")}
             </dt>
             <dd className="mt-1 text-sm text-slate-100">

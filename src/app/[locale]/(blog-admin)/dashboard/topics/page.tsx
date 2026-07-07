@@ -37,7 +37,7 @@ export default async function DashboardTopicsPage() {
 
       <div className="mt-8 flex flex-col gap-2">
         {topics.length === 0 ? (
-          <p className="text-slate-500">{t("noTopicsYet")}</p>
+          <p className="text-slate-400">{t("noTopicsYet")}</p>
         ) : (
           topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
         )}

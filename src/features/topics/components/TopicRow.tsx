@@ -59,6 +59,7 @@ export function TopicRow({ topic }: TopicRowProps) {
             value={name}
             onChange={(event) => setName(event.target.value)}
             autoFocus
+            aria-label={t("topicNamePlaceholder")}
             className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
         ) : (
@@ -118,7 +119,11 @@ export function TopicRow({ topic }: TopicRowProps) {
           )}
         </div>
       </div>
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

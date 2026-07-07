@@ -94,7 +94,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
       <section className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
         {posts.length === 0 ? (
-          <p className="col-span-full text-slate-500">{t("noPostsYet")}</p>
+          <p className="col-span-full text-slate-400">{t("noPostsYet")}</p>
         ) : (
           posts.map((post) => {
             const displayTitle = getLocalizedTitle(post, locale);
@@ -116,7 +116,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                 <div className="p-6">
                   {isAdmin && (
-                    <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
                       <Link
                         href={`/dashboard/posts/${post.id}/edit`}
                         aria-label={t("editArticle")}
@@ -159,7 +159,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                   <time
                     dateTime={post.createdAt}
-                    className="pointer-events-none mt-2 block text-sm text-slate-500"
+                    className="pointer-events-none mt-2 block text-sm text-slate-400"
                   >
                     {format(parseISO(post.createdAt), "MMMM d, yyyy", {
                       locale: dateLocale,

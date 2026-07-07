@@ -41,6 +41,7 @@ export function CreateTopicForm() {
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder={t("topicNamePlaceholder")}
+          aria-label={t("topicNamePlaceholder")}
           className="flex-1 rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
         />
         <button
@@ -51,7 +52,11 @@ export function CreateTopicForm() {
           {isSubmitting ? t("adding") : t("addTopic")}
         </button>
       </div>
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-red-400">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

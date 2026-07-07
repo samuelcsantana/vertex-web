@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Code2, X } from "lucide-react";
 
 import { useRouter } from "@/i18n/routing";
 import { loginAction } from "@/features/auth/actions/auth-actions";
+import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 import {
   OAUTH_BROADCAST_CHANNEL_NAME,
   OAUTH_SUCCESS_MESSAGE,
@@ -47,6 +48,11 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
   const [isConnectingGithub, setIsConnectingGithub] = useState(false);
+  const titleId = useId();
+  const emailId = useId();
+  const passwordId = useId();
+  const errorId = useId();
+  const dialogRef = useDialogBehavior(open, onClose);
 
   // The /auth/callback page — loaded inside the popup once vertex-api
   // redirects it there with the token after Google/GitHub OAuth — sets the
@@ -131,8 +137,18 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => event.stopPropagation()}
+        className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl"
+      >
         <button
           type="button"
           onClick={onClose}
@@ -146,7 +162,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
             <Code2 className="size-6" />
           </div>
-          <h2 className="text-xl font-bold text-white">{t("loginTitle")}</h2>
+          <h2 id={titleId} className="text-xl font-bold text-white">
+            {t("loginTitle")}
+          </h2>
           <p className="text-sm text-slate-400">{t("loginSubtitle")}</p>
         </div>
 
@@ -198,27 +216,41 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-800" />
-          <span className="text-xs text-slate-500">{t("orWithEmail")}</span>
+          <span className="text-xs text-slate-400">{t("orWithEmail")}</span>
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+          <label htmlFor={emailId} className="sr-only">
+            {t("emailPlaceholder")}
+          </label>
           <input
             type="email"
             name="email"
+            id={emailId}
             required
             placeholder={t("emailPlaceholder")}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+            aria-describedby={error ? errorId : undefined}
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
+          <label htmlFor={passwordId} className="sr-only">
+            {t("passwordPlaceholder")}
+          </label>
           <input
             type="password"
             name="password"
+            id={passwordId}
             required
             placeholder={t("passwordPlaceholder")}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+            aria-describedby={error ? errorId : undefined}
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
           />
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <p id={errorId} role="alert" className="text-sm text-red-400">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"

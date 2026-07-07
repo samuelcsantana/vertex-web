@@ -15,6 +15,7 @@ export function BlogLoginTrigger() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
+        aria-label={t("loginButton")}
         className="inline-flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-2.5 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03] sm:px-4"
       >
         <Shield className="size-4 shrink-0" />

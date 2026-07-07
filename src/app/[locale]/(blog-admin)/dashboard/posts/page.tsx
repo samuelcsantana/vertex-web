@@ -52,7 +52,7 @@ export default async function DashboardPostsPage() {
           <tbody>
             {posts.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-slate-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
                   {t("noPostsPublished")}
                 </td>
               </tr>

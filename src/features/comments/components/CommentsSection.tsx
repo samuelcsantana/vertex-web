@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
 
@@ -44,6 +44,7 @@ export function CommentsSection({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const t = useTranslations("Post");
   const format = useFormatter();
+  const commentFieldId = useId();
 
   useEffect(() => {
     if (!allowComments) {
@@ -135,9 +136,9 @@ export function CommentsSection({
 
       <div className="mt-4 flex flex-col gap-4">
         {isLoading ? (
-          <p className="text-sm text-slate-500">{t("loadingComments")}</p>
+          <p className="text-sm text-slate-400">{t("loadingComments")}</p>
         ) : comments.length === 0 ? (
-          <p className="text-sm text-slate-500">{t("beFirstToComment")}</p>
+          <p className="text-sm text-slate-400">{t("beFirstToComment")}</p>
         ) : (
           comments.map((comment) => {
             const initial = (comment.author.name?.trim()?.[0] ?? "?").toUpperCase();
@@ -170,7 +171,7 @@ export function CommentsSection({
                       <span className="text-sm font-medium text-slate-100">
                         {comment.author.name ?? t("anonymousUser")}
                       </span>
-                      <span className="ml-2 text-xs text-slate-500">
+                      <span className="ml-2 text-xs text-slate-400">
                         {format.dateTime(new Date(comment.createdAt), {
                           dateStyle: "medium",
                           timeStyle: "short",
@@ -187,7 +188,7 @@ export function CommentsSection({
                           <button
                             type="button"
                             aria-label={t("deleteComment")}
-                            className="inline-flex shrink-0 items-center rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400"
+                            className="inline-flex shrink-0 items-center rounded-lg p-1 text-slate-400 transition-colors hover:text-red-400"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -205,19 +206,31 @@ export function CommentsSection({
         )}
       </div>
 
-      {deleteError && <p className="mt-2 text-sm text-red-400">{deleteError}</p>}
+      {deleteError && (
+        <p role="alert" className="mt-2 text-sm text-red-400">
+          {deleteError}
+        </p>
+      )}
 
       <div className="mt-6">
         {currentUser ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <label htmlFor={commentFieldId} className="sr-only">
+              {t("commentPlaceholder")}
+            </label>
             <textarea
+              id={commentFieldId}
               value={content}
               onChange={(event) => setContent(event.target.value)}
               rows={3}
               placeholder={t("commentPlaceholder")}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
             />
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && (
+              <p role="alert" className="text-sm text-red-400">
+                {error}
+              </p>
+            )}
             <button
               type="submit"
               disabled={isSubmitting || !content.trim()}
