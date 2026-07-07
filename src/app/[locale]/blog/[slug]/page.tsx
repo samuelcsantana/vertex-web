@@ -47,7 +47,10 @@ export async function generateMetadata({
   const title = getLocalizedTitle(post, locale);
   const content = getLocalizedContent(post, locale);
   const description = `${stripMarkdown(content).slice(0, 100)}...`;
-  const images = post.coverUrl ? [{ url: post.coverUrl }] : [];
+  // Posts without their own cover fall back to the site icon (rendered onto
+  // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
+  // with no image at all.
+  const ogImageUrl = post.coverUrl ?? "/og-fallback.png";
   const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${post.slug}`, locale })}`;
 
   return {
@@ -61,13 +64,13 @@ export async function generateMetadata({
       description,
       url: canonicalUrl,
       type: "article",
-      images,
+      images: [{ url: ogImageUrl }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: post.coverUrl ? [post.coverUrl] : [],
+      images: [ogImageUrl],
     },
   };
 }
@@ -121,7 +124,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: displayTitle,
-    image: post.coverUrl ? [post.coverUrl] : [],
+    image: [post.coverUrl ?? `${SITE_URL}/og-fallback.png`],
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
     author: [

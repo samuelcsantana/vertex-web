@@ -33,6 +33,11 @@ export const metadata: Metadata = {
     siteName: "samuel.dev",
     type: "website",
     url: SITE_URL,
+    // Site-wide default so any page without a more specific openGraph.images
+    // (set individually where it matters, e.g. a post's own cover image)
+    // still shares a real image instead of a blank card — metadataBase
+    // above resolves this relative path to an absolute URL automatically.
+    images: ["/og-fallback.png"],
   },
 };
 
