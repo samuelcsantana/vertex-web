@@ -1,19 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
+import { Trash2 } from "lucide-react";
 
+import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
 import {
   createCommentAction,
+  deleteCommentAction,
   getCommentsAction,
 } from "@/features/comments/actions/comment-actions";
 import type { Comment } from "@/features/comments/types";
+import type { UserRole } from "@/features/auth/api/profile-service";
 
 interface CommentsSectionCurrentUser {
   id: string;
   name: string | null;
   avatarUrl: string | null;
+  role: UserRole;
 }
 
 interface CommentsSectionProps {
@@ -36,7 +41,9 @@ export function CommentsSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const t = useTranslations("Post");
+  const format = useFormatter();
 
   useEffect(() => {
     if (!allowComments) {
@@ -87,8 +94,9 @@ export function CommentsSection({
     // The create endpoint returns the raw row with no author join; the
     // logged-in user's own name/avatar (already known client-side) stand
     // in for it so the comment appears instantly, without a refetch.
+    // Prepended, not appended: the list is newest-first (matching
+    // CommentsService.findAllForPost's orderBy on the API side).
     setComments((previous) => [
-      ...previous,
       {
         id: result.comment!.id,
         postId,
@@ -101,8 +109,24 @@ export function CommentsSection({
           avatarUrl: currentUser.avatarUrl,
         },
       },
+      ...previous,
     ]);
     setContent("");
+  }
+
+  async function handleDelete(commentId: string) {
+    setDeleteError(null);
+
+    const result = await deleteCommentAction(commentId);
+
+    if (!result.success) {
+      setDeleteError(result.error ?? t("genericCommentDeleteError"));
+      return;
+    }
+
+    setComments((previous) =>
+      previous.filter((comment) => comment.id !== commentId)
+    );
   }
 
   return (
@@ -117,6 +141,10 @@ export function CommentsSection({
         ) : (
           comments.map((comment) => {
             const initial = (comment.author.name?.trim()?.[0] ?? "?").toUpperCase();
+            const canDelete =
+              !!currentUser &&
+              (currentUser.id === comment.authorId ||
+                currentUser.role === "admin");
 
             return (
               <div
@@ -136,10 +164,37 @@ export function CommentsSection({
                     {initial}
                   </span>
                 )}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-100">
-                    {comment.author.name ?? t("anonymousUser")}
-                  </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium text-slate-100">
+                        {comment.author.name ?? t("anonymousUser")}
+                      </span>
+                      <span className="ml-2 text-xs text-slate-500">
+                        {format.dateTime(new Date(comment.createdAt), {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </span>
+                    </div>
+                    {canDelete && (
+                      <ConfirmDialog
+                        title={t("confirmDeleteCommentTitle")}
+                        description={t("confirmDeleteCommentDescription")}
+                        confirmLabel={t("removeComment")}
+                        action={() => handleDelete(comment.id)}
+                        trigger={
+                          <button
+                            type="button"
+                            aria-label={t("deleteComment")}
+                            className="inline-flex shrink-0 items-center rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        }
+                      />
+                    )}
+                  </div>
                   <p className="mt-1 text-sm break-words whitespace-pre-wrap text-slate-300">
                     {comment.content}
                   </p>
@@ -149,6 +204,8 @@ export function CommentsSection({
           })
         )}
       </div>
+
+      {deleteError && <p className="mt-2 text-sm text-red-400">{deleteError}</p>}
 
       <div className="mt-6">
         {currentUser ? (

@@ -64,7 +64,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-background font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider
+          locale={locale}
+          messages={messages}
+          timeZone="America/Bahia"
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

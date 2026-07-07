@@ -104,7 +104,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const accessToken = cookieStore.get("access_token")?.value;
   const profile = accessToken ? await getProfile(accessToken) : null;
   const currentUser = profile
-    ? { id: profile.sub, name: profile.name, avatarUrl: profile.avatarUrl }
+    ? {
+        id: profile.sub,
+        name: profile.name,
+        avatarUrl: profile.avatarUrl,
+        role: profile.role,
+      }
     : null;
 
   const locale = await getLocale();
