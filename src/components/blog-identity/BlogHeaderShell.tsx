@@ -15,7 +15,12 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
 
   return (
     <header className="sticky top-4 z-50 mx-auto w-full max-w-6xl px-4 sm:px-6">
-      <div className="flex h-16 items-center justify-between gap-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:gap-2 sm:px-6">
+      {/* transform-gpu forces this blurred layer onto its own GPU
+          compositing layer instead of being recomposited inline with the
+          page as it scrolls — some mobile browsers (older Samsung Internet
+          in particular) smear/haze backdrop-blur during scroll without
+          this hint. Unverified on the actual device that reported it. */}
+      <div className="transform-gpu flex h-16 items-center justify-between gap-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl will-change-transform sm:gap-2 sm:px-6">
         <Link
           href="/"
           className="shrink-0 font-mono text-base font-bold tracking-tight sm:text-lg"

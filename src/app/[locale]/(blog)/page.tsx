@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { FileText, Hash, Pencil, Plus, Trash2, User } from "lucide-react";
+import { FileText, Hash, Pencil, Plus, Trash2, User, Users } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -12,6 +12,7 @@ import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { getLocalizedTitle } from "@/features/posts/utils/localized-content";
+import { getProfile } from "@/features/auth/api/profile-service";
 
 interface BlogPageProps {
   params: Promise<{ locale: string }>;
@@ -24,8 +25,14 @@ export default async function BlogPage({ params }: BlogPageProps) {
     notFound();
   }
 
+  // Cookie presence alone only proves "logged in", not "admin" — any Google
+  // account can sign in since GoogleStrategy auto-provisions unknown emails
+  // (role defaults to "user" unless it matches ADMIN_EMAIL). This card and
+  // the per-post edit/delete controls below must gate on the real role.
   const cookieStore = await cookies();
-  const isAdmin = cookieStore.has("access_token");
+  const accessToken = cookieStore.get("access_token")?.value;
+  const profile = accessToken ? await getProfile(accessToken) : null;
+  const isAdmin = profile?.role === "admin";
   const posts = await getPosts();
   const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
@@ -69,6 +76,13 @@ export default async function BlogPage({ params }: BlogPageProps) {
               >
                 <FileText className="size-3.5" />
                 {t("editAbout")}
+              </Link>
+              <Link
+                href="/dashboard/users"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+              >
+                <Users className="size-3.5" />
+                {t("manageUsers")}
               </Link>
             </div>
           </div>
