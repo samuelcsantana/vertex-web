@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky || true",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
