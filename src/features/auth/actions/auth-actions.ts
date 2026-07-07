@@ -112,25 +112,25 @@ export async function loginAction(
   return { success: true };
 }
 
-export async function checkSessionAction(): Promise<boolean> {
+const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
+
+// Called from the /auth/callback page after Google/GitHub OAuth: vertex-api
+// can't set this cookie itself anymore (it redirects here with the token in
+// the URL instead), since it and vertex-web are on different domains — a
+// cookie set by vertex-api's own response would be scoped to its domain,
+// which this app's own cookies() calls could never see.
+export async function setCookieAction(token: string): Promise<void> {
   const cookieStore = await cookies();
 
-  // Matches BlogHeader's own check (cookie presence, not a validated
-  // profile fetch) so this can't disagree with what the header is about
-  // to render once revalidated.
-  const hasSession = cookieStore.has(AUTH_COOKIE_NAME);
+  cookieStore.set(AUTH_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SEVEN_DAYS_IN_SECONDS,
+  });
 
-  if (!hasSession) {
-    return false;
-  }
-
-  // The Google OAuth popup sets this cookie directly via vertex-api, outside
-  // of any Server Action, so nothing has revalidated the layout's cached
-  // auth state yet — mirror logoutAction's approach so the header picks up
-  // the new session instead of only refreshing on the next hard navigation.
   revalidatePath("/", "layout");
-
-  return true;
 }
 
 export async function checkGithubLinkedAction(): Promise<boolean> {
@@ -141,9 +141,9 @@ export async function checkGithubLinkedAction(): Promise<boolean> {
     return false;
   }
 
-  // Unlike checkSessionAction, this needs a validated profile fetch: the
-  // link flow doesn't reissue the session cookie, so githubId can only be
-  // observed by asking the API for the current DB state.
+  // Unlike setCookieAction's login flow, linking doesn't reissue the session
+  // cookie, so githubId can only be observed by asking the API for the
+  // current DB state — a validated profile fetch, not just cookie presence.
   const profile = await getProfile(accessToken);
 
   if (!profile?.githubId) {

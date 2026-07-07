@@ -28,7 +28,9 @@
     "signingIn": "Signing in...",
     "genericLoginError": "Unable to sign in.",
     "signOut": "Sign out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "completingLogin": "Completing sign-in...",
+    "loginFailed": "Couldn't complete sign-in. You can close this window."
   },
   "Post": {
     "share": "Share",

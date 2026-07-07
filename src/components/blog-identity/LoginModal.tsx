@@ -1,16 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Code2, X } from "lucide-react";
 
 import { useRouter } from "@/i18n/routing";
-import { checkSessionAction, loginAction } from "@/features/auth/actions/auth-actions";
+import { loginAction } from "@/features/auth/actions/auth-actions";
+import {
+  OAUTH_BROADCAST_CHANNEL_NAME,
+  OAUTH_SUCCESS_MESSAGE,
+} from "@/features/auth/constants";
+
+const API_URL = process.env.NEXT_PUBLIC_VERTEX_API_URL ?? "http://localhost:3333";
 
 interface LoginModalProps {
   open: boolean;
   onClose: () => void;
+}
+
+// Best-effort only: Google/GitHub's own OAuth pages send a strict
+// Cross-Origin-Opener-Policy header that permanently severs our reference
+// to the popup, so popup.closed can misreport `true` immediately even
+// though it's genuinely still open (verified with Playwright). This is
+// fine here — it only resets the button back to clickable if the visitor
+// abandons the popup, it's not what detects a successful login (the
+// BroadcastChannel listener below is), so an early false positive is
+// harmless.
+function watchForAbandonedPopup(
+  popup: Window,
+  setConnecting: (value: boolean) => void
+) {
+  const interval = window.setInterval(() => {
+    if (popup.closed) {
+      window.clearInterval(interval);
+      setConnecting(false);
+    }
+  }, 1000);
 }
 
 export function LoginModal({ open, onClose }: LoginModalProps) {
@@ -22,59 +48,26 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
   const [isConnectingGithub, setIsConnectingGithub] = useState(false);
 
-  if (!open) {
-    return null;
-  }
+  // The /auth/callback page — loaded inside the popup once vertex-api
+  // redirects it there with the token after Google/GitHub OAuth — sets the
+  // session cookie itself and broadcasts this. Kept mount-scoped (not tied
+  // to `open`) so a popup that finishes after the visitor has closed the
+  // modal is still picked up.
+  useEffect(() => {
+    const channel = new BroadcastChannel(OAUTH_BROADCAST_CHANNEL_NAME);
 
-  // Shared by every OAuth provider popup (Google, GitHub, ...): poll our own
-  // backend for the session cookie instead of trusting the popup's own
-  // state. Real sign-in (account picker, 2FA, "verify it's you") routinely
-  // runs past a couple of minutes, so the give-up cap is a backstop for an
-  // abandoned tab, not a normal-flow limit — it needs to be generous.
-  // Providers' own OAuth pages send Cross-Origin-Opener-Policy: same-origin,
-  // which severs the popup's browsing context group from ours — in Chromium
-  // that makes popup.closed read back `true` from our side *immediately*,
-  // even though the popup is genuinely still open (verified with
-  // Playwright). So popup.closed is never used as a give-up signal, only
-  // the elapsed-time backstop below can trigger it.
-  function pollForOAuthSession(popup: Window, setConnecting: (value: boolean) => void) {
-    let attempts = 0;
-    const maxAttempts = 900; // give up after ~15 minutes of polling
-    let checking = false;
-
-    const pollTimer = window.setInterval(async () => {
-      attempts += 1;
-
-      if (checking) {
-        return;
-      }
-      checking = true;
-      const authenticated = await checkSessionAction();
-      checking = false;
-
-      if (authenticated) {
-        window.clearInterval(pollTimer);
-        try {
-          // Best-effort: this reliably no-ops once COOP has severed the
-          // popup, so it can't be relied on to ever actually close it.
-          popup.close();
-        } catch {
-          // Ignored: same COOP severance as above.
-        }
-        setConnecting(false);
+    channel.onmessage = (event) => {
+      if (event.data === OAUTH_SUCCESS_MESSAGE) {
         onClose();
         window.location.reload();
-        return;
       }
+    };
 
-      if (attempts >= maxAttempts) {
-        window.clearInterval(pollTimer);
-        setConnecting(false);
-        console.warn(
-          "OAuth polling gave up without detecting a session; reload the page if login actually succeeded."
-        );
-      }
-    }, 1000);
+    return () => channel.close();
+  }, [onClose]);
+
+  if (!open) {
+    return null;
   }
 
   function handleGoogleLogin() {
@@ -83,7 +76,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     const popup = window.open(
-      "/auth/google",
+      `${API_URL}/auth/google`,
       "Google OAuth",
       "width=500,height=600,left=200,top=200"
     );
@@ -93,7 +86,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     setIsConnectingGoogle(true);
-    pollForOAuthSession(popup, setIsConnectingGoogle);
+    watchForAbandonedPopup(popup, setIsConnectingGoogle);
   }
 
   function handleGithubLogin() {
@@ -102,7 +95,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     const popup = window.open(
-      "/auth/github",
+      `${API_URL}/auth/github`,
       "GitHub OAuth",
       "width=500,height=600,left=200,top=200"
     );
@@ -112,7 +105,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     setIsConnectingGithub(true);
-    pollForOAuthSession(popup, setIsConnectingGithub);
+    watchForAbandonedPopup(popup, setIsConnectingGithub);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

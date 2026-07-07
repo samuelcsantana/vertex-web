@@ -28,7 +28,9 @@
     "signingIn": "Entrando...",
     "genericLoginError": "No se pudo iniciar sesión.",
     "signOut": "Salir",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "completingLogin": "Completando el inicio de sesión...",
+    "loginFailed": "No se pudo completar el inicio de sesión. Puedes cerrar esta ventana."
   },
   "Post": {
     "share": "Compartir",
