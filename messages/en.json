@@ -101,6 +101,7 @@
     "usersDescription": "Manage who has access to the blog.",
     "noUsersYet": "No users registered yet.",
     "roleAdmin": "Admin",
+    "roleUser": "User",
     "userBanned": "Blocked",
     "userCreatedOn": "since {date}",
     "blockUser": "Block",
@@ -143,7 +144,12 @@
     "linkedAccountsDescription": "Connect external accounts to sign in faster.",
     "connectGithub": "Connect GitHub Account",
     "connecting": "Connecting...",
-    "githubConnected": "GitHub Connected"
+    "githubConnected": "GitHub Connected",
+    "dangerZone": "Danger Zone",
+    "deleteAccountDescription": "Deleting your account is permanent. You have the right to request deletion of your personal data at any time.",
+    "deleteAccount": "Delete my account",
+    "confirmDeleteAccountTitle": "Permanently delete your account?",
+    "confirmDeleteAccountDescription": "This action cannot be undone. Your account and all of your comments will be permanently erased — none of your data will be retained. You'll be signed out immediately."
   },
   "About": {
     "editHeading": "Edit About",

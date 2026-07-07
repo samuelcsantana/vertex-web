@@ -1,9 +1,12 @@
 import { cookies } from "next/headers";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Trash2 } from "lucide-react";
 
 import { redirect } from "@/i18n/routing";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { LinkGithubButton } from "@/features/auth/components/LinkGithubButton";
+import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
+import { deleteOwnAccountAction } from "@/features/users/actions/user-actions";
 
 export default async function ProfilePage() {
   const cookieStore = await cookies();
@@ -64,6 +67,34 @@ export default async function ProfilePage() {
 
         <div className="mt-4">
           <LinkGithubButton githubLinked={Boolean(profile.githubId)} />
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-red-500/20 bg-red-500/5 p-6">
+        <h2 className="text-lg font-semibold text-white">{t("dangerZone")}</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          {t("deleteAccountDescription")}
+        </p>
+
+        <div className="mt-4">
+          <ConfirmDialog
+            title={t("confirmDeleteAccountTitle")}
+            description={t("confirmDeleteAccountDescription")}
+            confirmLabel={t("deleteAccount")}
+            action={async () => {
+              "use server";
+              await deleteOwnAccountAction();
+            }}
+            trigger={
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20"
+              >
+                <Trash2 className="size-4" />
+                {t("deleteAccount")}
+              </button>
+            }
+          />
         </div>
       </div>
     </div>

@@ -67,11 +67,15 @@ export function UserRow({ user, isSelf }: UserRowProps) {
               <span className="truncate text-sm font-medium text-slate-100">
                 {user.name ?? user.email}
               </span>
-              {user.role === "admin" && (
-                <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[11px] font-medium text-cyan-400">
-                  {t("roleAdmin")}
-                </span>
-              )}
+              <span
+                className={
+                  user.role === "admin"
+                    ? "rounded-full bg-cyan-500/10 px-2 py-0.5 text-[11px] font-medium text-cyan-400"
+                    : "rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-400"
+                }
+              >
+                {user.role === "admin" ? t("roleAdmin") : t("roleUser")}
+              </span>
               {user.isBanned && (
                 <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-medium text-red-400">
                   {t("userBanned")}

@@ -101,6 +101,7 @@
     "usersDescription": "Gerencie quem tem acesso ao blog.",
     "noUsersYet": "Nenhum usuário cadastrado ainda.",
     "roleAdmin": "Admin",
+    "roleUser": "Usuário",
     "userBanned": "Bloqueado",
     "userCreatedOn": "desde {date}",
     "blockUser": "Bloquear",
@@ -143,7 +144,12 @@
     "linkedAccountsDescription": "Conecte contas externas para entrar mais rápido.",
     "connectGithub": "Conectar Conta do GitHub",
     "connecting": "A conectar...",
-    "githubConnected": "GitHub Conectado"
+    "githubConnected": "GitHub Conectado",
+    "dangerZone": "Zona de Risco",
+    "deleteAccountDescription": "Excluir sua conta é permanente. De acordo com a LGPD (Lei Geral de Proteção de Dados), você tem o direito de solicitar a eliminação dos seus dados pessoais a qualquer momento.",
+    "deleteAccount": "Excluir minha conta",
+    "confirmDeleteAccountTitle": "Excluir sua conta permanentemente?",
+    "confirmDeleteAccountDescription": "Esta ação não pode ser desfeita. Sua conta e todos os seus comentários serão apagados definitivamente — nenhum dado seu será mantido. Você será desconectado imediatamente."
   },
   "About": {
     "editHeading": "Editar Sobre",
