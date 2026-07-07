@@ -43,5 +43,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // "auth" is excluded so OAuth popup requests (proxied straight through to
+  // vertex-api by the rewrite in next.config.ts) never get caught by
+  // next-intl's locale negotiation — a visitor with a non-default locale
+  // preference could otherwise get /auth/google redirected to /en/auth/google,
+  // which the rewrite's "/auth/:path*" source would no longer match.
+  matcher: ["/((?!api|auth|_next|_vercel|.*\\..*).*)"],
 };
