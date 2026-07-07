@@ -1,0 +1,67 @@
+# Vertex Web - System Context & AI Agent Rules
+
+## 🎯 Project Objective
+Vertex Web is the "Front Door" (marketing and technical blog) of a SaaS ecosystem. It is designed to showcase high-level software architecture, web performance, and technical depth for international Senior/Tech Lead engineering roles.
+
+## 🌍 Language & Localization
+- **STRICT RULE:** The entire codebase MUST be written in English.
+- This includes components, variables, comments, documentation, commit messages, and routing.
+- User-facing copy is a separate concern from codebase language: it's translated (pt/en/es) via `next-intl` — see the i18n section below. Codebase language and UI language are independent axes.
+
+## 🛠️ Tech Stack & Architecture
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Language:** TypeScript (Strict Mode)
+- **Styling:** Tailwind CSS v4 (no `tailwind.config.ts` — `@plugin` directives live in `globals.css`)
+- **UI Components:** Hand-rolled, not a component library. The `shadcn` CLI is still installed as a dev dependency and `components.json` is still present, but every component currently in the codebase (the `blog-identity/` chrome, forms, dialogs) is bespoke Tailwind — there is no `src/components/ui` directory. If you reach for Shadcn CLI to scaffold something new, that's a deliberate reintroduction, not a continuation of an existing pattern.
+- **Content:** Post bodies are Markdown rendered client-side via `react-markdown` + `remark-gfm` + `rehype-highlight`/`rehype-pretty-code` (see `EditPostForm`/`CreatePostForm`'s preview tab and `blog/[slug]/page.tsx`) — not MDX files. `@next/mdx` is configured in `next.config.ts` but nothing in the current post-authoring or rendering path actually uses `.mdx` files.
+- **Data Fetching:** React Server Components (RSC) by default.
+- **i18n:** `next-intl`, sub-path routing (see dedicated section below) — not the cookie-only setup this project started with.
+
+## 🏗️ Design Patterns & React Best Practices
+- **Server-First Approach:** Default to Server Components. Only add `'use client'` at the lowest possible leaf node in the component tree where interactivity (hooks, event listeners) is strictly required.
+- **Folder Structure:** Follow a Feature-Sliced / Domain-driven organization inside `src/` (e.g., `src/features/posts`, `src/features/auth`, `src/components/blog-identity`). Do not dump everything into a flat `components` folder.
+- **State Management:** Prefer URL Search Params and Next.js Server Actions. Minimize global client state.
+- **Performance:** Optimize for Core Web Vitals. Utilize `next/image`, `next/font`, and dynamic imports for heavy interactive components.
+- **Security:** Do not expose sensitive API logic. Trust HttpOnly cookies for auth state integration with `vertex-api` — but see "Cross-Domain OAuth" below, since vertex-api and vertex-web living on different domains (Vercel vs. Render) means this app must set that cookie itself, not trust one vertex-api tries to set directly.
+- **Edge Interception:** For route interception at the Edge, use the Next.js 16 `proxy.ts` convention instead of the deprecated `middleware.ts` — Next.js hard-errors if both files exist. This single file does double duty: `next-intl`'s locale routing middleware, and gating `/dashboard/**` + `/profile` behind an `access_token` cookie check (with the locale prefix stripped first, so `/dashboard` and `/en/dashboard` are recognized as the same gated route).
+- **Authentication:** There is no standalone `/login` route. Sign-in happens through the `LoginModal` (triggered from the header), which calls the real `loginAction` Server Action for email/password, or opens a popup at vertex-api's `/auth/google` or `/auth/github` for OAuth. Unauthenticated access to protected routes redirects to the locale-aware root (`/`, `/en`, or `/es`), not to a login page. `logoutAction` takes an optional `redirectTo`: omit it on public pages so the visitor stays put after signing out; pass a path on admin-only pages that can't be rendered once signed out.
+
+## 🔐 Cross-Domain OAuth (Token Callback Pattern)
+vertex-web and vertex-api are deployed on different domains. A cookie set directly by vertex-api's own OAuth callback response would be scoped to *its* domain — this app's `cookies()` calls could never see it, no matter how long anything polled for it. (This only ever appeared to work in local dev because `localhost:3000` and `localhost:3333` share the same hostname; browsers don't scope cookies by port.)
+
+Instead:
+1. The OAuth popup navigates directly to vertex-api's `/auth/google` or `/auth/github` (absolute URL, via `NEXT_PUBLIC_VERTEX_API_URL`).
+2. vertex-api's callback mints a short-lived, single-use exchange code (never the real token) and redirects the popup to `src/app/[locale]/auth/callback?code=...`.
+3. That page strips the code from the URL immediately (`history.replaceState`, before the exchange request even goes out), then calls `exchangeOAuthCodeAction`, which trades the code for the real token server-to-server (`POST /auth/exchange`) and sets it as this app's own cookie via `cookies().set(...)`.
+4. Since Google/GitHub's own OAuth pages send a strict `Cross-Origin-Opener-Policy` header that permanently severs `window.opener`, the callback page can't reliably reload the opener window directly. It broadcasts success over a `BroadcastChannel` instead (origin-scoped, survives the severance) — see `src/features/auth/constants.ts`. `LoginModal` listens for that broadcast rather than polling a session-check endpoint.
+
+If you're touching anything under `src/features/auth/` or the OAuth popups, read this section before assuming a simpler cookie-based flow will work — it won't, for the domain-separation reason above.
+
+## 🌐 i18n: Sub-Path Routing (next-intl)
+- Locales: `pt` (default), `en`, `es` — defined in `src/i18n/config.ts`.
+- **`localePrefix: "as-needed"`**: the default locale (`pt`) is served unprefixed at the root (`/`, `/about`, `/blog/x`); `en`/`es` get a real prefix (`/en`, `/es/blog/x`). This means `/pt/...` is invalid and canonicalizes (307) back to the unprefixed path.
+- Every route lives under `src/app/[locale]/` — there is no bare `src/app/page.tsx` anymore. `src/app/[locale]/layout.tsx` validates `params.locale` via `hasLocale()` and calls `notFound()` on garbage values; nested pages don't need to re-validate, the layout gate covers them.
+- Import `Link`, `redirect`, `usePathname`, `useRouter`, `getPathname` from `@/i18n/routing` — never from `next/link`/`next/navigation` for anything that needs to stay locale-aware. `notFound()` is the one exception that still comes from `next/navigation` (it isn't locale-specific).
+- **A real gotcha:** `redirect` from `@/i18n/routing` requires an explicit `{ href, locale }`, and TypeScript does not reliably recognize it as a `never`-returning call for control-flow narrowing purposes (a confirmed quirk of its generic-heavy type signature, not a config issue on our end). Every guard-and-redirect call site uses `throw redirect(...)` — not a bare `redirect(...)` — specifically to make narrowing/exhaustiveness work regardless of that quirk.
+- `sitemap.ts` emits one entry per locale per route with real `hreflang` alternates (meaningful now that each locale has a genuinely distinct, crawlable URL — this wasn't true before the sub-path migration).
+- `src/app/robots.ts` and `src/app/sitemap.ts` stay at the true `src/app/` root, outside `[locale]/`, per the Next.js file-convention requirement for those files.
+
+## 🧩 Route Groups & Visual Identity
+The legacy neutral "Vertex" Shadcn theme (the `(site)` route group, `/projects`, the old `src/components/layout/Header.tsx`) has been fully deleted. There is currently **one** visual identity: the "samuel.dev" dark/emerald-cyan blog identity. Chrome + shared pieces live in `src/components/blog-identity/`. All of the below now live under `src/app/[locale]/`:
+- **`(blog)`** — public pages: `/` (home/listing, the site's main entry point) and `/about`.
+- **`(blog-admin)`** — same visual identity, for authenticated post/topic/about management (`/dashboard/posts`, `/dashboard/posts/[id]/edit`, `/dashboard/topics`, `/dashboard/about`, `/profile`). Its header shows a real "Sair" (logout) instead of the public "Login" trigger, since these routes are already gated by `proxy.ts`.
+- **`blog/`** (no parentheses, a real path segment, not a route group) — `/blog/[slug]`, the individual post reading page. Kept as a plain segment because it needs the literal `/blog` URL prefix; `blog/page.tsx` is just a locale-aware `redirect` to `/` for the old `/blog` index.
+- **`auth/callback/`** (also a plain segment, no group) — the OAuth Token Callback Pattern's landing page. No header/footer chrome; it only ever renders inside a small OAuth popup window.
+
+When adding a new route, it inherits the `(blog)` or `(blog-admin)` chrome depending on which group it lands in — there's no longer a "which identity" decision to make, but there is a "does this need the header/footer at all, or is it a bare utility page like `auth/callback`" decision.
+
+## 🌿 Version Control & Git Strategy
+- **Branching Model:** Gitflow standard (`main`, `develop`, `feature/*`, `bugfix/*`).
+- **Semantic Commits:** ALL commit messages MUST follow the Conventional Commits specification strictly in English (e.g., `feat:`, `fix:`, `chore:`, `refactor:`).
+- **Atomic Commits:** Commits MUST be atomic, representing a single logical change.
+- **AI Git Execution:** When asked to commit, analyze staged files, craft an appropriate Semantic Commit in English.
+
+## 🤖 AI Assistant Directives
+1. **Always read this file** when starting a new session or generating UI components.
+2. **No interactive inputs:** Always use non-interactive CLI flags (e.g., `--yes`, `--ts`, `--tailwind`, `--app`, `--src-dir`, `-d`).
+3. **UI components:** Match the existing hand-rolled Tailwind convention (see `src/components/blog-identity/`) rather than reaching for the Shadcn CLI, unless the user explicitly asks to reintroduce a component library.
