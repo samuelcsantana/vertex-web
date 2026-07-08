@@ -6,21 +6,24 @@ import {
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
 import { getPathname, routing } from "@/i18n/routing";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+import { getSiteUrl } from "@/lib/site-url";
 
 type Locale = (typeof routing.locales)[number];
 
-function absoluteUrl(href: string, locale: Locale) {
-  return `${SITE_URL}${getPathname({ href, locale })}`;
+function absoluteUrl(siteUrl: string, href: string, locale: Locale) {
+  return `${siteUrl}${getPathname({ href, locale })}`;
 }
 
 function buildAlternates(
+  siteUrl: string,
   hrefForLocale: (locale: Locale) => string,
   locales: readonly Locale[]
 ) {
   return Object.fromEntries(
-    locales.map((locale) => [locale, absoluteUrl(hrefForLocale(locale), locale)])
+    locales.map((locale) => [
+      locale,
+      absoluteUrl(siteUrl, hrefForLocale(locale), locale),
+    ])
   );
 }
 
@@ -45,14 +48,15 @@ interface RouteOptions {
 // fallback) would get listed as if they were real translations, hreflang-
 // pointing search engines at duplicate content under the wrong language.
 function buildEntriesForRoute(
+  siteUrl: string,
   hrefForLocale: (locale: Locale) => string,
   { lastModified, changeFrequency, priority }: RouteOptions,
   locales: readonly Locale[] = routing.locales
 ): MetadataRoute.Sitemap {
-  const alternates = buildAlternates(hrefForLocale, locales);
+  const alternates = buildAlternates(siteUrl, hrefForLocale, locales);
 
   return locales.map((locale) => ({
-    url: absoluteUrl(hrefForLocale(locale), locale),
+    url: absoluteUrl(siteUrl, hrefForLocale(locale), locale),
     lastModified,
     changeFrequency,
     priority,
@@ -61,16 +65,17 @@ function buildEntriesForRoute(
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const siteUrl = await getSiteUrl();
   const posts = await getPosts();
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    ...buildEntriesForRoute(() => "/", {
+    ...buildEntriesForRoute(siteUrl, () => "/", {
       lastModified: now,
       changeFrequency: "daily",
       priority: 1,
     }),
-    ...buildEntriesForRoute(() => "/about", {
+    ...buildEntriesForRoute(siteUrl, () => "/about", {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
@@ -79,6 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postRoutes: MetadataRoute.Sitemap = posts.flatMap((post) =>
     buildEntriesForRoute(
+      siteUrl,
       (locale) => `/blog/${getLocalizedSlug(post, locale)}`,
       {
         lastModified: new Date(post.updatedAt ?? post.createdAt),

@@ -26,8 +26,7 @@ import {
   getLocalizedTitle,
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+import { getSiteUrl } from "@/lib/site-url";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -51,6 +50,7 @@ export async function generateMetadata({
     return {};
   }
 
+  const siteUrl = await getSiteUrl();
   const title = getLocalizedTitle(post, locale);
   const content = getLocalizedContent(post, locale);
   // A manually-written description for this locale wins when set — it's
@@ -65,8 +65,10 @@ export async function generateMetadata({
     `${stripMarkdown(content).slice(0, 100)}...`;
   // Posts without their own cover fall back to the site icon (rendered onto
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
-  // with no image at all.
-  const ogImageUrl = post.coverUrl ?? "/og-fallback.png";
+  // with no image at all. Built fully absolute here (not left relative for
+  // metadataBase to resolve) so it's correct even if this page's own
+  // openGraph.images ever stops matching the layout's metadataBase.
+  const ogImageUrl = post.coverUrl ?? `${siteUrl}/og-fallback.png`;
 
   // If this locale has no translation of its own, what's being rendered is
   // the pt fallback content under this locale's URL — point the canonical
@@ -76,7 +78,7 @@ export async function generateMetadata({
   const translatedLocales = getTranslatedLocales(post);
   const isTranslated = (translatedLocales as string[]).includes(locale);
   const canonicalLocale = isTranslated ? locale : "pt";
-  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
+  const canonicalUrl = `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
 
   // Only advertise an hreflang alternate for locales this post genuinely
   // has its own content in — same reasoning sitemap.ts's
@@ -84,7 +86,7 @@ export async function generateMetadata({
   const languageAlternates = Object.fromEntries(
     translatedLocales.map((loc) => [
       loc,
-      `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, loc)}`, locale: loc })}`,
+      `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, loc)}`, locale: loc })}`,
     ])
   );
 
@@ -157,6 +159,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const headings = extractHeadings(displayContent);
   const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
+  const siteUrl = await getSiteUrl();
 
   // pt is a required field, so the fallback below always lands on the pt
   // version — this is only ever true when locale is "en" or "es" and the
@@ -169,17 +172,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: displayTitle,
-    image: [post.coverUrl ?? `${SITE_URL}/og-fallback.png`],
+    image: [post.coverUrl ?? `${siteUrl}/og-fallback.png`],
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
     author: [
       {
         "@type": "Person",
         name: post.author?.name ?? "Samuel Santana",
-        url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
+        url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
       },
     ],
-    mainEntityOfPage: `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`,
+    mainEntityOfPage: `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`,
   };
 
   return (
