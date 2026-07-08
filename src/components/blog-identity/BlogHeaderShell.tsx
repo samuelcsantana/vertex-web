@@ -21,7 +21,12 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
       >
         {t("skipToContent")}
       </a>
-      <header className="sticky top-4 z-50 mx-auto w-full max-w-6xl px-4 sm:px-6">
+      {/* max-w-[calc(var(--container-6xl)+6rem)] instead of plain max-w-6xl:
+          this header nests two layers of "px-4 sm:px-6" padding (this
+          element's own, plus the rounded card's below) — 6rem cancels
+          that double 24px+24px inset at sm+ so the card's visible edges
+          land at the same x as a plain max-w-6xl content column. */}
+      <header className="sticky top-4 z-50 mx-auto w-full max-w-[calc(var(--container-6xl)+6rem)] px-4 sm:px-6">
         {/* transform-gpu forces this blurred layer onto its own GPU
             compositing layer instead of being recomposited inline with the
             page as it scrolls — some mobile browsers (older Samsung Internet

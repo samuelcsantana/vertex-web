@@ -157,10 +157,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           header within the full lg:max-w-6xl outer container while the
           grid's first column left-aligned the prose against it instead,
           leaving the header ~192px out of step with the article text.
-          The two-column grid only applies when there's a TOC to show —
-          otherwise grid-template-columns still reserves the second
-          column's width even with nothing rendered into it, leaving a
-          dead 220px+gap gutter on the right of short/heading-less posts. */}
+          lg:mx-0 always applies (not just when there's a TOC) so an
+          article's reading column sits at the same left position
+          whether or not that particular post has one — a post's start
+          shouldn't visually jump left/right depending on its headings.
+          The two-column grid itself still only applies when there's a
+          TOC to show — otherwise grid-template-columns would reserve
+          the second column's width even with nothing rendered into it,
+          leaving a dead 220px+gap gutter on the right. */}
       <div
         className={
           hasToc
@@ -168,7 +172,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             : ""
         }
       >
-        <div className={`mx-auto max-w-3xl ${hasToc ? "lg:mx-0" : ""}`}>
+        <div className="mx-auto max-w-3xl lg:mx-0">
           <Link
             href="/blog"
             className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
