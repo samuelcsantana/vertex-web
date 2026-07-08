@@ -30,6 +30,11 @@ export const createPostFormSchema = z.object({
   allowComments: z.boolean(),
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),
   coverAlt: z.string().optional(),
+  // 160 chars matches Google's typical meta description truncation point.
+  metaDescription: z
+    .string()
+    .max(160, "Máximo de 160 caracteres")
+    .optional(),
   topicIds: z.array(z.string()),
 });
 

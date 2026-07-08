@@ -342,6 +342,36 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <p className="text-xs text-slate-400">{t("coverAltHint")}</p>
         </div>
 
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="metaDescription"
+            className="text-sm font-medium text-slate-300"
+          >
+            {t("metaDescriptionLabel")}
+          </label>
+          <textarea
+            id="metaDescription"
+            rows={2}
+            placeholder={t("metaDescriptionPlaceholder")}
+            aria-invalid={!!errors.metaDescription}
+            aria-describedby={
+              errors.metaDescription ? "metaDescription-error" : undefined
+            }
+            className={`${inputClasses} resize-y`}
+            {...register("metaDescription")}
+          />
+          <p className="text-xs text-slate-400">{t("metaDescriptionHint")}</p>
+          {errors.metaDescription && (
+            <p
+              id="metaDescription-error"
+              role="alert"
+              className="text-sm text-red-400"
+            >
+              {errors.metaDescription.message}
+            </p>
+          )}
+        </div>
+
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
         <label className="flex items-center gap-2 text-sm text-slate-300">

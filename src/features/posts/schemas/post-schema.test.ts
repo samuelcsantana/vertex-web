@@ -15,6 +15,7 @@ const validPost = {
   isPublished: true,
   allowComments: true,
   coverUrl: "",
+  metaDescription: "",
   topicIds: [],
 };
 
@@ -100,6 +101,22 @@ describe("createPostFormSchema", () => {
     const result = createPostFormSchema.safeParse({
       ...validPost,
       slugEn: "Coffee With Milk",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a metaDescription up to 160 characters", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      metaDescription: "a".repeat(160),
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a metaDescription longer than 160 characters", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      metaDescription: "a".repeat(161),
     });
     expect(result.success).toBe(false);
   });
