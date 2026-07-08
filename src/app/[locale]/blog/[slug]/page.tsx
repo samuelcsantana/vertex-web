@@ -149,62 +149,67 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-3xl">
-        <Link
-          href="/blog"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
-        >
-          <ArrowLeft className="size-4" />
-          {t("backToBlog")}
-        </Link>
-
-        {post.coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
-          <img
-            src={post.coverUrl}
-            alt={post.coverAlt ?? ""}
-            referrerPolicy="no-referrer"
-            className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
-          />
-        )}
-
-        <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
-          {post.author && (
-            <div className="flex items-center gap-2">
-              {post.author.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
-                <img
-                  src={post.author.avatarUrl}
-                  alt=""
-                  referrerPolicy="no-referrer"
-                  className="size-7 shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
-                  {(post.author.name?.trim()?.[0] ?? "?").toUpperCase()}
-                </span>
-              )}
-              <span className="font-medium text-slate-300">{post.author.name}</span>
-            </div>
-          )}
-
-          <span>{t("publishedOn", { date: formatDate(post.createdAt, locale) })}</span>
-          {wasEdited && (
-            <span>{t("editedOn", { date: formatDate(post.updatedAt, locale) })}</span>
-          )}
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 md:gap-4">
-          <TopicPills topics={post.topics} />
-          <ShareButton title={displayTitle} />
-        </div>
-      </div>
-
-      <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8">
+      {/* A single mx-auto max-w-3xl lg:mx-0 wrapper owns every left-column
+          element (header, prose, comments) so they all share one box and
+          can't drift out of alignment with each other — previously each
+          had its own independent "mx-auto max-w-3xl", which centered the
+          header within the full lg:max-w-6xl outer container while the
+          grid's first column left-aligned the prose against it instead,
+          leaving the header ~192px out of step with the article text. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8">
         <div className="mx-auto max-w-3xl lg:mx-0">
-          <div className="prose prose-invert prose-sm max-w-none sm:prose-base lg:prose-lg">
+          <Link
+            href="/blog"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="size-4" />
+            {t("backToBlog")}
+          </Link>
+
+          {post.coverUrl && (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
+            <img
+              src={post.coverUrl}
+              alt={post.coverAlt ?? ""}
+              referrerPolicy="no-referrer"
+              className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
+            />
+          )}
+
+          <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
+            {post.author && (
+              <div className="flex items-center gap-2">
+                {post.author.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
+                  <img
+                    src={post.author.avatarUrl}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    className="size-7 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
+                    {(post.author.name?.trim()?.[0] ?? "?").toUpperCase()}
+                  </span>
+                )}
+                <span className="font-medium text-slate-300">{post.author.name}</span>
+              </div>
+            )}
+
+            <span>{t("publishedOn", { date: formatDate(post.createdAt, locale) })}</span>
+            {wasEdited && (
+              <span>{t("editedOn", { date: formatDate(post.updatedAt, locale) })}</span>
+            )}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 md:gap-4">
+            <TopicPills topics={post.topics} />
+            <ShareButton title={displayTitle} />
+          </div>
+
+          <div className="prose prose-invert prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
@@ -213,17 +218,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {displayContent}
             </ReactMarkdown>
           </div>
+
+          <CommentsSection
+            postId={post.id}
+            allowComments={post.allowComments}
+            currentUser={currentUser}
+          />
         </div>
 
         <TableOfContents headings={headings} />
-      </div>
-
-      <div className="mx-auto max-w-3xl">
-        <CommentsSection
-          postId={post.id}
-          allowComments={post.allowComments}
-          currentUser={currentUser}
-        />
       </div>
     </div>
   );
