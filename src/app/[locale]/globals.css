@@ -128,6 +128,14 @@
   }
   html {
     @apply font-sans;
+    /* Reserves the vertical scrollbar's space unconditionally, instead
+       of only once a page's content is tall enough to need it. Without
+       this, every mx-auto-centered element (the sticky header above
+       all) visibly shifts by the scrollbar's width the moment a page
+       goes from "fits in the viewport" to "needs to scroll" — e.g. the
+       home page's header nudging over once enough posts have loaded in
+       to push it past one screenful. */
+    scrollbar-gutter: stable;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
