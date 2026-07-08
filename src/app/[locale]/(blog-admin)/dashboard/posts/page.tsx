@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 import { getLocale, getTranslations } from "next-intl/server";
+import { format, parseISO } from "date-fns";
+import { enUS, ptBR } from "date-fns/locale";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { Link, redirect } from "@/i18n/routing";
@@ -7,6 +9,23 @@ import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
+import type { Post } from "@/features/posts/types";
+
+// pt is always present (the required default); en/es only "count" once
+// their content is actually filled in — a title alone with no content
+// wouldn't give a reader anything to read in that language (mirrors
+// getLocalizedContent's own contentEn/contentEs truthiness check).
+function getPostLanguages(post: Post): Array<"PT" | "EN" | "ES"> {
+  const languages: Array<"PT" | "EN" | "ES"> = ["PT"];
+  if (post.contentEn) languages.push("EN");
+  if (post.contentEs) languages.push("ES");
+  return languages;
+}
+
+const badgeClasses =
+  "rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase";
+const badgeActive = `${badgeClasses} bg-emerald-500/10 text-emerald-400`;
+const badgeInactive = `${badgeClasses} bg-slate-800 text-slate-400`;
 
 export default async function DashboardPostsPage() {
   const cookieStore = await cookies();
@@ -17,6 +36,8 @@ export default async function DashboardPostsPage() {
   }
 
   const posts = await getDashboardPosts(accessToken);
+  const locale = await getLocale();
+  const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Dashboard");
   const tHome = await getTranslations("Home");
 
@@ -37,37 +58,72 @@ export default async function DashboardPostsPage() {
             {t("newArticleHeading")}
           </Link>
         </div>
+      </div>
 
-        <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
-          <table className="w-full min-w-[36rem] text-left text-sm">
-            <thead className="border-b border-slate-800 bg-slate-900/60">
+      <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
+        <table className="w-full min-w-[64rem] text-left text-sm">
+          <thead className="border-b border-slate-800 bg-slate-900/60">
+            <tr>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableTitle")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableLanguage")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableTopics")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableStatus")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableComments")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300">
+                {t("tableSeo")}
+              </th>
+              <th className="px-4 py-3 font-medium text-slate-300 whitespace-nowrap">
+                {t("tableCreatedAt")}
+              </th>
+              <th className="w-px px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody>
+            {posts.length === 0 ? (
               <tr>
-                <th className="px-4 py-3 font-medium text-slate-300">
-                  {t("tableTitle")}
-                </th>
-                <th className="px-4 py-3 font-medium text-slate-300">
-                  {t("tableTopics")}
-                </th>
-                <th className="px-4 py-3 font-medium text-slate-300">
-                  {t("tableStatus")}
-                </th>
-                <th className="w-px px-4 py-3" />
+                <td
+                  colSpan={8}
+                  className="px-4 py-6 text-center text-slate-400"
+                >
+                  {t("noPostsPublished")}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {posts.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
-                    {t("noPostsPublished")}
-                  </td>
-                </tr>
-              ) : (
-                posts.map((post) => (
+            ) : (
+              posts.map((post) => {
+                const postLanguages = getPostLanguages(post);
+
+                return (
                   <tr
                     key={post.id}
                     className="border-b border-slate-800 bg-slate-900/30 last:border-0"
                   >
                     <td className="px-4 py-3 text-slate-100">{post.title}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        {(["PT", "EN", "ES"] as const).map((language) => (
+                          <span
+                            key={language}
+                            className={
+                              postLanguages.includes(language)
+                                ? badgeActive
+                                : badgeInactive
+                            }
+                          >
+                            {language}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <TopicPills topics={post.topics} />
                     </td>
@@ -81,6 +137,31 @@ export default async function DashboardPostsPage() {
                       >
                         {post.isPublished ? t("published") : t("draft")}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={
+                          post.allowComments ? badgeActive : badgeInactive
+                        }
+                      >
+                        {post.allowComments
+                          ? t("commentsEnabled")
+                          : t("commentsDisabled")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={
+                          post.metaDescription ? badgeActive : badgeInactive
+                        }
+                      >
+                        {post.metaDescription ? t("seoCustom") : t("seoAuto")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-400">
+                      {format(parseISO(post.createdAt), "d MMM yyyy", {
+                        locale: dateLocale,
+                      })}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
@@ -109,11 +190,11 @@ export default async function DashboardPostsPage() {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
