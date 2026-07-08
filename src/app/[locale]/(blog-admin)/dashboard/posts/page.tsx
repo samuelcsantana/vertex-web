@@ -9,18 +9,7 @@ import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
-import type { Post } from "@/features/posts/types";
-
-// pt is always present (the required default); en/es only "count" once
-// their content is actually filled in — a title alone with no content
-// wouldn't give a reader anything to read in that language (mirrors
-// getLocalizedContent's own contentEn/contentEs truthiness check).
-function getPostLanguages(post: Post): Array<"PT" | "EN" | "ES"> {
-  const languages: Array<"PT" | "EN" | "ES"> = ["PT"];
-  if (post.contentEn) languages.push("EN");
-  if (post.contentEs) languages.push("ES");
-  return languages;
-}
+import { getTranslatedLocales } from "@/features/posts/utils/localized-content";
 
 const badgeClasses =
   "rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase";
@@ -100,7 +89,7 @@ export default async function DashboardPostsPage() {
               </tr>
             ) : (
               posts.map((post) => {
-                const postLanguages = getPostLanguages(post);
+                const translatedLocales = getTranslatedLocales(post);
 
                 return (
                   <tr
@@ -110,16 +99,16 @@ export default async function DashboardPostsPage() {
                     <td className="px-4 py-3 text-slate-100">{post.title}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        {(["PT", "EN", "ES"] as const).map((language) => (
+                        {(["pt", "en", "es"] as const).map((language) => (
                           <span
                             key={language}
                             className={
-                              postLanguages.includes(language)
+                              translatedLocales.includes(language)
                                 ? badgeActive
                                 : badgeInactive
                             }
                           >
-                            {language}
+                            {language.toUpperCase()}
                           </span>
                         ))}
                       </div>

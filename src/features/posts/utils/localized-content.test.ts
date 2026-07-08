@@ -4,6 +4,7 @@ import {
   getLocalizedContent,
   getLocalizedSlug,
   getLocalizedTitle,
+  getTranslatedLocales,
 } from "./localized-content";
 
 describe("getLocalizedTitle", () => {
@@ -91,5 +92,27 @@ describe("getLocalizedSlug", () => {
       slugEs: "cafe-con-leche",
     };
     expect(getLocalizedSlug(post, "pt")).toBe("cafe-com-leite");
+  });
+});
+
+describe("getTranslatedLocales", () => {
+  it("returns only pt when contentEn and contentEs are both null", () => {
+    const post = { contentEn: null, contentEs: null };
+    expect(getTranslatedLocales(post)).toEqual(["pt"]);
+  });
+
+  it("includes en when contentEn is set", () => {
+    const post = { contentEn: "Content", contentEs: null };
+    expect(getTranslatedLocales(post)).toEqual(["pt", "en"]);
+  });
+
+  it("includes es when contentEs is set", () => {
+    const post = { contentEn: null, contentEs: "Contenido" };
+    expect(getTranslatedLocales(post)).toEqual(["pt", "es"]);
+  });
+
+  it("includes all three when contentEn and contentEs are both set", () => {
+    const post = { contentEn: "Content", contentEs: "Contenido" };
+    expect(getTranslatedLocales(post)).toEqual(["pt", "en", "es"]);
   });
 });
