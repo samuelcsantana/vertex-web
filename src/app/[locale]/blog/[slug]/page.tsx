@@ -123,6 +123,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const displayTitle = getLocalizedTitle(post, locale);
   const displayContent = getLocalizedContent(post, locale);
   const headings = extractHeadings(displayContent);
+  const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
 
   const jsonLd = {
@@ -155,14 +156,28 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           had its own independent "mx-auto max-w-3xl", which centered the
           header within the full lg:max-w-6xl outer container while the
           grid's first column left-aligned the prose against it instead,
-          leaving the header ~192px out of step with the article text. */}
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8">
-        <div className="mx-auto max-w-3xl lg:mx-0">
+          leaving the header ~192px out of step with the article text.
+          The two-column grid only applies when there's a TOC to show —
+          otherwise grid-template-columns still reserves the second
+          column's width even with nothing rendered into it, leaving a
+          dead 220px+gap gutter on the right of short/heading-less posts. */}
+      <div
+        className={
+          hasToc
+            ? "lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8"
+            : ""
+        }
+      >
+        <div className={`mx-auto max-w-3xl ${hasToc ? "lg:mx-0" : ""}`}>
           <Link
             href="/blog"
             className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
           >
-            <ArrowLeft className="size-4" />
+            {/* -ml-[3px] compensates for ArrowLeft's own glyph not
+                touching the left edge of its viewBox — without it, the
+                arrow visually sits ~3px right of the H1/paragraph text
+                below it despite both elements' boxes being flush. */}
+            <ArrowLeft className="-ml-[3px] size-4" />
             {t("backToBlog")}
           </Link>
 
@@ -226,7 +241,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
         </div>
 
-        <TableOfContents headings={headings} />
+        {hasToc && <TableOfContents headings={headings} />}
       </div>
     </div>
   );
