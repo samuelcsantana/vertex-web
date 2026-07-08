@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { FileText, Hash, Pencil, Plus, Trash2, User, Users } from "lucide-react";
+import { FileText, Hash, Pencil, Plus, Settings, Trash2, Users } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -87,7 +87,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
             </div>
           </div>
           <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
-            <User className="size-5" />
+            <Settings className="size-5" />
           </div>
         </div>
       )}
