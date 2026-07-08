@@ -2,6 +2,8 @@
   "Common": {
     "cancel": "Cancelar",
     "close": "Fechar",
+    "copyCode": "Copiar código",
+    "codeCopied": "Copiado!",
     "genericFormError": "Algo deu errado. Tente novamente."
   },
   "Navigation": {

@@ -11,6 +11,7 @@ import "highlight.js/styles/github-dark.css";
 
 import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
 import { TopicCheckboxGroup } from "@/features/posts/components/TopicCheckboxGroup";
+import { CodeBlock } from "@/components/blog-identity/CodeBlock";
 import { updatePostAction } from "@/features/posts/actions/post-actions";
 import {
   createPostFormSchema,
@@ -243,6 +244,7 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeHighlight]}
+                  components={{ pre: CodeBlock }}
                 >
                   {content}
                 </ReactMarkdown>
