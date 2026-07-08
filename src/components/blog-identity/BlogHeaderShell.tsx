@@ -35,7 +35,7 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
             <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               {"< "}
             </span>
-            <span className="text-white">samuel.dev</span>
+            <span className="text-white">samuelsantana.dev</span>
             <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               {" />"}
             </span>

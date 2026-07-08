@@ -5,7 +5,7 @@
 [![Security](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-The Next.js frontend for **[samuel.dev](https://vertex-web-zeta.vercel.app)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
+The Next.js frontend for **[samuelsantana.dev](https://samuelsantana.dev)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
 
 Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the NestJS backend, over a REST API. The two are deployed on separate domains (Vercel and Render), which shapes a few of the decisions below.
 
@@ -75,7 +75,7 @@ See [`.env.example`](./.env.example) for the full, documented list. In short:
 
 ## Architecture notes
 
-- **Route groups, not folders-as-decoration.** `(blog)` and `(blog-admin)` share the samuel.dev visual identity but differ in what chrome they render (public login trigger vs. an authenticated "Sair" menu); `blog/[slug]` is a plain segment (not a group) because it needs the literal `/blog` URL prefix. All three live under `src/app/[locale]/`.
+- **Route groups, not folders-as-decoration.** `(blog)` and `(blog-admin)` share the samuelsantana.dev visual identity but differ in what chrome they render (public login trigger vs. an authenticated "Sair" menu); `blog/[slug]` is a plain segment (not a group) because it needs the literal `/blog` URL prefix. All three live under `src/app/[locale]/`.
 - **`proxy.ts`, not `middleware.ts`.** Next.js 16 deprecated the latter and hard-errors if both exist. This one file does double duty: next-intl's locale routing, and gating `/dashboard/**` and `/profile` behind a session cookie check — with the locale prefix stripped first, since `/dashboard` (pt) and `/en/dashboard` need the same gate.
 - **Auth state is resolved server-side and threaded down as props**, never read from `localStorage` or an unauthenticated client guess — the access token is `HttpOnly` and simply isn't visible to client code.
 
