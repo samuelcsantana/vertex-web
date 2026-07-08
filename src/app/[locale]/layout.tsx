@@ -24,13 +24,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "samuelsantana.dev — Engenharia de Software, Performance e Arquitetura",
-    template: "%s | samuelsantana.dev",
+    default: "Samuel Santana | Software Engineer",
+    template: "%s | Samuel Santana",
   },
   description:
     "Blog técnico de Samuel Santana sobre arquitetura de software, performance web e engenharia frontend.",
   openGraph: {
-    siteName: "samuelsantana.dev",
+    siteName: "Samuel Santana",
     type: "website",
     url: SITE_URL,
     // Site-wide default so any page without a more specific openGraph.images
