@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { FileText, Hash, Pencil, Plus, Settings, Trash2, Users } from "lucide-react";
+import { FileText, Hash, List, Pencil, Plus, Settings, Trash2, Users } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -52,42 +52,49 @@ export default async function BlogPage({ params }: BlogPageProps) {
       </section>
 
       {isAdmin && (
-        <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-xl items-center justify-between gap-4 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
-          <div>
-            <p className="text-sm font-medium text-white">{t("adminPanelActive")}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Link
-                href="/dashboard/posts/new"
-                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
-              >
-                <Plus className="size-3.5" />
-                {t("newArticle")}
-              </Link>
-              <Link
-                href="/dashboard/topics"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-              >
-                <Hash className="size-3.5" />
-                {t("topics")}
-              </Link>
-              <Link
-                href="/dashboard/about"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-              >
-                <FileText className="size-3.5" />
-                {t("editAbout")}
-              </Link>
-              <Link
-                href="/dashboard/users"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-              >
-                <Users className="size-3.5" />
-                {t("manageUsers")}
-              </Link>
+        <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
+              <Settings className="size-4" />
             </div>
+            <p className="text-sm font-medium text-white">{t("adminPanelActive")}</p>
           </div>
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
-            <Settings className="size-5" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/dashboard/posts/new"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
+            >
+              <Plus className="size-3.5" />
+              {t("newArticle")}
+            </Link>
+            <Link
+              href="/dashboard/posts"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+            >
+              <List className="size-3.5" />
+              {t("managePosts")}
+            </Link>
+            <Link
+              href="/dashboard/topics"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+            >
+              <Hash className="size-3.5" />
+              {t("topics")}
+            </Link>
+            <Link
+              href="/dashboard/about"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+            >
+              <FileText className="size-3.5" />
+              {t("editAbout")}
+            </Link>
+            <Link
+              href="/dashboard/users"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+            >
+              <Users className="size-3.5" />
+              {t("manageUsers")}
+            </Link>
           </div>
         </div>
       )}
