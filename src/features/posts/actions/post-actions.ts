@@ -42,6 +42,27 @@ async function extractErrorMessage(response: Response, fallback: string) {
   return fallback;
 }
 
+// Both the home page and the dashboard listing live under the [locale]
+// dynamic segment (src/app/[locale]/(blog)/page.tsx and
+// .../(blog-admin)/dashboard/posts/page.tsx) — a literal revalidatePath("/")
+// only busts the cache entry for the exact path it's given, which is just
+// the unprefixed pt route. /en and /es visitors kept seeing stale data
+// until getPosts()'s own 60s revalidate window passed on its own.
+//
+// The docs' officially recommended fix for a dynamic segment —
+// revalidatePath("/[locale]", "page") — was verified NOT to actually bust
+// the cache in this Next.js 16 + Turbopack dev setup (confirmed live: the
+// backend had already deleted the post, but a fresh, uncached browser
+// context still rendered it 5+ seconds later). revalidatePath("/", "layout")
+// — the docs' own "revalidate everything" option — was verified to work
+// reliably and near-instantly instead, so this uses that rather than the
+// theoretically-narrower pattern that didn't actually work here. The
+// broader invalidation (busting /about's cache too, etc.) is a non-issue
+// at this app's size.
+function revalidatePostListings() {
+  revalidatePath("/", "layout");
+}
+
 export async function createPostAction(
   data: CreatePostInput
 ): Promise<PostActionResult> {
@@ -81,11 +102,7 @@ export async function createPostAction(
     };
   }
 
-  // The blog listing lives at "/" now ((blog)/page.tsx) — "/blog" is just a
-  // redirect("/") stub left over from the samuel.dev identity restructuring,
-  // so revalidating it never actually busted the home page's cache.
-  revalidatePath("/");
-  revalidatePath("/dashboard/posts");
+  revalidatePostListings();
   throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
 }
 
@@ -129,8 +146,7 @@ export async function updatePostAction(
     };
   }
 
-  revalidatePath("/");
-  revalidatePath("/dashboard/posts");
+  revalidatePostListings();
   throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
 }
 
@@ -152,6 +168,5 @@ export async function deletePostAction(id: string): Promise<void> {
     return;
   }
 
-  revalidatePath("/");
-  revalidatePath("/dashboard/posts");
+  revalidatePostListings();
 }
