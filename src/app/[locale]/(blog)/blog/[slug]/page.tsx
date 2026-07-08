@@ -23,6 +23,7 @@ import {
   getLocalizedContent,
   getLocalizedSlug,
   getLocalizedTitle,
+  getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -61,13 +62,33 @@ export async function generateMetadata({
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
   // with no image at all.
   const ogImageUrl = post.coverUrl ?? "/og-fallback.png";
-  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`;
+
+  // If this locale has no translation of its own, what's being rendered is
+  // the pt fallback content under this locale's URL — point the canonical
+  // back at the real pt page instead of self-referencing, so search
+  // engines treat this as a duplicate of the pt original rather than a
+  // distinct page whose URL and content language disagree.
+  const translatedLocales = getTranslatedLocales(post);
+  const isTranslated = (translatedLocales as string[]).includes(locale);
+  const canonicalLocale = isTranslated ? locale : "pt";
+  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
+
+  // Only advertise an hreflang alternate for locales this post genuinely
+  // has its own content in — same reasoning sitemap.ts's
+  // buildEntriesForRoute uses for the sitemap's own hreflang entries.
+  const languageAlternates = Object.fromEntries(
+    translatedLocales.map((loc) => [
+      loc,
+      `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, loc)}`, locale: loc })}`,
+    ])
+  );
 
   return {
     title,
     description,
     alternates: {
       canonical: canonicalUrl,
+      languages: languageAlternates,
     },
     openGraph: {
       title,
