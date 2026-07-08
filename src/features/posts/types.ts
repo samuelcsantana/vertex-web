@@ -24,6 +24,10 @@ export interface Post {
   allowComments: boolean;
   coverUrl: string | null;
   coverAlt: string | null;
+  // Manually-written search-result snippet — falls back to an
+  // auto-generated excerpt of the post's content when null (see
+  // blog/[slug]/page.tsx's generateMetadata).
+  metaDescription: string | null;
   authorId: string;
   author: PostAuthor;
   createdAt: string;
@@ -45,5 +49,6 @@ export interface CreatePostInput {
   allowComments: boolean;
   coverUrl?: string;
   coverAlt?: string;
+  metaDescription?: string;
   topicIds: string[];
 }

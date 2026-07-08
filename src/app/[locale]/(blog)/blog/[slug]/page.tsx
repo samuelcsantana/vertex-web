@@ -51,7 +51,12 @@ export async function generateMetadata({
 
   const title = getLocalizedTitle(post, locale);
   const content = getLocalizedContent(post, locale);
-  const description = `${stripMarkdown(content).slice(0, 100)}...`;
+  // A manually-written description wins when set — it's meant to carry
+  // the technical keywords a curiosity-driven opening paragraph often
+  // doesn't, for SEO. Otherwise fall back to the auto-generated excerpt,
+  // same as before this field existed (so existing posts are unaffected).
+  const description =
+    post.metaDescription || `${stripMarkdown(content).slice(0, 100)}...`;
   // Posts without their own cover fall back to the site icon (rendered onto
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
   // with no image at all.
