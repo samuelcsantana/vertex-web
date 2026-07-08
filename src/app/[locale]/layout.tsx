@@ -8,6 +8,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { routing } from "@/i18n/routing";
+import { getSiteUrl } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -19,27 +20,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Async generateMetadata (rather than a static `export const metadata`)
+// specifically so metadataBase can come from getSiteUrl() — see that
+// file for why a static SITE_URL env var isn't reliable here.
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = await getSiteUrl();
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: "Samuel Santana | Software Engineer",
-    template: "%s | Samuel Santana",
-  },
-  description:
-    "Blog técnico de Samuel Santana sobre arquitetura de software, performance web e engenharia frontend.",
-  openGraph: {
-    siteName: "Samuel Santana",
-    type: "website",
-    url: SITE_URL,
-    // Site-wide default so any page without a more specific openGraph.images
-    // (set individually where it matters, e.g. a post's own cover image)
-    // still shares a real image instead of a blank card — metadataBase
-    // above resolves this relative path to an absolute URL automatically.
-    images: ["/og-fallback.png"],
-  },
-};
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: "Samuel Santana | Software Engineer",
+      template: "%s | Samuel Santana",
+    },
+    description:
+      "Blog técnico de Samuel Santana sobre arquitetura de software, performance web e engenharia frontend.",
+    openGraph: {
+      siteName: "Samuel Santana",
+      type: "website",
+      url: siteUrl,
+      // Site-wide default so any page without a more specific
+      // openGraph.images (set individually where it matters, e.g. a
+      // post's own cover image) still shares a real image instead of a
+      // blank card — metadataBase above resolves this relative path to
+      // an absolute URL automatically.
+      images: ["/og-fallback.png"],
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

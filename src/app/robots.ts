@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { routing } from "@/i18n/routing";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+import { getSiteUrl } from "@/lib/site-url";
 
 // "as-needed" means the default locale (pt) has no URL prefix, so
 // /dashboard and /profile alone cover it; en/es need their own prefixed
@@ -20,13 +19,15 @@ const disallow = [
   ),
 ];
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const siteUrl = await getSiteUrl();
+
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow,
     },
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }
