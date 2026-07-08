@@ -80,7 +80,7 @@ export function EditAboutForm({ initialContent }: EditAboutFormProps) {
           value={content}
           onChange={(event) => setContent(event.target.value)}
           rows={20}
-          className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+          className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
         />
       ) : (
         <div className="prose prose-invert min-h-[19rem] max-w-none rounded-xl border border-slate-800 bg-slate-950 p-4">

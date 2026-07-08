@@ -23,7 +23,7 @@ interface CreatePostFormProps {
 }
 
 const inputClasses =
-  "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none";
+  "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none";
 
 export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -48,6 +48,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
       isPublished: false,
       allowComments: true,
       coverUrl: "",
+      coverAlt: "",
       topicIds: [],
     },
   });
@@ -278,12 +279,25 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           )}
         </div>
 
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="coverAlt" className="text-sm font-medium text-slate-300">
+            {t("coverAltLabel")}
+          </label>
+          <input
+            id="coverAlt"
+            placeholder={t("coverAltPlaceholder")}
+            className={inputClasses}
+            {...register("coverAlt")}
+          />
+          <p className="text-xs text-slate-400">{t("coverAltHint")}</p>
+        </div>
+
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
         <label className="flex items-center gap-2 text-sm text-slate-300">
           <input
             type="checkbox"
-            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
+            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/70"
             {...register("isPublished")}
           />
           {t("publishNow")}
@@ -292,7 +306,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
         <label className="flex items-center gap-2 text-sm text-slate-300">
           <input
             type="checkbox"
-            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/50"
+            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/70"
             {...register("allowComments")}
           />
           {t("enableComments")}

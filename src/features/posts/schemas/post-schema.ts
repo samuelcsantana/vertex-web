@@ -15,6 +15,7 @@ export const createPostFormSchema = z.object({
   isPublished: z.boolean(),
   allowComments: z.boolean(),
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),
+  coverAlt: z.string().optional(),
   topicIds: z.array(z.string()),
 });
 

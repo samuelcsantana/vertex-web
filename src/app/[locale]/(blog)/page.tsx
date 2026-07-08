@@ -108,7 +108,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                   // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
                   <img
                     src={post.coverUrl}
-                    alt=""
+                    alt={post.coverAlt ?? ""}
                     referrerPolicy="no-referrer"
                     className="pointer-events-none aspect-video w-full object-cover"
                   />
