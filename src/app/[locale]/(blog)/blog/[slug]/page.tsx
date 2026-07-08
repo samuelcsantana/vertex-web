@@ -173,8 +173,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         }
       >
         <div className="mx-auto max-w-3xl lg:mx-0">
+          {/* Links straight to "/" rather than "/blog" — that route only
+              exists as a redirect stub for old bookmarks/external links to
+              the pre-rename "/blog" index (see blog/page.tsx), so an
+              internal link through it just adds a second RSC round-trip
+              for no reason. */}
           <Link
-            href="/blog"
+            href="/"
             className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
           >
             {/* -ml-[3px] compensates for ArrowLeft's own glyph not
