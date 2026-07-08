@@ -21,6 +21,7 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { extractHeadings } from "@/features/posts/utils/extract-headings";
 import {
   getLocalizedContent,
+  getLocalizedSlug,
   getLocalizedTitle,
 } from "@/features/posts/utils/localized-content";
 
@@ -41,13 +42,13 @@ export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const locale = await getLocale();
+  const post = await getPostBySlug(slug, locale);
 
   if (!post) {
     return {};
   }
 
-  const locale = await getLocale();
   const title = getLocalizedTitle(post, locale);
   const content = getLocalizedContent(post, locale);
   const description = `${stripMarkdown(content).slice(0, 100)}...`;
@@ -55,7 +56,7 @@ export async function generateMetadata({
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
   // with no image at all.
   const ogImageUrl = post.coverUrl ?? "/og-fallback.png";
-  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${post.slug}`, locale })}`;
+  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`;
 
   return {
     title,
@@ -81,7 +82,8 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const locale = await getLocale();
+  const post = await getPostBySlug(slug, locale);
 
   if (!post) {
     notFound();
@@ -119,7 +121,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       }
     : null;
 
-  const locale = await getLocale();
   const displayTitle = getLocalizedTitle(post, locale);
   const displayContent = getLocalizedContent(post, locale);
   const headings = extractHeadings(displayContent);
@@ -140,7 +141,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
       },
     ],
-    mainEntityOfPage: `${SITE_URL}${getPathname({ href: `/blog/${post.slug}`, locale })}`,
+    mainEntityOfPage: `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`,
   };
 
   return (

@@ -124,6 +124,7 @@
     "editArticleHeading": "Editar artículo",
     "editArticleDescription": "Actualiza el contenido y el estado de publicación.",
     "slugLabel": "Slug",
+    "slugFallbackHint": "Deja en blanco para reutilizar el slug en portugués.",
     "write": "Escribir",
     "preview": "Vista previa",
     "nothingToPreview": "Nada para previsualizar todavía.",
