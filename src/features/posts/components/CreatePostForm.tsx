@@ -17,6 +17,10 @@ import {
   createPostFormSchema,
   type CreatePostFormValues,
 } from "@/features/posts/schemas/post-schema";
+import {
+  getPostLanguageFields,
+  type PostLanguage,
+} from "@/features/posts/utils/post-language-fields";
 import type { Topic } from "@/features/topics/types";
 
 interface CreatePostFormProps {
@@ -26,10 +30,28 @@ interface CreatePostFormProps {
 const inputClasses =
   "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none";
 
+const LANGUAGE_TAB_LABELS: Record<PostLanguage, string> = {
+  pt: "Português",
+  en: "English",
+  es: "Español",
+};
+
+const TITLE_LABELS: Record<PostLanguage, string> = {
+  pt: "Título",
+  en: "Title",
+  es: "Título",
+};
+
+const CONTENT_LABELS: Record<PostLanguage, string> = {
+  pt: "Conteúdo (Markdown)",
+  en: "Content (Markdown)",
+  es: "Contenido (Markdown)",
+};
+
 export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"write" | "preview">("write");
-  const [activeLanguage, setActiveLanguage] = useState<"pt" | "en">("pt");
+  const [activeLanguage, setActiveLanguage] = useState<PostLanguage>("pt");
   const contentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const t = useTranslations("PostForm");
   const tCommon = useTranslations("Common");
@@ -54,8 +76,8 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     },
   });
 
-  const titleField = activeLanguage === "en" ? "titleEn" : "title";
-  const contentField = activeLanguage === "en" ? "contentEn" : "content";
+  const { titleField, contentField, slugField } =
+    getPostLanguageFields(activeLanguage);
 
   const content = watch(contentField);
 
@@ -116,34 +138,26 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
       >
         <div className="overflow-x-auto">
           <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
-            <button
-              type="button"
-              onClick={() => setActiveLanguage("pt")}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                activeLanguage === "pt"
-                  ? "bg-emerald-500/10 text-emerald-400"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              Português
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveLanguage("en")}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                activeLanguage === "en"
-                  ? "bg-emerald-500/10 text-emerald-400"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              English
-            </button>
+            {(Object.keys(LANGUAGE_TAB_LABELS) as PostLanguage[]).map((language) => (
+              <button
+                key={language}
+                type="button"
+                onClick={() => setActiveLanguage(language)}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  activeLanguage === language
+                    ? "bg-emerald-500/10 text-emerald-400"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {LANGUAGE_TAB_LABELS[language]}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor={titleField} className="text-sm font-medium text-slate-300">
-            {activeLanguage === "en" ? "Title" : "Título"}
+            {TITLE_LABELS[activeLanguage]}
           </label>
           <input
             id={titleField}
@@ -160,20 +174,26 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="slug" className="text-sm font-medium text-slate-300">
+          <label htmlFor={slugField} className="text-sm font-medium text-slate-300">
             {t("slugLabel")}
           </label>
           <input
-            id="slug"
+            id={slugField}
             placeholder="meu-artigo"
-            aria-invalid={!!errors.slug}
-            aria-describedby={errors.slug ? "slug-error" : undefined}
+            aria-invalid={!!errors[slugField]}
+            aria-describedby={errors[slugField] ? `${slugField}-error` : undefined}
             className={inputClasses}
-            {...register("slug")}
+            {...register(slugField)}
           />
-          {errors.slug && (
-            <p id="slug-error" role="alert" className="text-sm text-red-400">
-              {errors.slug.message}
+          {/* pt's slug is required; en/es fall back to it when left blank
+              (see getLocalizedSlug/findPublishedBySlug) — only show that
+              hint on the tabs where it actually applies. */}
+          {activeLanguage !== "pt" && (
+            <p className="text-xs text-slate-400">{t("slugFallbackHint")}</p>
+          )}
+          {errors[slugField] && (
+            <p id={`${slugField}-error`} role="alert" className="text-sm text-red-400">
+              {errors[slugField]?.message}
             </p>
           )}
         </div>
@@ -184,7 +204,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
               htmlFor={contentField}
               className="text-sm font-medium text-slate-300"
             >
-              {activeLanguage === "en" ? "Content (Markdown)" : "Conteúdo (Markdown)"}
+              {CONTENT_LABELS[activeLanguage]}
             </label>
             {viewMode === "write" && (
               <AttachImageButton onUploaded={insertImageMarkdown} />

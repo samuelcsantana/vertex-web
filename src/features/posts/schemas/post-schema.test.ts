@@ -5,9 +5,13 @@ import { createPostFormSchema } from "./post-schema";
 const validPost = {
   title: "My Post",
   titleEn: "",
+  titleEs: "",
   slug: "my-post",
+  slugEn: "",
+  slugEs: "",
   content: "Some content",
   contentEn: "",
+  contentEs: "",
   isPublished: true,
   allowComments: true,
   coverUrl: "",
@@ -64,5 +68,39 @@ describe("createPostFormSchema", () => {
       coverUrl: "https://example.com/cover.jpg",
     });
     expect(result.success).toBe(true);
+  });
+
+  it("accepts an empty slugEn/slugEs (no locale-specific slug)", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      slugEn: "",
+      slugEs: "",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.slugEn).toBeUndefined();
+      expect(result.data.slugEs).toBeUndefined();
+    }
+  });
+
+  it("accepts a valid slugEn/slugEs", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      slugEn: "coffee-with-milk",
+      slugEs: "cafe-con-leche",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.slugEn).toBe("coffee-with-milk");
+      expect(result.data.slugEs).toBe("cafe-con-leche");
+    }
+  });
+
+  it("rejects a slugEn that isn't lowercase-hyphenated", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      slugEn: "Coffee With Milk",
+    });
+    expect(result.success).toBe(false);
   });
 });

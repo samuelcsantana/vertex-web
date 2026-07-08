@@ -1,17 +1,31 @@
 import { z } from "zod";
 
+const slugSchema = z
+  .string()
+  .min(1, "Slug is required")
+  .regex(
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Use lowercase letters, numbers, and hyphens only"
+  );
+
+// A locale-specific slug the author left blank submits as "" (react-hook-form
+// always sends a defined string, never omits the field) — treat that the
+// same as "no override" rather than failing the format regex.
+const optionalSlugSchema = z
+  .union([slugSchema, z.literal("")])
+  .transform((value) => (value === "" ? undefined : value))
+  .optional();
+
 export const createPostFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
   titleEn: z.string().optional(),
-  slug: z
-    .string()
-    .min(1, "Slug is required")
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Use lowercase letters, numbers, and hyphens only"
-    ),
+  titleEs: z.string().optional(),
+  slug: slugSchema,
+  slugEn: optionalSlugSchema,
+  slugEs: optionalSlugSchema,
   content: z.string().min(1, "Content is required"),
   contentEn: z.string().optional(),
+  contentEs: z.string().optional(),
   isPublished: z.boolean(),
   allowComments: z.boolean(),
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),

@@ -20,11 +20,16 @@ export async function getPosts(): Promise<Post[]> {
   return response.json();
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostBySlug(
+  slug: string,
+  locale?: string
+): Promise<Post | null> {
   let response: Response;
 
   try {
-    response = await fetch(`${API_URL}/posts/${slug}`, {
+    const url = new URL(`${API_URL}/posts/${slug}`);
+    if (locale) url.searchParams.set("locale", locale);
+    response = await fetch(url, {
       next: { revalidate: 60 },
     });
   } catch {

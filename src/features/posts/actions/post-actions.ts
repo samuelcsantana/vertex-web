@@ -21,6 +21,27 @@ function normalizeCoverUrl<T extends { coverUrl?: string }>(data: T) {
   return { ...data, coverUrl: data.coverUrl || undefined };
 }
 
+// Surfaces Nest's default exception body ({ message, error, statusCode })
+// when there is one — e.g. the friendly "slug already in use" message from
+// a 409 on a duplicate slugEn/slugEs — instead of always showing a generic
+// fallback that throws away real information from the API.
+async function extractErrorMessage(response: Response, fallback: string) {
+  try {
+    const body: unknown = await response.json();
+    if (
+      body &&
+      typeof body === "object" &&
+      "message" in body &&
+      typeof body.message === "string"
+    ) {
+      return body.message;
+    }
+  } catch {
+    // Response body wasn't JSON — fall through to the generic message.
+  }
+  return fallback;
+}
+
 export async function createPostAction(
   data: CreatePostInput
 ): Promise<PostActionResult> {
@@ -54,7 +75,10 @@ export async function createPostAction(
   }
 
   if (!response.ok) {
-    return { success: false, error: "Failed to create post." };
+    return {
+      success: false,
+      error: await extractErrorMessage(response, "Failed to create post."),
+    };
   }
 
   // The blog listing lives at "/" now ((blog)/page.tsx) — "/blog" is just a
@@ -100,7 +124,10 @@ export async function updatePostAction(
   }
 
   if (!response.ok) {
-    return { success: false, error: "Failed to update post." };
+    return {
+      success: false,
+      error: await extractErrorMessage(response, "Failed to update post."),
+    };
   }
 
   revalidatePath("/");

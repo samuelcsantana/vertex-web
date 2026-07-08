@@ -124,6 +124,7 @@
     "editArticleHeading": "Edit article",
     "editArticleDescription": "Update the content and publish status.",
     "slugLabel": "Slug",
+    "slugFallbackHint": "Leave blank to reuse the Portuguese slug.",
     "write": "Write",
     "preview": "Preview",
     "nothingToPreview": "Nothing to preview yet.",
