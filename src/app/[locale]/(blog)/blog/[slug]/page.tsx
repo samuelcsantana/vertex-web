@@ -21,6 +21,7 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { extractHeadings } from "@/features/posts/utils/extract-headings";
 import {
   getLocalizedContent,
+  getLocalizedMetaDescription,
   getLocalizedSlug,
   getLocalizedTitle,
   getTranslatedLocales,
@@ -52,12 +53,16 @@ export async function generateMetadata({
 
   const title = getLocalizedTitle(post, locale);
   const content = getLocalizedContent(post, locale);
-  // A manually-written description wins when set — it's meant to carry
-  // the technical keywords a curiosity-driven opening paragraph often
-  // doesn't, for SEO. Otherwise fall back to the auto-generated excerpt,
-  // same as before this field existed (so existing posts are unaffected).
+  // A manually-written description for this locale wins when set — it's
+  // meant to carry the technical keywords a curiosity-driven opening
+  // paragraph often doesn't, for SEO. Otherwise fall back to an excerpt
+  // auto-generated from this locale's own (already-resolved, possibly
+  // itself pt-fallback) content — never another locale's hand-written
+  // text, which could describe different words than what's actually
+  // rendered on the page.
   const description =
-    post.metaDescription || `${stripMarkdown(content).slice(0, 100)}...`;
+    getLocalizedMetaDescription(post, locale) ||
+    `${stripMarkdown(content).slice(0, 100)}...`;
   // Posts without their own cover fall back to the site icon (rendered onto
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
   // with no image at all.

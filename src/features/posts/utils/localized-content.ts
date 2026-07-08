@@ -33,6 +33,23 @@ export function getLocalizedSlug(
   return post.slug;
 }
 
+// The manually-written meta description for a given locale, or null if
+// that locale has none of its own. Deliberately does NOT fall back to
+// another locale's text the way getLocalizedTitle/Content/Slug do — a
+// locale with no override should fall through to an auto-generated
+// excerpt of *that locale's own* (possibly itself pt-fallback) content
+// instead of silently reusing another language's hand-written SEO copy,
+// which could describe different text than what's actually on the page.
+// See blog/[slug]/page.tsx's generateMetadata for the auto-generate step.
+export function getLocalizedMetaDescription(
+  post: Pick<Post, "metaDescription" | "metaDescriptionEn" | "metaDescriptionEs">,
+  locale: string
+) {
+  if (locale === "en") return post.metaDescriptionEn;
+  if (locale === "es") return post.metaDescriptionEs;
+  return post.metaDescription;
+}
+
 // Which locales this post genuinely has its own content in — pt is
 // always included (title/slug/content are required fields); en/es only
 // count once their own content is filled in. This is a different

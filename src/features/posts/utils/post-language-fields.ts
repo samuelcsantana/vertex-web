@@ -11,18 +11,21 @@ export function getPostLanguageFields(language: PostLanguage) {
         titleField: "titleEn",
         contentField: "contentEn",
         slugField: "slugEn",
+        metaDescriptionField: "metaDescriptionEn",
       } as const;
     case "es":
       return {
         titleField: "titleEs",
         contentField: "contentEs",
         slugField: "slugEs",
+        metaDescriptionField: "metaDescriptionEs",
       } as const;
     default:
       return {
         titleField: "title",
         contentField: "content",
         slugField: "slug",
+        metaDescriptionField: "metaDescription",
       } as const;
   }
 }

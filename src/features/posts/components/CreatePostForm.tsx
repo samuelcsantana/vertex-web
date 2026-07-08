@@ -77,7 +77,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     },
   });
 
-  const { titleField, contentField, slugField } =
+  const { titleField, contentField, slugField, metaDescriptionField } =
     getPostLanguageFields(activeLanguage);
 
   const content = watch(contentField);
@@ -311,6 +311,41 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor={metaDescriptionField}
+            className="text-sm font-medium text-slate-300"
+          >
+            {t("metaDescriptionLabel")}
+          </label>
+          {LANGUAGES.map((language) => {
+            const field = getPostLanguageFields(language).metaDescriptionField;
+            return (
+              <textarea
+                key={field}
+                id={field}
+                rows={2}
+                hidden={activeLanguage !== language}
+                placeholder={t("metaDescriptionPlaceholder")}
+                aria-invalid={!!errors[field]}
+                aria-describedby={errors[field] ? `${field}-error` : undefined}
+                className={`${inputClasses} resize-y`}
+                {...register(field)}
+              />
+            );
+          })}
+          <p className="text-xs text-slate-400">{t("metaDescriptionHint")}</p>
+          {errors[metaDescriptionField] && (
+            <p
+              id={`${metaDescriptionField}-error`}
+              role="alert"
+              className="text-sm text-red-400"
+            >
+              {errors[metaDescriptionField]?.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
           <label htmlFor="coverUrl" className="text-sm font-medium text-slate-300">
             {t("coverUrlLabel")}
           </label>
@@ -340,36 +375,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
             {...register("coverAlt")}
           />
           <p className="text-xs text-slate-400">{t("coverAltHint")}</p>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="metaDescription"
-            className="text-sm font-medium text-slate-300"
-          >
-            {t("metaDescriptionLabel")}
-          </label>
-          <textarea
-            id="metaDescription"
-            rows={2}
-            placeholder={t("metaDescriptionPlaceholder")}
-            aria-invalid={!!errors.metaDescription}
-            aria-describedby={
-              errors.metaDescription ? "metaDescription-error" : undefined
-            }
-            className={`${inputClasses} resize-y`}
-            {...register("metaDescription")}
-          />
-          <p className="text-xs text-slate-400">{t("metaDescriptionHint")}</p>
-          {errors.metaDescription && (
-            <p
-              id="metaDescription-error"
-              role="alert"
-              className="text-sm text-red-400"
-            >
-              {errors.metaDescription.message}
-            </p>
-          )}
         </div>
 
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />

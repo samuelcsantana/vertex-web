@@ -31,7 +31,15 @@ export const createPostFormSchema = z.object({
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),
   coverAlt: z.string().optional(),
   // 160 chars matches Google's typical meta description truncation point.
+  // Per locale, same as title/content — a locale without its own falls
+  // back to an auto-generated excerpt of that locale's own content, not
+  // another locale's hand-written text.
   metaDescription: z
+    .string()
+    .max(160, "Máximo de 160 caracteres")
+    .optional(),
+  metaDescriptionEn: z.string().max(160, "Max 160 characters").optional(),
+  metaDescriptionEs: z
     .string()
     .max(160, "Máximo de 160 caracteres")
     .optional(),

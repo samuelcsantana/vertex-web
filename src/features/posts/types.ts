@@ -24,10 +24,14 @@ export interface Post {
   allowComments: boolean;
   coverUrl: string | null;
   coverAlt: string | null;
-  // Manually-written search-result snippet — falls back to an
-  // auto-generated excerpt of the post's content when null (see
+  // Manually-written search-result snippet, per locale — a locale
+  // without its own falls back to an auto-generated excerpt of that
+  // locale's own content, not another locale's text (see
+  // localized-content.ts's getLocalizedMetaDescription and
   // blog/[slug]/page.tsx's generateMetadata).
   metaDescription: string | null;
+  metaDescriptionEn: string | null;
+  metaDescriptionEs: string | null;
   authorId: string;
   author: PostAuthor;
   createdAt: string;
@@ -50,5 +54,7 @@ export interface CreatePostInput {
   coverUrl?: string;
   coverAlt?: string;
   metaDescription?: string;
+  metaDescriptionEn?: string;
+  metaDescriptionEs?: string;
   topicIds: string[];
 }
