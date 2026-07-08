@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getLocalizedContent,
+  getLocalizedMetaDescription,
   getLocalizedSlug,
   getLocalizedTitle,
   getTranslatedLocales,
@@ -92,6 +93,53 @@ describe("getLocalizedSlug", () => {
       slugEs: "cafe-con-leche",
     };
     expect(getLocalizedSlug(post, "pt")).toBe("cafe-com-leite");
+  });
+});
+
+describe("getLocalizedMetaDescription", () => {
+  it("returns the English meta description when locale is en and set", () => {
+    const post = {
+      metaDescription: "Resumo",
+      metaDescriptionEn: "Summary",
+      metaDescriptionEs: null,
+    };
+    expect(getLocalizedMetaDescription(post, "en")).toBe("Summary");
+  });
+
+  it("returns null when locale is en but metaDescriptionEn is unset, rather than falling back to pt", () => {
+    const post = {
+      metaDescription: "Resumo",
+      metaDescriptionEn: null,
+      metaDescriptionEs: null,
+    };
+    expect(getLocalizedMetaDescription(post, "en")).toBeNull();
+  });
+
+  it("returns the Spanish meta description when locale is es and set", () => {
+    const post = {
+      metaDescription: "Resumo",
+      metaDescriptionEn: null,
+      metaDescriptionEs: "Resumen",
+    };
+    expect(getLocalizedMetaDescription(post, "es")).toBe("Resumen");
+  });
+
+  it("returns null when locale is es but metaDescriptionEs is unset, rather than falling back to pt", () => {
+    const post = {
+      metaDescription: "Resumo",
+      metaDescriptionEn: null,
+      metaDescriptionEs: null,
+    };
+    expect(getLocalizedMetaDescription(post, "es")).toBeNull();
+  });
+
+  it("returns the default meta description for pt regardless of the other locales", () => {
+    const post = {
+      metaDescription: "Resumo",
+      metaDescriptionEn: "Summary",
+      metaDescriptionEs: "Resumen",
+    };
+    expect(getLocalizedMetaDescription(post, "pt")).toBe("Resumo");
   });
 });
 

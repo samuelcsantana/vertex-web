@@ -8,6 +8,7 @@ describe("getPostLanguageFields", () => {
       titleField: "title",
       contentField: "content",
       slugField: "slug",
+      metaDescriptionField: "metaDescription",
     });
   });
 
@@ -16,6 +17,7 @@ describe("getPostLanguageFields", () => {
       titleField: "titleEn",
       contentField: "contentEn",
       slugField: "slugEn",
+      metaDescriptionField: "metaDescriptionEn",
     });
   });
 
@@ -24,6 +26,7 @@ describe("getPostLanguageFields", () => {
       titleField: "titleEs",
       contentField: "contentEs",
       slugField: "slugEs",
+      metaDescriptionField: "metaDescriptionEs",
     });
   });
 });

@@ -16,6 +16,8 @@ const validPost = {
   allowComments: true,
   coverUrl: "",
   metaDescription: "",
+  metaDescriptionEn: "",
+  metaDescriptionEs: "",
   topicIds: [],
 };
 
@@ -117,6 +119,22 @@ describe("createPostFormSchema", () => {
     const result = createPostFormSchema.safeParse({
       ...validPost,
       metaDescription: "a".repeat(161),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a metaDescriptionEn longer than 160 characters", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      metaDescriptionEn: "a".repeat(161),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a metaDescriptionEs longer than 160 characters", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      metaDescriptionEs: "a".repeat(161),
     });
     expect(result.success).toBe(false);
   });
