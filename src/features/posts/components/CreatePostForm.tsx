@@ -30,6 +30,8 @@ interface CreatePostFormProps {
 const inputClasses =
   "rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none";
 
+const LANGUAGES: PostLanguage[] = ["pt", "en", "es"];
+
 const LANGUAGE_TAB_LABELS: Record<PostLanguage, string> = {
   pt: "Português",
   en: "English",
@@ -80,9 +82,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     getPostLanguageFields(activeLanguage);
 
   const content = watch(contentField);
-
-  const { ref: contentRegisterRef, ...contentRegisterRest } =
-    register(contentField);
 
   function insertImageMarkdown(markdown: string) {
     const textarea = contentTextareaRef.current;
@@ -138,7 +137,7 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
       >
         <div className="overflow-x-auto">
           <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
-            {(Object.keys(LANGUAGE_TAB_LABELS) as PostLanguage[]).map((language) => (
+            {LANGUAGES.map((language) => (
               <button
                 key={language}
                 type="button"
@@ -159,13 +158,28 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <label htmlFor={titleField} className="text-sm font-medium text-slate-300">
             {TITLE_LABELS[activeLanguage]}
           </label>
-          <input
-            id={titleField}
-            aria-invalid={!!errors[titleField]}
-            aria-describedby={errors[titleField] ? `${titleField}-error` : undefined}
-            className={inputClasses}
-            {...register(titleField)}
-          />
+          {/* One persistent <input> per language rather than reusing a
+              single element and swapping which field register() binds it
+              to — react-hook-form doesn't resync an uncontrolled input's
+              DOM value when the field name behind it changes, so swapping
+              silently carried over (or wiped) whatever the input last
+              displayed. Each field now keeps its own element, own
+              registration, and its value never depends on which tab was
+              open last; visibility is the only thing that toggles. */}
+          {LANGUAGES.map((language) => {
+            const field = getPostLanguageFields(language).titleField;
+            return (
+              <input
+                key={field}
+                id={field}
+                hidden={activeLanguage !== language}
+                aria-invalid={!!errors[field]}
+                aria-describedby={errors[field] ? `${field}-error` : undefined}
+                className={inputClasses}
+                {...register(field)}
+              />
+            );
+          })}
           {errors[titleField] && (
             <p id={`${titleField}-error`} role="alert" className="text-sm text-red-400">
               {errors[titleField]?.message}
@@ -177,14 +191,21 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <label htmlFor={slugField} className="text-sm font-medium text-slate-300">
             {t("slugLabel")}
           </label>
-          <input
-            id={slugField}
-            placeholder="meu-artigo"
-            aria-invalid={!!errors[slugField]}
-            aria-describedby={errors[slugField] ? `${slugField}-error` : undefined}
-            className={inputClasses}
-            {...register(slugField)}
-          />
+          {LANGUAGES.map((language) => {
+            const field = getPostLanguageFields(language).slugField;
+            return (
+              <input
+                key={field}
+                id={field}
+                placeholder="meu-artigo"
+                hidden={activeLanguage !== language}
+                aria-invalid={!!errors[field]}
+                aria-describedby={errors[field] ? `${field}-error` : undefined}
+                className={inputClasses}
+                {...register(field)}
+              />
+            );
+          })}
           {/* pt's slug is required; en/es fall back to it when left blank
               (see getLocalizedSlug/findPublishedBySlug) — only show that
               hint on the tabs where it actually applies. */}
@@ -239,20 +260,28 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           </div>
 
           {viewMode === "write" ? (
-            <textarea
-              id={contentField}
-              rows={12}
-              aria-invalid={!!errors[contentField]}
-              aria-describedby={
-                errors[contentField] ? `${contentField}-error` : undefined
-              }
-              className={`${inputClasses} resize-y`}
-              {...contentRegisterRest}
-              ref={(element) => {
-                contentRegisterRef(element);
-                contentTextareaRef.current = element;
-              }}
-            />
+            LANGUAGES.map((language) => {
+              const field = getPostLanguageFields(language).contentField;
+              const { ref: fieldRef, ...fieldRest } = register(field);
+              return (
+                <textarea
+                  key={field}
+                  id={field}
+                  rows={12}
+                  hidden={activeLanguage !== language}
+                  aria-invalid={!!errors[field]}
+                  aria-describedby={errors[field] ? `${field}-error` : undefined}
+                  className={`${inputClasses} resize-y`}
+                  {...fieldRest}
+                  ref={(element) => {
+                    fieldRef(element);
+                    if (activeLanguage === language) {
+                      contentTextareaRef.current = element;
+                    }
+                  }}
+                />
+              );
+            })
           ) : (
             <div
               id={contentField}
