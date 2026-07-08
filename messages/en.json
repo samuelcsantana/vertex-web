@@ -16,8 +16,7 @@
   "Locale": {
     "pt": "Portuguese",
     "en": "English",
-    "es": "Spanish",
-    "notAvailable": "This article isn't available in this language yet"
+    "es": "Spanish"
   },
   "Auth": {
     "loginButton": "Login",
