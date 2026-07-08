@@ -20,11 +20,18 @@ export default async function AboutPage() {
   const startsWithHeading = /^#{1,6}\s+/.test((about?.content ?? "").trimStart());
 
   return (
-    <article className="prose prose-invert lg:prose-lg mx-auto max-w-3xl px-4 py-12">
-      {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {about?.content ?? ""}
-      </ReactMarkdown>
-    </article>
+    // Same outer/inner wrapper split as blog/[slug]/page.tsx: the outer box
+    // matches the header's own effective width so this page's content
+    // shares its left edge with the header logo above it (previously this
+    // was a single mx-auto max-w-3xl centered on the *full* page width,
+    // ~200px out of step with the header on wide screens).
+    <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:max-w-6xl xl:px-0">
+      <article className="prose prose-invert lg:prose-lg mx-auto max-w-3xl lg:mx-0">
+        {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {about?.content ?? ""}
+        </ReactMarkdown>
+      </article>
+    </div>
   );
 }
