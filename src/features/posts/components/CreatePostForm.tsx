@@ -65,7 +65,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
     setValue,
     watch,
     control,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<CreatePostFormValues>({
     resolver: zodResolver(createPostFormSchema),
@@ -115,14 +114,14 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   async function onSubmit(values: CreatePostFormValues) {
     setServerError(null);
 
+    // Redirects to /dashboard/posts on success (see createPostAction) —
+    // this form now lives on its own /dashboard/posts/new page, so there's
+    // no listing on the same screen to reset back into.
     const result = await createPostAction(values);
 
-    if (!result.success) {
+    if (result && !result.success) {
       setServerError(result.error ?? tCommon("genericFormError"));
-      return;
     }
-
-    reset();
   }
 
   return (

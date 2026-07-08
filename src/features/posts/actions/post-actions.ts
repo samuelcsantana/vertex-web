@@ -86,8 +86,7 @@ export async function createPostAction(
   // so revalidating it never actually busted the home page's cache.
   revalidatePath("/");
   revalidatePath("/dashboard/posts");
-
-  return { success: true };
+  throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
 }
 
 export async function updatePostAction(

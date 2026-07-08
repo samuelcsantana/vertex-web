@@ -1,14 +1,12 @@
 import { cookies } from "next/headers";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { Link, redirect } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
-import { CreatePostForm } from "@/features/posts/components/CreatePostForm";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
-import { getTopics } from "@/features/topics/api/topic-service";
 
 export default async function DashboardPostsPage() {
   const cookieStore = await cookies();
@@ -18,19 +16,21 @@ export default async function DashboardPostsPage() {
     throw redirect({ href: "/", locale: await getLocale() });
   }
 
-  const [posts, topics] = await Promise.all([
-    getDashboardPosts(accessToken),
-    getTopics(),
-  ]);
+  const posts = await getDashboardPosts(accessToken);
   const t = await getTranslations("Dashboard");
   const tHome = await getTranslations("Home");
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <h1 className="text-4xl font-bold text-white">{t("managePosts")}</h1>
-
-      <div className="mt-8">
-        <CreatePostForm availableTopics={topics} />
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-4xl font-bold text-white">{t("managePosts")}</h1>
+        <Link
+          href="/dashboard/posts/new"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03]"
+        >
+          <Plus className="size-4" />
+          {t("newArticleHeading")}
+        </Link>
       </div>
 
       <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
