@@ -15,6 +15,7 @@ import { CommentsSection } from "@/features/comments/components/CommentsSection"
 import { getProfile } from "@/features/auth/api/profile-service";
 import { ShareButton } from "@/components/blog-identity/ShareButton";
 import { markdownHeadingComponents } from "@/components/blog-identity/markdownHeadingComponents";
+import { CodeBlock } from "@/components/blog-identity/CodeBlock";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import {
   getLocalizedContent,
@@ -200,7 +201,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}
-          components={markdownHeadingComponents}
+          components={{ ...markdownHeadingComponents, pre: CodeBlock }}
         >
           {displayContent}
         </ReactMarkdown>
