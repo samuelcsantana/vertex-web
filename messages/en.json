@@ -59,7 +59,8 @@
     "editedOn": "(Edited on {date})",
     "backToBlog": "Back to the Blog",
     "readPost": "Read {title}",
-    "tableOfContents": "On this page"
+    "tableOfContents": "On this page",
+    "translationFallbackNotice": "This article hasn't been translated into this language yet. Showing the original Portuguese version."
   },
   "Home": {
     "heroTitleLine1": "Software Engineering,",

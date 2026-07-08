@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -153,6 +153,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
 
+  // pt is a required field, so the fallback below always lands on the pt
+  // version — this is only ever true when locale is "en" or "es" and the
+  // post has no translated content of its own for it yet.
+  const isTranslated = (getTranslatedLocales(post) as string[]).includes(
+    locale
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -228,6 +235,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
 
           <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
+
+          {!isTranslated && (
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <p>{t("translationFallbackNotice")}</p>
+            </div>
+          )}
 
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
             {post.author && (
