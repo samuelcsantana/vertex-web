@@ -58,7 +58,8 @@
     "publishedOn": "Published on {date}",
     "editedOn": "(Edited on {date})",
     "backToBlog": "Back to the Blog",
-    "readPost": "Read {title}"
+    "readPost": "Read {title}",
+    "tableOfContents": "On this page"
   },
   "Home": {
     "heroTitleLine1": "Software Engineering,",

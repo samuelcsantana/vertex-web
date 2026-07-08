@@ -65,7 +65,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-background font-sans antialiased">
