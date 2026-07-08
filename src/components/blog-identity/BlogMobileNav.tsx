@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 
 import { Link } from "@/i18n/routing";
@@ -11,13 +12,14 @@ interface BlogMobileNavProps {
 
 export function BlogMobileNav({ navLinks }: BlogMobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("Navigation");
 
   return (
     <div className="shrink-0 md:hidden">
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+        aria-label={isOpen ? t("closeMenu") : t("openMenu")}
         aria-expanded={isOpen}
         className="flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-800/60 text-slate-300 transition-colors hover:text-white"
       >

@@ -224,7 +224,7 @@ export function CommentsSection({
               onChange={(event) => setContent(event.target.value)}
               rows={3}
               placeholder={t("commentPlaceholder")}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
             />
             {error && (
               <p role="alert" className="text-sm text-red-400">

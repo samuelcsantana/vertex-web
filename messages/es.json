@@ -6,7 +6,10 @@
   },
   "Navigation": {
     "about": "Sobre Mí",
-    "home": "Inicio"
+    "home": "Inicio",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "skipToContent": "Saltar al contenido"
   },
   "Locale": {
     "pt": "Portugués",
@@ -122,6 +125,9 @@
     "preview": "Vista previa",
     "nothingToPreview": "Nada para previsualizar todavía.",
     "coverUrlLabel": "Imagen de Portada (URL)",
+    "coverAltLabel": "Texto Alternativo de la Portada",
+    "coverAltPlaceholder": "Describe la imagen para lectores de pantalla",
+    "coverAltHint": "Déjalo en blanco si la imagen es puramente decorativa.",
     "publishNow": "Publicar inmediatamente",
     "published": "Publicado",
     "enableComments": "Habilitar Comentarios",

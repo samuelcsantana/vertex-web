@@ -6,7 +6,10 @@
   },
   "Navigation": {
     "about": "About",
-    "home": "Home"
+    "home": "Home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "skipToContent": "Skip to content"
   },
   "Locale": {
     "pt": "Portuguese",
@@ -122,6 +125,9 @@
     "preview": "Preview",
     "nothingToPreview": "Nothing to preview yet.",
     "coverUrlLabel": "Cover Image (URL)",
+    "coverAltLabel": "Cover Alt Text",
+    "coverAltPlaceholder": "Describe the image for screen reader users",
+    "coverAltHint": "Leave blank if the image is purely decorative.",
     "publishNow": "Publish immediately",
     "published": "Published",
     "enableComments": "Enable Comments",

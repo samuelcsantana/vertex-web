@@ -24,7 +24,7 @@ export default async function BlogAdminLayout({
       <BlogHeaderShell
         rightSlot={<AdminHeaderActions redirectTo="/" profile={profile ?? undefined} />}
       />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">{children}</main>
       <BlogFooter />
     </div>
   );

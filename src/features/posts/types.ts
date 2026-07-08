@@ -16,6 +16,7 @@ export interface Post {
   isPublished: boolean;
   allowComments: boolean;
   coverUrl: string | null;
+  coverAlt: string | null;
   authorId: string;
   author: PostAuthor;
   createdAt: string;
@@ -32,5 +33,6 @@ export interface CreatePostInput {
   isPublished: boolean;
   allowComments: boolean;
   coverUrl?: string;
+  coverAlt?: string;
   topicIds: string[];
 }

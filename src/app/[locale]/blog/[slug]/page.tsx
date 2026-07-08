@@ -14,6 +14,7 @@ import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { ShareButton } from "@/components/blog-identity/ShareButton";
+import { markdownHeadingComponents } from "@/components/blog-identity/markdownHeadingComponents";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import {
   getLocalizedContent,
@@ -156,7 +157,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
         <img
           src={post.coverUrl}
-          alt=""
+          alt={post.coverAlt ?? ""}
           referrerPolicy="no-referrer"
           className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
         />
@@ -196,7 +197,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       <div className="prose prose-invert prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+          components={markdownHeadingComponents}
+        >
           {displayContent}
         </ReactMarkdown>
       </div>

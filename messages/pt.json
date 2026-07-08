@@ -6,7 +6,10 @@
   },
   "Navigation": {
     "about": "Sobre",
-    "home": "Início"
+    "home": "Início",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "skipToContent": "Pular para o conteúdo"
   },
   "Locale": {
     "pt": "Português",
@@ -122,6 +125,9 @@
     "preview": "Visualizar",
     "nothingToPreview": "Nada para visualizar ainda.",
     "coverUrlLabel": "Imagem de Capa (URL)",
+    "coverAltLabel": "Texto Alternativo da Capa",
+    "coverAltPlaceholder": "Descreva a imagem para quem usa leitor de tela",
+    "coverAltHint": "Deixe em branco se a imagem for puramente decorativa.",
     "publishNow": "Publicar imediatamente",
     "published": "Publicado",
     "enableComments": "Habilitar Comentários",

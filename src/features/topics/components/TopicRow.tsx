@@ -60,7 +60,7 @@ export function TopicRow({ topic }: TopicRowProps) {
             onChange={(event) => setName(event.target.value)}
             autoFocus
             aria-label={t("topicNamePlaceholder")}
-            className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+            className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
           />
         ) : (
           <span className="text-sm text-slate-100">{topic.name}</span>

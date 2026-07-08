@@ -231,7 +231,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             required
             placeholder={t("emailPlaceholder")}
             aria-describedby={error ? errorId : undefined}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
           />
           <label htmlFor={passwordId} className="sr-only">
             {t("passwordPlaceholder")}
@@ -243,7 +243,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             required
             placeholder={t("passwordPlaceholder")}
             aria-describedby={error ? errorId : undefined}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none"
+            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
           />
 
           {error && (
