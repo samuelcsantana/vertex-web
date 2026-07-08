@@ -58,7 +58,8 @@
     "publishedOn": "Publicado el {date}",
     "editedOn": "(Editado el {date})",
     "backToBlog": "Volver al Blog",
-    "readPost": "Leer {title}"
+    "readPost": "Leer {title}",
+    "tableOfContents": "En este artículo"
   },
   "Home": {
     "heroTitleLine1": "Ingeniería de Software,",
