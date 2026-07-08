@@ -59,7 +59,8 @@
     "editedOn": "(Editado el {date})",
     "backToBlog": "Volver al Blog",
     "readPost": "Leer {title}",
-    "tableOfContents": "En este artículo"
+    "tableOfContents": "En este artículo",
+    "translationFallbackNotice": "Este artículo aún no ha sido traducido a este idioma. Mostrando la versión original en portugués."
   },
   "Home": {
     "heroTitleLine1": "Ingeniería de Software,",
