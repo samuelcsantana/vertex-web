@@ -25,17 +25,6 @@ type LocaleCode = (typeof LOCALES)[number]["code"];
 
 const POST_PATH_PATTERN = /^\/blog\/([^/]+)$/;
 
-// pt is always present (the required default); en/es only count once their
-// content is actually filled in — mirrors dashboard/posts/page.tsx's
-// getPostLanguages, so the admin table's language badges and this
-// switcher never disagree about what counts as "translated".
-function getAvailableLocales(post: Post): LocaleCode[] {
-  const locales: LocaleCode[] = ["pt"];
-  if (post.contentEn) locales.push("en");
-  if (post.contentEs) locales.push("es");
-  return locales;
-}
-
 export function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations("Locale");
@@ -81,9 +70,8 @@ export function LanguageSwitcher() {
         const data: Post = await response.json();
         if (!cancelled) setFetchedPost({ slug, post: data });
       } catch {
-        // Network error — availableLocales below just stays null, and the
-        // click handler treats an unresolved post as "don't navigate"
-        // rather than guessing at a fallback URL that might not resolve.
+        // Network error — post stays null, and the click handler treats
+        // an unresolved post as "don't navigate" rather than guessing.
       }
     }
 
@@ -95,17 +83,14 @@ export function LanguageSwitcher() {
 
   const post =
     fetchedPost && fetchedPost.slug === currentSlug ? fetchedPost.post : null;
-  const availableLocales = post ? getAvailableLocales(post) : null;
 
   function handleSelect(code: LocaleCode) {
     if (currentSlug) {
-      // On a post page: only navigate once we've confirmed this post
-      // actually has a translated version for the target locale.
-      // Otherwise, stay right here — the "fallback" is simply not
-      // switching away from the locale currently being viewed, rather
-      // than jumping to a URL that would either show this same post's pt
-      // content under a misleading locale prefix or fail to resolve.
-      if (!post || !availableLocales?.includes(code)) return;
+      // getLocalizedSlug always falls back to post.slug (pt) when the
+      // target locale has no translated slug of its own — pt is a
+      // required field, so this always resolves to a real, reachable
+      // slug. If post hasn't loaded yet, do nothing rather than guess.
+      if (!post) return;
 
       const targetSlug = getLocalizedSlug(post, code);
       router.replace(`/blog/${targetSlug}`, { locale: code });
@@ -120,34 +105,23 @@ export function LanguageSwitcher() {
 
   return (
     <div className="flex shrink-0 items-center gap-0.5 rounded-full border border-slate-700 bg-slate-800/60 p-0.5 sm:gap-1 sm:p-1">
-      {LOCALES.map((item) => {
-        const isUnavailable =
-          currentSlug !== null &&
-          availableLocales !== null &&
-          locale !== item.code &&
-          !availableLocales.includes(item.code);
-
-        return (
-          <button
-            key={item.code}
-            type="button"
-            onClick={() => handleSelect(item.code)}
-            disabled={isUnavailable}
-            aria-label={item.label}
-            title={isUnavailable ? t("notAvailable") : t(item.code)}
-            aria-pressed={locale === item.code}
-            className={`flex size-5 shrink-0 items-center justify-center rounded-full text-sm transition-colors sm:size-7 ${
-              locale === item.code
-                ? "bg-emerald-500/20 ring-1 ring-emerald-500/40"
-                : isUnavailable
-                  ? "cursor-not-allowed opacity-30"
-                  : "opacity-50 hover:opacity-100"
-            }`}
-          >
-            {item.flag}
-          </button>
-        );
-      })}
+      {LOCALES.map((item) => (
+        <button
+          key={item.code}
+          type="button"
+          onClick={() => handleSelect(item.code)}
+          aria-label={item.label}
+          title={t(item.code)}
+          aria-pressed={locale === item.code}
+          className={`flex size-5 shrink-0 items-center justify-center rounded-full text-sm transition-colors sm:size-7 ${
+            locale === item.code
+              ? "bg-emerald-500/20 ring-1 ring-emerald-500/40"
+              : "opacity-50 hover:opacity-100"
+          }`}
+        >
+          {item.flag}
+        </button>
+      ))}
     </div>
   );
 }
