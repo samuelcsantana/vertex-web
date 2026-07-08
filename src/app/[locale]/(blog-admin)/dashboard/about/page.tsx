@@ -19,20 +19,26 @@ export default async function DashboardAboutPage() {
   const tAbout = await getTranslations("About");
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Link
-        href="/"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
-      >
-        <ArrowLeft className="size-4" />
-        {t("backToPanel")}
-      </Link>
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
+      <div className="mx-auto max-w-3xl lg:mx-0">
+        {/* Was href="/" — every other dashboard sub-page's "back to panel"
+            link goes to /dashboard/posts (the hub); this one alone went
+            all the way to the public homepage instead, contradicting its
+            own "Voltar para o Painel" label. */}
+        <Link
+          href="/dashboard/posts"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="size-4" />
+          {t("backToPanel")}
+        </Link>
 
-      <h1 className="text-4xl font-bold text-white">{tAbout("editHeading")}</h1>
-      <p className="mt-2 text-sm text-slate-400">{tAbout("editDescription")}</p>
+        <h1 className="text-4xl font-bold text-white">{tAbout("editHeading")}</h1>
+        <p className="mt-2 text-sm text-slate-400">{tAbout("editDescription")}</p>
 
-      <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
-        <EditAboutForm initialContent={about?.content ?? ""} />
+        <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+          <EditAboutForm initialContent={about?.content ?? ""} />
+        </div>
       </div>
     </div>
   );

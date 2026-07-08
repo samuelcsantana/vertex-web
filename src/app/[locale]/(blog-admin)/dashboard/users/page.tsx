@@ -21,26 +21,28 @@ export default async function DashboardUsersPage() {
   const t = await getTranslations("Dashboard");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <Link
-        href="/dashboard/posts"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
-      >
-        <ArrowLeft className="size-4" />
-        {t("backToPanel")}
-      </Link>
+    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
+      <div className="mx-auto max-w-2xl lg:mx-0">
+        <Link
+          href="/dashboard/posts"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="size-4" />
+          {t("backToPanel")}
+        </Link>
 
-      <h1 className="text-4xl font-bold text-white">{t("manageUsersTitle")}</h1>
-      <p className="mt-2 text-sm text-slate-400">{t("usersDescription")}</p>
+        <h1 className="text-4xl font-bold text-white">{t("manageUsersTitle")}</h1>
+        <p className="mt-2 text-sm text-slate-400">{t("usersDescription")}</p>
 
-      <div className="mt-8 flex flex-col gap-2">
-        {users.length === 0 ? (
-          <p className="text-slate-400">{t("noUsersYet")}</p>
-        ) : (
-          users.map((user) => (
-            <UserRow key={user.id} user={user} isSelf={user.id === profile?.sub} />
-          ))
-        )}
+        <div className="mt-8 flex flex-col gap-2">
+          {users.length === 0 ? (
+            <p className="text-slate-400">{t("noUsersYet")}</p>
+          ) : (
+            users.map((user) => (
+              <UserRow key={user.id} user={user} isSelf={user.id === profile?.sub} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
