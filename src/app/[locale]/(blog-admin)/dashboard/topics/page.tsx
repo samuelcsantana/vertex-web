@@ -19,28 +19,30 @@ export default async function DashboardTopicsPage() {
   const t = await getTranslations("Dashboard");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <Link
-        href="/dashboard/posts"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
-      >
-        <ArrowLeft className="size-4" />
-        {t("backToPanel")}
-      </Link>
+    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
+      <div className="mx-auto max-w-2xl lg:mx-0">
+        <Link
+          href="/dashboard/posts"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="size-4" />
+          {t("backToPanel")}
+        </Link>
 
-      <h1 className="text-4xl font-bold text-white">{t("manageTopics")}</h1>
-      <p className="mt-2 text-sm text-slate-400">{t("topicsDescription")}</p>
+        <h1 className="text-4xl font-bold text-white">{t("manageTopics")}</h1>
+        <p className="mt-2 text-sm text-slate-400">{t("topicsDescription")}</p>
 
-      <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
-        <CreateTopicForm />
-      </div>
+        <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+          <CreateTopicForm />
+        </div>
 
-      <div className="mt-8 flex flex-col gap-2">
-        {topics.length === 0 ? (
-          <p className="text-slate-400">{t("noTopicsYet")}</p>
-        ) : (
-          topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
-        )}
+        <div className="mt-8 flex flex-col gap-2">
+          {topics.length === 0 ? (
+            <p className="text-slate-400">{t("noTopicsYet")}</p>
+          ) : (
+            topics.map((topic) => <TopicRow key={topic.id} topic={topic} />)
+          )}
+        </div>
       </div>
     </div>
   );

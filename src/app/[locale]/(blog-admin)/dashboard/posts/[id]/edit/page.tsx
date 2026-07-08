@@ -36,19 +36,21 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
   const t = await getTranslations("Dashboard");
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Link
-        href="/dashboard/posts"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
-      >
-        <ArrowLeft className="size-4" />
-        {t("backToPanel")}
-      </Link>
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
+      <div className="mx-auto max-w-3xl lg:mx-0">
+        <Link
+          href="/dashboard/posts"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="size-4" />
+          {t("backToPanel")}
+        </Link>
 
-      <h1 className="text-4xl font-bold text-white">{t("editArticleHeading")}</h1>
+        <h1 className="text-4xl font-bold text-white">{t("editArticleHeading")}</h1>
 
-      <div className="mt-8">
-        <EditPostForm initialData={post} availableTopics={topics} />
+        <div className="mt-8">
+          <EditPostForm initialData={post} availableTopics={topics} />
+        </div>
       </div>
     </div>
   );

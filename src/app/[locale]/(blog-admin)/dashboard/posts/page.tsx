@@ -21,93 +21,99 @@ export default async function DashboardPostsPage() {
   const tHome = await getTranslations("Home");
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-4xl font-bold text-white">{t("managePosts")}</h1>
-        <Link
-          href="/dashboard/posts/new"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03]"
-        >
-          <Plus className="size-4" />
-          {t("newArticleHeading")}
-        </Link>
-      </div>
+    // Outer box matches the header's own effective width (see
+    // BlogHeaderShell.tsx) so this page's content shares its left edge
+    // with the header logo above it, same pattern as blog/[slug]/page.tsx
+    // and (blog)/about/page.tsx.
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
+      <div className="mx-auto max-w-3xl lg:mx-0">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-4xl font-bold text-white">{t("managePosts")}</h1>
+          <Link
+            href="/dashboard/posts/new"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03]"
+          >
+            <Plus className="size-4" />
+            {t("newArticleHeading")}
+          </Link>
+        </div>
 
-      <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
-        <table className="w-full min-w-[36rem] text-left text-sm">
-          <thead className="border-b border-slate-800 bg-slate-900/60">
-            <tr>
-              <th className="px-4 py-3 font-medium text-slate-300">
-                {t("tableTitle")}
-              </th>
-              <th className="px-4 py-3 font-medium text-slate-300">
-                {t("tableTopics")}
-              </th>
-              <th className="px-4 py-3 font-medium text-slate-300">
-                {t("tableStatus")}
-              </th>
-              <th className="w-px px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody>
-            {posts.length === 0 ? (
+        <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-800">
+          <table className="w-full min-w-[36rem] text-left text-sm">
+            <thead className="border-b border-slate-800 bg-slate-900/60">
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
-                  {t("noPostsPublished")}
-                </td>
+                <th className="px-4 py-3 font-medium text-slate-300">
+                  {t("tableTitle")}
+                </th>
+                <th className="px-4 py-3 font-medium text-slate-300">
+                  {t("tableTopics")}
+                </th>
+                <th className="px-4 py-3 font-medium text-slate-300">
+                  {t("tableStatus")}
+                </th>
+                <th className="w-px px-4 py-3" />
               </tr>
-            ) : (
-              posts.map((post) => (
-                <tr
-                  key={post.id}
-                  className="border-b border-slate-800 bg-slate-900/30 last:border-0"
-                >
-                  <td className="px-4 py-3 text-slate-100">{post.title}</td>
-                  <td className="px-4 py-3">
-                    <TopicPills topics={post.topics} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={
-                        post.isPublished
-                          ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400"
-                          : "rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400"
-                      }
-                    >
-                      {post.isPublished ? t("published") : t("draft")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/dashboard/posts/${post.id}/edit`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
-                      >
-                        <Pencil className="size-3.5" />
-                        {t("edit")}
-                      </Link>
-                      <ConfirmDialog
-                        title={tHome("confirmDeleteTitle")}
-                        description={tHome("confirmDeleteDescription")}
-                        confirmLabel={tHome("confirmContinue")}
-                        action={deletePostAction.bind(null, post.id)}
-                        trigger={
-                          <button
-                            type="button"
-                            className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20"
-                          >
-                            <Trash2 className="size-3.5" />
-                            {t("delete")}
-                          </button>
-                        }
-                      />
-                    </div>
+            </thead>
+            <tbody>
+              {posts.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
+                    {t("noPostsPublished")}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                posts.map((post) => (
+                  <tr
+                    key={post.id}
+                    className="border-b border-slate-800 bg-slate-900/30 last:border-0"
+                  >
+                    <td className="px-4 py-3 text-slate-100">{post.title}</td>
+                    <td className="px-4 py-3">
+                      <TopicPills topics={post.topics} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={
+                          post.isPublished
+                            ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400"
+                            : "rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400"
+                        }
+                      >
+                        {post.isPublished ? t("published") : t("draft")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/dashboard/posts/${post.id}/edit`}
+                          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+                        >
+                          <Pencil className="size-3.5" />
+                          {t("edit")}
+                        </Link>
+                        <ConfirmDialog
+                          title={tHome("confirmDeleteTitle")}
+                          description={tHome("confirmDeleteDescription")}
+                          confirmLabel={tHome("confirmContinue")}
+                          action={deletePostAction.bind(null, post.id)}
+                          trigger={
+                            <button
+                              type="button"
+                              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20"
+                            >
+                              <Trash2 className="size-3.5" />
+                              {t("delete")}
+                            </button>
+                          }
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
