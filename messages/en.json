@@ -71,7 +71,7 @@
     "topics": "Topics",
     "editAbout": "Edit About",
     "manageUsers": "Users",
-    "managePosts": "Manage Posts",
+    "managePosts": "Manage Articles",
     "noPostsYet": "No articles published yet.",
     "editArticle": "Edit article",
     "deleteArticle": "Delete article",
@@ -80,8 +80,8 @@
     "confirmContinue": "Continue"
   },
   "Dashboard": {
-    "managePosts": "Manage Posts",
-    "noPostsPublished": "No posts published yet.",
+    "managePosts": "Manage Articles",
+    "noPostsPublished": "No articles published yet.",
     "tableTitle": "Title",
     "tableTopics": "Topics",
     "tableStatus": "Status",
