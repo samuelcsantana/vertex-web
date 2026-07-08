@@ -71,7 +71,7 @@
     "topics": "Temas",
     "editAbout": "Editar Sobre Mí",
     "manageUsers": "Usuarios",
-    "managePosts": "Gestionar Publicaciones",
+    "managePosts": "Gestionar Artículos",
     "noPostsYet": "Aún no hay artículos publicados.",
     "editArticle": "Editar artículo",
     "deleteArticle": "Eliminar artículo",
@@ -80,8 +80,8 @@
     "confirmContinue": "Continuar"
   },
   "Dashboard": {
-    "managePosts": "Gestionar Publicaciones",
-    "noPostsPublished": "Aún no hay publicaciones.",
+    "managePosts": "Gestionar Artículos",
+    "noPostsPublished": "Aún no hay artículos publicados.",
     "tableTitle": "Título",
     "tableTopics": "Temas",
     "tableStatus": "Estado",

@@ -71,7 +71,7 @@
     "topics": "Tópicos",
     "editAbout": "Editar Sobre",
     "manageUsers": "Usuários",
-    "managePosts": "Gerenciar Posts",
+    "managePosts": "Gerenciar Artigos",
     "noPostsYet": "Nenhum artigo publicado ainda.",
     "editArticle": "Editar artigo",
     "deleteArticle": "Excluir artigo",
@@ -80,8 +80,8 @@
     "confirmContinue": "Continuar"
   },
   "Dashboard": {
-    "managePosts": "Gerenciar Posts",
-    "noPostsPublished": "Nenhum post publicado ainda.",
+    "managePosts": "Gerenciar Artigos",
+    "noPostsPublished": "Nenhum artigo publicado ainda.",
     "tableTitle": "Título",
     "tableTopics": "Tópicos",
     "tableStatus": "Status",
