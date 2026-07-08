@@ -173,6 +173,6 @@
     "goToBlog": "Go to the blog"
   },
   "Footer": {
-    "copyright": "© {year} Samuel. Built with Next.js & Tailwind CSS."
+    "copyright": "© {year} Samuel Santana. Built with Next.js & NestJS."
   }
 }
