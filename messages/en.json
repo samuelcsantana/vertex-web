@@ -16,7 +16,8 @@
   "Locale": {
     "pt": "Portuguese",
     "en": "English",
-    "es": "Spanish"
+    "es": "Spanish",
+    "changeLanguage": "Change language"
   },
   "Auth": {
     "loginButton": "Login",
