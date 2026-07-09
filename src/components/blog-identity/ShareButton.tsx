@@ -30,7 +30,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.log("Não foi possível copiar o link", error);
+      console.error("Could not copy the link", error);
     }
   }
 

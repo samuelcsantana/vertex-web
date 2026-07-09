@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
@@ -21,25 +21,33 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: "Samuel Santana | Software Engineer",
-    template: "%s | Samuel Santana",
-  },
-  description:
-    "Blog técnico de Samuel Santana sobre arquitetura de software, performance web e engenharia frontend.",
-  openGraph: {
-    siteName: "Samuel Santana",
-    type: "website",
-    url: SITE_URL,
-    // Site-wide default so any page without a more specific openGraph.images
-    // (set individually where it matters, e.g. a post's own cover image)
-    // still shares a real image instead of a blank card — metadataBase
-    // above resolves this relative path to an absolute URL automatically.
-    images: ["/og-fallback.png"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // getLocale() (not params.locale) so this matches every page-level
+  // generateMetadata in the app: it always resolves to a valid, negotiated
+  // locale even while the layout body itself is about to notFound() a
+  // garbage [locale] segment.
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: "Samuel Santana | Software Engineer",
+      template: "%s | Samuel Santana",
+    },
+    description: t("siteDescription"),
+    openGraph: {
+      siteName: "Samuel Santana",
+      type: "website",
+      url: SITE_URL,
+      // Site-wide default so any page without a more specific openGraph.images
+      // (set individually where it matters, e.g. a post's own cover image)
+      // still shares a real image instead of a blank card — metadataBase
+      // above resolves this relative path to an absolute URL automatically.
+      images: ["/og-fallback.png"],
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

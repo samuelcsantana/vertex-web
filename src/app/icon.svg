@@ -10,16 +10,16 @@
     </linearGradient>
   </defs>
   
-  <!-- Fundo com bordas arredondadas -->
+  <!-- Rounded-corner background -->
   <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
-  
-  <!-- Linhas do "V" / Grafo (Agora na posição correta!) -->
+
+  <!-- "V" lines / graph edges -->
   <path d="M 140 160 L 256 350 L 372 160" fill="none" stroke="url(#vertexGrad)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" />
-  
-  <!-- Vértice Inferior (O núcleo do V) -->
+
+  <!-- Bottom vertex (the V's core) -->
   <circle cx="256" cy="350" r="32" fill="#818cf8" />
-  
-  <!-- Vértices Superiores -->
+
+  <!-- Top vertices -->
   <circle cx="140" cy="160" r="28" fill="#38bdf8" />
   <circle cx="372" cy="160" r="28" fill="#38bdf8" />
 </svg>

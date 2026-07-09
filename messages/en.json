@@ -182,6 +182,9 @@
     "contentSaved": "Content saved successfully.",
     "translationFallbackNotice": "This page hasn't been translated into this language yet. Showing the original Portuguese version."
   },
+  "Metadata": {
+    "siteDescription": "Samuel Santana's technical blog on software architecture, web performance, and frontend engineering."
+  },
   "NotFound": {
     "errorLabel": "Error 404",
     "title": "Page not found",
