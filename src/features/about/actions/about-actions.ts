@@ -3,6 +3,11 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import {
+  apiErrorMessage,
+  apiErrorsTranslator,
+} from "@/lib/api-error-message";
+
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
 interface AboutActionResult {
@@ -23,10 +28,8 @@ export async function updateAboutContentAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return {
-      success: false,
-      error: "You must be signed in to update the About page.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -42,17 +45,14 @@ export async function updateAboutContentAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to update the About page.",
+      error: await apiErrorMessage(response, "updateAboutFailed"),
     };
   }
 

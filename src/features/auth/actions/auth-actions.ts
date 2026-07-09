@@ -7,6 +7,10 @@ import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/routing";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
 import { getProfile } from "@/features/auth/api/profile-service";
+import {
+  apiErrorMessage,
+  apiErrorsTranslator,
+} from "@/lib/api-error-message";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -46,7 +50,8 @@ export async function loginAction(
   const parsed = loginSchema.safeParse(data);
 
   if (!parsed.success) {
-    return { success: false, error: "Invalid email or password." };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("invalidEmailOrPassword") };
   }
 
   let response: Response;
@@ -59,14 +64,15 @@ export async function loginAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the authentication server.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    return { success: false, error: "Invalid credentials." };
+    return {
+      success: false,
+      error: await apiErrorMessage(response, "loginFailed"),
+    };
   }
 
   const cookieStore = await cookies();
@@ -96,10 +102,8 @@ export async function loginAction(
   const token = body?.access_token ?? body?.token;
 
   if (!token) {
-    return {
-      success: false,
-      error: "Unexpected response from the authentication server.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("unexpectedResponse") };
   }
 
   cookieStore.set(AUTH_COOKIE_NAME, token, {

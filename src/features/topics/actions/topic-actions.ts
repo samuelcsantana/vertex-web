@@ -3,6 +3,11 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import {
+  apiErrorMessage,
+  apiErrorsTranslator,
+} from "@/lib/api-error-message";
+
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
 interface TopicActionResult {
@@ -17,10 +22,8 @@ export async function createTopicAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return {
-      success: false,
-      error: "You must be signed in to create a topic.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -36,17 +39,14 @@ export async function createTopicAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to create topic.",
+      error: await apiErrorMessage(response, "createTopicFailed"),
     };
   }
 
@@ -64,10 +64,8 @@ export async function updateTopicAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return {
-      success: false,
-      error: "You must be signed in to update a topic.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -83,17 +81,14 @@ export async function updateTopicAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to update topic.",
+      error: await apiErrorMessage(response, "updateTopicFailed"),
     };
   }
 

@@ -185,6 +185,32 @@
   "Metadata": {
     "siteDescription": "Samuel Santana's technical blog on software architecture, web performance, and frontend engineering."
   },
+  "ApiErrors": {
+    "INVALID_CREDENTIALS": "Invalid credentials.",
+    "EMAIL_IN_USE": "This email is already in use.",
+    "USER_BANNED": "Your account has been banned by moderation.",
+    "ADMIN_ONLY": "This action is restricted to administrators.",
+    "COMMENTS_DISABLED": "Comments are disabled for this article.",
+    "CANNOT_BAN_SELF": "You cannot ban your own account.",
+    "SLUG_IN_USE": "The \"{field}\" slug is already in use by another article.",
+    "GITHUB_ALREADY_LINKED": "This GitHub profile is already linked to another account.",
+    "GITHUB_EMAIL_CONFLICT": "This email is already associated with a Google account. Sign in with Google and connect GitHub from your profile settings.",
+    "network": "Unable to reach the server. Please try again.",
+    "notSignedIn": "You must be signed in to perform this action.",
+    "unexpectedResponse": "Unexpected response from the server.",
+    "invalidEmailOrPassword": "Invalid email or password.",
+    "loginFailed": "Could not sign you in. Please try again.",
+    "createPostFailed": "Failed to create the article.",
+    "updatePostFailed": "Failed to update the article.",
+    "createTopicFailed": "Failed to create the topic.",
+    "updateTopicFailed": "Failed to update the topic.",
+    "postCommentFailed": "Failed to post the comment.",
+    "deleteCommentFailed": "Failed to delete the comment.",
+    "updateUserFailed": "Failed to update the user.",
+    "deleteUserFailed": "Failed to delete the user.",
+    "deleteOwnAccountFailed": "Failed to delete your account.",
+    "updateAboutFailed": "Failed to update the About page."
+  },
   "NotFound": {
     "errorLabel": "Error 404",
     "title": "Page not found",

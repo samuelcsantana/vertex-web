@@ -5,6 +5,10 @@ import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 
 import { redirect } from "@/i18n/routing";
+import {
+  apiErrorMessage,
+  apiErrorsTranslator,
+} from "@/lib/api-error-message";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -21,7 +25,8 @@ export async function setUserBannedAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return { success: false, error: "You must be signed in to do that." };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -37,17 +42,14 @@ export async function setUserBannedAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to update the user.",
+      error: await apiErrorMessage(response, "updateUserFailed"),
     };
   }
 
@@ -61,7 +63,8 @@ export async function deleteUserAction(id: string): Promise<UserActionResult> {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return { success: false, error: "You must be signed in to do that." };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -73,17 +76,14 @@ export async function deleteUserAction(id: string): Promise<UserActionResult> {
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to delete the user.",
+      error: await apiErrorMessage(response, "deleteUserFailed"),
     };
   }
 
@@ -104,7 +104,8 @@ export async function deleteOwnAccountAction(): Promise<UserActionResult> {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return { success: false, error: "You must be signed in to do that." };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -116,17 +117,14 @@ export async function deleteOwnAccountAction(): Promise<UserActionResult> {
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
     return {
       success: false,
-      error: body?.message ?? "Failed to delete your account.",
+      error: await apiErrorMessage(response, "deleteOwnAccountFailed"),
     };
   }
 
