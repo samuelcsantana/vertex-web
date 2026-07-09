@@ -6,6 +6,10 @@ import { getLocale } from "next-intl/server";
 
 import { redirect } from "@/i18n/routing";
 import type { CreatePostInput } from "@/features/posts/types";
+import {
+  apiErrorMessage,
+  apiErrorsTranslator,
+} from "@/lib/api-error-message";
 
 const API_URL = process.env.VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -19,27 +23,6 @@ interface PostActionResult {
 // that validation, so it needs to become "not sent" instead.
 function normalizeCoverUrl<T extends { coverUrl?: string }>(data: T) {
   return { ...data, coverUrl: data.coverUrl || undefined };
-}
-
-// Surfaces Nest's default exception body ({ message, error, statusCode })
-// when there is one — e.g. the friendly "slug already in use" message from
-// a 409 on a duplicate slugEn/slugEs — instead of always showing a generic
-// fallback that throws away real information from the API.
-async function extractErrorMessage(response: Response, fallback: string) {
-  try {
-    const body: unknown = await response.json();
-    if (
-      body &&
-      typeof body === "object" &&
-      "message" in body &&
-      typeof body.message === "string"
-    ) {
-      return body.message;
-    }
-  } catch {
-    // Response body wasn't JSON — fall through to the generic message.
-  }
-  return fallback;
 }
 
 // Both the home page and the dashboard listing live under the [locale]
@@ -70,10 +53,8 @@ export async function createPostAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return {
-      success: false,
-      error: "You must be signed in to create a post.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -89,16 +70,14 @@ export async function createPostAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
     return {
       success: false,
-      error: await extractErrorMessage(response, "Failed to create post."),
+      error: await apiErrorMessage(response, "createPostFailed"),
     };
   }
 
@@ -114,10 +93,8 @@ export async function updatePostAction(
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return {
-      success: false,
-      error: "You must be signed in to update a post.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("notSignedIn") };
   }
 
   let response: Response;
@@ -133,16 +110,14 @@ export async function updatePostAction(
       cache: "no-store",
     });
   } catch {
-    return {
-      success: false,
-      error: "Unable to reach the server. Please try again.",
-    };
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
   }
 
   if (!response.ok) {
     return {
       success: false,
-      error: await extractErrorMessage(response, "Failed to update post."),
+      error: await apiErrorMessage(response, "updatePostFailed"),
     };
   }
 

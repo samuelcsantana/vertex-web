@@ -7,14 +7,44 @@ import { useTranslations } from "next-intl";
 import { exchangeOAuthCodeAction } from "@/features/auth/actions/auth-actions";
 import {
   OAUTH_BROADCAST_CHANNEL_NAME,
+  OAUTH_ERROR_MESSAGE_TYPE,
   OAUTH_SUCCESS_MESSAGE,
+  type OAuthErrorBroadcast,
 } from "@/features/auth/constants";
+import { isApiErrorCode } from "@/lib/api-error-codes";
 
 export function OAuthCallbackClient() {
   const searchParams = useSearchParams();
   const t = useTranslations("Auth");
+  const tApiErrors = useTranslations("ApiErrors");
   const code = searchParams.get("code");
+  const oauthError = searchParams.get("oauth_error");
   const [actionFailed, setActionFailed] = useState(false);
+
+  // vertex-api's GithubPopupExceptionFilter lands here with a
+  // machine-readable ?oauth_error=<code> when the OAuth flow fails in a
+  // way the visitor needs to hear about (GitHub profile already linked,
+  // email owned by a Google account). Relay the code to the opener over
+  // the BroadcastChannel — the opener renders it translated into its own
+  // locale, which this popup can't know (its URL has no locale prefix) —
+  // then close.
+  useEffect(() => {
+    if (!oauthError) {
+      return;
+    }
+
+    window.history.replaceState(null, "", window.location.pathname);
+
+    new BroadcastChannel(OAUTH_BROADCAST_CHANNEL_NAME).postMessage({
+      type: OAUTH_ERROR_MESSAGE_TYPE,
+      code: oauthError,
+    } satisfies OAuthErrorBroadcast);
+
+    // Allowed despite COOP severance: a script may close the window it is
+    // running in when that window was itself script-opened, which this
+    // popup always was.
+    window.close();
+  }, [oauthError]);
 
   useEffect(() => {
     if (!code) {
@@ -54,11 +84,20 @@ export function OAuthCallbackClient() {
       .catch(() => setActionFailed(true));
   }, [code]);
 
-  const failed = !code || actionFailed;
+  // Fallback text in case window.close() is blocked and the visitor
+  // actually reads the popup — the authoritative, locale-correct rendering
+  // of the error happens in the opener via the broadcast above.
+  const oauthErrorText = oauthError
+    ? isApiErrorCode(oauthError)
+      ? tApiErrors(oauthError)
+      : t("loginFailed")
+    : null;
+
+  const failed = (!code && !oauthError) || actionFailed;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-center text-sm text-slate-400">
-      {failed ? t("loginFailed") : t("completingLogin")}
+      {oauthErrorText ?? (failed ? t("loginFailed") : t("completingLogin"))}
     </div>
   );
 }

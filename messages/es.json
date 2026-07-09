@@ -185,6 +185,32 @@
   "Metadata": {
     "siteDescription": "Blog técnico de Samuel Santana sobre arquitectura de software, rendimiento web e ingeniería frontend."
   },
+  "ApiErrors": {
+    "INVALID_CREDENTIALS": "Credenciales inválidas.",
+    "EMAIL_IN_USE": "Este correo ya está en uso.",
+    "USER_BANNED": "Tu cuenta fue suspendida por la moderación.",
+    "ADMIN_ONLY": "Acción restringida a administradores.",
+    "COMMENTS_DISABLED": "Los comentarios están desactivados para este artículo.",
+    "CANNOT_BAN_SELF": "No puedes banear tu propia cuenta.",
+    "SLUG_IN_USE": "El slug \"{field}\" ya está en uso por otro artículo.",
+    "GITHUB_ALREADY_LINKED": "Este perfil de GitHub ya está vinculado a otra cuenta.",
+    "GITHUB_EMAIL_CONFLICT": "Este correo ya está asociado a una cuenta de Google. Inicia sesión con Google y conecta GitHub desde la configuración de tu perfil.",
+    "network": "No fue posible conectar con el servidor. Inténtalo de nuevo.",
+    "notSignedIn": "Debes iniciar sesión para realizar esta acción.",
+    "unexpectedResponse": "Respuesta inesperada del servidor.",
+    "invalidEmailOrPassword": "Correo o contraseña inválidos.",
+    "loginFailed": "No fue posible iniciar sesión. Inténtalo de nuevo.",
+    "createPostFailed": "No fue posible crear el artículo.",
+    "updatePostFailed": "No fue posible actualizar el artículo.",
+    "createTopicFailed": "No fue posible crear el tema.",
+    "updateTopicFailed": "No fue posible actualizar el tema.",
+    "postCommentFailed": "No fue posible publicar el comentario.",
+    "deleteCommentFailed": "No fue posible eliminar el comentario.",
+    "updateUserFailed": "No fue posible actualizar el usuario.",
+    "deleteUserFailed": "No fue posible eliminar el usuario.",
+    "deleteOwnAccountFailed": "No fue posible eliminar tu cuenta.",
+    "updateAboutFailed": "No fue posible actualizar la página Sobre mí."
+  },
   "NotFound": {
     "errorLabel": "Error 404",
     "title": "Página no encontrada",

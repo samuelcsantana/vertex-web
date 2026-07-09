@@ -9,9 +9,11 @@ import { useRouter } from "@/i18n/routing";
 import { loginAction } from "@/features/auth/actions/auth-actions";
 import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 import {
+  isOAuthErrorBroadcast,
   OAUTH_BROADCAST_CHANNEL_NAME,
   OAUTH_SUCCESS_MESSAGE,
 } from "@/features/auth/constants";
+import { isApiErrorCode } from "@/lib/api-error-codes";
 
 const API_URL = process.env.NEXT_PUBLIC_VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -44,6 +46,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const router = useRouter();
   const t = useTranslations("Auth");
   const tCommon = useTranslations("Common");
+  const tApiErrors = useTranslations("ApiErrors");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
@@ -66,11 +69,25 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       if (event.data === OAUTH_SUCCESS_MESSAGE) {
         onClose();
         window.location.reload();
+        return;
+      }
+
+      // A failed OAuth flow (e.g. the GitHub account's email belongs to a
+      // Google login) arrives as a machine-readable code the popup can't
+      // translate itself — render it here, in the visitor's locale.
+      if (isOAuthErrorBroadcast(event.data)) {
+        setIsConnectingGoogle(false);
+        setIsConnectingGithub(false);
+        setError(
+          isApiErrorCode(event.data.code)
+            ? tApiErrors(event.data.code)
+            : t("genericLoginError")
+        );
       }
     };
 
     return () => channel.close();
-  }, [onClose]);
+  }, [onClose, t, tApiErrors]);
 
   if (!open) {
     return null;
