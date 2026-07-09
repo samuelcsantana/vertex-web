@@ -10,8 +10,14 @@ interface AboutActionResult {
   error?: string;
 }
 
+export interface UpdateAboutInput {
+  content: string;
+  contentEn: string;
+  contentEs: string;
+}
+
 export async function updateAboutContentAction(
-  content: string
+  input: UpdateAboutInput
 ): Promise<AboutActionResult> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
@@ -32,7 +38,7 @@ export async function updateAboutContentAction(
         "Content-Type": "application/json",
         Cookie: `access_token=${accessToken}`,
       },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(input),
       cache: "no-store",
     });
   } catch {
@@ -50,8 +56,15 @@ export async function updateAboutContentAction(
     };
   }
 
-  revalidatePath("/about");
-  revalidatePath("/dashboard/about");
+  // Both /about and /dashboard/about live under the [locale] dynamic
+  // segment, so literal paths here only ever busted the unprefixed pt
+  // routes — /en/about and /es/about kept serving stale content until
+  // getAboutContent()'s own 60s revalidate window passed. Same reasoning
+  // (and the same verified-working fix) as post-actions.ts's
+  // revalidatePostListings: revalidatePath("/[locale]", "page") does not
+  // actually bust the cache in this Next 16 + Turbopack setup, the
+  // layout-wide invalidation does.
+  revalidatePath("/", "layout");
 
   return { success: true };
 }
