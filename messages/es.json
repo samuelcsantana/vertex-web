@@ -20,8 +20,8 @@
   },
   "Auth": {
     "loginButton": "Login",
-    "loginTitle": "Acceso Admin",
-    "loginSubtitle": "Inicia sesión para gestionar los artículos del blog.",
+    "loginTitle": "Iniciar sesión",
+    "loginSubtitle": "Inicia sesión para comentar y unirte a la conversación.",
     "continueWithGoogle": "Continuar con Google",
     "waitingGoogle": "Esperando a Google...",
     "continueWithGithub": "Continuar con GitHub",
