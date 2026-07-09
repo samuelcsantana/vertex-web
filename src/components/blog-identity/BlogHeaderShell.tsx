@@ -35,7 +35,7 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
         <div className="transform-gpu flex h-16 items-center justify-between gap-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl will-change-transform sm:gap-2 sm:px-6">
           <Link
             href="/"
-            className="shrink-0 font-mono text-base font-bold tracking-tight sm:text-lg"
+            className="shrink-0 font-mono text-sm font-bold tracking-tight min-[400px]:text-base sm:text-lg"
           >
             <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               {"< "}
@@ -59,7 +59,12 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-3">
-            <LanguageSwitcher />
+            {/* Below md the switcher lives inside BlogMobileNav's dropdown —
+                the bar can't fit logo + switcher + login + hamburger on
+                phone widths (everything in it is shrink-0 by design). */}
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
             {rightSlot}
             <BlogMobileNav navLinks={NAV_LINKS} />
           </div>

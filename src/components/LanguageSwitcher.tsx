@@ -25,7 +25,14 @@ type LocaleCode = (typeof LOCALES)[number]["code"];
 
 const POST_PATH_PATTERN = /^\/blog\/([^/]+)$/;
 
-export function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  // Lets a hosting menu (BlogMobileNav's dropdown) close itself when a
+  // locale is picked — locale switching navigates, but this component's
+  // ancestors stay mounted across it, so an open menu would stay open.
+  onSelect?: () => void;
+}
+
+export function LanguageSwitcher({ onSelect }: LanguageSwitcherProps = {}) {
   const locale = useLocale();
   const t = useTranslations("Locale");
   const router = useRouter();
@@ -93,6 +100,7 @@ export function LanguageSwitcher() {
       if (!post) return;
 
       const targetSlug = getLocalizedSlug(post, code);
+      onSelect?.();
       router.replace(`/blog/${targetSlug}`, { locale: code });
       return;
     }
@@ -100,6 +108,7 @@ export function LanguageSwitcher() {
     // A real navigation to the locale-prefixed URL (not a cookie flip), so
     // the [locale] segment re-renders end to end — <html lang>, messages,
     // and everything under it — instead of relying on a manual reload.
+    onSelect?.();
     router.replace(pathname, { locale: code });
   }
 

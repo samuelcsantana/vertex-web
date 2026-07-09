@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 
 import { Link } from "@/i18n/routing";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface BlogMobileNavProps {
   navLinks: { href: string; label: string }[];
@@ -38,6 +39,11 @@ export function BlogMobileNav({ navLinks }: BlogMobileNavProps) {
               {link.label}
             </Link>
           ))}
+          {/* On <md the switcher only exists here — BlogHeaderShell hides
+              its bar instance because it doesn't fit on phone widths. */}
+          <div className="mt-1 flex justify-center border-t border-white/10 px-3 pt-3 pb-1">
+            <LanguageSwitcher onSelect={() => setIsOpen(false)} />
+          </div>
         </nav>
       )}
     </div>
