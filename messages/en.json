@@ -179,7 +179,8 @@
     "editHeading": "Edit About",
     "editDescription": "Update the content shown at /about.",
     "contentLabel": "Content (Markdown)",
-    "contentSaved": "Content saved successfully."
+    "contentSaved": "Content saved successfully.",
+    "translationFallbackNotice": "This page hasn't been translated into this language yet. Showing the original Portuguese version."
   },
   "NotFound": {
     "errorLabel": "Error 404",

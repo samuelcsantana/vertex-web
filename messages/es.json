@@ -179,7 +179,8 @@
     "editHeading": "Editar Sobre Mí",
     "editDescription": "Actualiza el contenido mostrado en /about.",
     "contentLabel": "Contenido (Markdown)",
-    "contentSaved": "Contenido guardado con éxito."
+    "contentSaved": "Contenido guardado con éxito.",
+    "translationFallbackNotice": "Esta página aún no ha sido traducida a este idioma. Mostrando la versión original en portugués."
   },
   "NotFound": {
     "errorLabel": "Error 404",
