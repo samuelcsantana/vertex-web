@@ -1,13 +1,48 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Info } from "lucide-react";
 
+import { getPathname } from "@/i18n/routing";
 import { getAboutContent } from "@/features/about/api/about-service";
 import {
   getLocalizedContent,
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
+import { getSiteUrl } from "@/lib/site-url";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const about = await getAboutContent();
+
+  if (!about) {
+    return {};
+  }
+
+  const locale = await getLocale();
+  const siteUrl = await getSiteUrl();
+
+  // Same duplicate-content reasoning as blog/[slug]/page.tsx's
+  // generateMetadata: a locale without its own translation serves the pt
+  // fallback under its own URL, so its canonical points back at the real
+  // pt page instead of self-referencing, and only genuinely translated
+  // locales are advertised as hreflang alternates.
+  const translatedLocales = getTranslatedLocales(about);
+  const isTranslated = (translatedLocales as string[]).includes(locale);
+  const canonicalLocale = isTranslated ? locale : "pt";
+
+  return {
+    alternates: {
+      canonical: `${siteUrl}${getPathname({ href: "/about", locale: canonicalLocale })}`,
+      languages: Object.fromEntries(
+        translatedLocales.map((loc) => [
+          loc,
+          `${siteUrl}${getPathname({ href: "/about", locale: loc })}`,
+        ])
+      ),
+    },
+  };
+}
 
 export default async function AboutPage() {
   const about = await getAboutContent();
