@@ -102,6 +102,9 @@ export async function generateMetadata({
       description,
       url: canonicalUrl,
       type: "article",
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      authors: [post.author?.name ?? "Samuel Santana"],
       images: [{ url: ogImageUrl }],
     },
     twitter: {
