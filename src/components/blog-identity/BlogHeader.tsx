@@ -10,7 +10,9 @@ export async function BlogHeader() {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    return <BlogHeaderShell rightSlot={<BlogLoginTrigger />} />;
+    return (
+      <BlogHeaderShell rightSlot={<BlogLoginTrigger />} isAuthenticated={false} />
+    );
   }
 
   // Cookie presence alone is what actually gates the admin UI; the profile
@@ -21,6 +23,7 @@ export async function BlogHeader() {
   return (
     <BlogHeaderShell
       rightSlot={<AdminHeaderActions profile={profile ?? undefined} />}
+      isAuthenticated
     />
   );
 }

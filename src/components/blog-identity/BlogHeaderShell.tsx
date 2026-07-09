@@ -5,7 +5,18 @@ import { Link } from "@/i18n/routing";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BlogMobileNav } from "@/components/blog-identity/BlogMobileNav";
 
-export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
+export function BlogHeaderShell({
+  rightSlot,
+  isAuthenticated,
+  logoutRedirectTo,
+}: {
+  rightSlot: ReactNode;
+  // Below md the rightSlot (login trigger / account actions) is hidden and
+  // BlogMobileNav renders the equivalent entries inside its dropdown, so
+  // it needs to know which set to show and where logout should land.
+  isAuthenticated: boolean;
+  logoutRedirectTo?: string;
+}) {
   const t = useTranslations("Navigation");
 
   const NAV_LINKS = [
@@ -59,14 +70,17 @@ export function BlogHeaderShell({ rightSlot }: { rightSlot: ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-3">
-            {/* Below md the switcher lives inside BlogMobileNav's dropdown —
-                the bar can't fit logo + switcher + login + hamburger on
-                phone widths (everything in it is shrink-0 by design). */}
-            <div className="hidden md:block">
-              <LanguageSwitcher />
-            </div>
-            {rightSlot}
-            <BlogMobileNav navLinks={NAV_LINKS} />
+            <LanguageSwitcher />
+            {/* Below md the bar can't fit logo + switcher + account actions
+                + hamburger (everything in it is shrink-0 by design), so the
+                rightSlot's login/account entries move into BlogMobileNav's
+                dropdown and the switcher collapses to a single flag. */}
+            <div className="hidden md:block">{rightSlot}</div>
+            <BlogMobileNav
+              navLinks={NAV_LINKS}
+              isAuthenticated={isAuthenticated}
+              logoutRedirectTo={logoutRedirectTo}
+            />
           </div>
         </div>
       </header>

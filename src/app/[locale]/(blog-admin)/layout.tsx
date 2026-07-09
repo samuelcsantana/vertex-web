@@ -23,6 +23,8 @@ export default async function BlogAdminLayout({
       <BlogBackground />
       <BlogHeaderShell
         rightSlot={<AdminHeaderActions redirectTo="/" profile={profile ?? undefined} />}
+        isAuthenticated
+        logoutRedirectTo="/"
       />
       <main id="main-content" className="flex-1">{children}</main>
       <BlogFooter />

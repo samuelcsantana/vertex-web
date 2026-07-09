@@ -1,19 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Menu, X } from "lucide-react";
+import { LogIn, LogOut, Menu, User, X } from "lucide-react";
 
-import { Link } from "@/i18n/routing";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Link, useRouter } from "@/i18n/routing";
+import { logoutAction } from "@/features/auth/actions/auth-actions";
+import { LoginModal } from "./LoginModal";
 
 interface BlogMobileNavProps {
   navLinks: { href: string; label: string }[];
+  // Below md the header hides its rightSlot (login trigger / account
+  // actions), so this menu is where those actions live on phones.
+  isAuthenticated: boolean;
+  // Same contract as AdminHeaderActions/logoutAction: omitted on public
+  // pages so the visitor stays put after signing out, set on admin pages
+  // that can't be rendered once signed out.
+  logoutRedirectTo?: string;
 }
 
-export function BlogMobileNav({ navLinks }: BlogMobileNavProps) {
+export function BlogMobileNav({
+  navLinks,
+  isAuthenticated,
+  logoutRedirectTo,
+}: BlogMobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const t = useTranslations("Navigation");
+  const tAuth = useTranslations("Auth");
+
+  function handleLogout() {
+    setIsOpen(false);
+    startTransition(async () => {
+      await logoutAction(logoutRedirectTo);
+      router.refresh();
+    });
+  }
 
   return (
     <div className="shrink-0 md:hidden">
@@ -39,13 +63,46 @@ export function BlogMobileNav({ navLinks }: BlogMobileNavProps) {
               {link.label}
             </Link>
           ))}
-          {/* On <md the switcher only exists here — BlogHeaderShell hides
-              its bar instance because it doesn't fit on phone widths. */}
-          <div className="mt-1 flex justify-center border-t border-white/10 px-3 pt-3 pb-1">
-            <LanguageSwitcher onSelect={() => setIsOpen(false)} />
+
+          <div className="mt-1 flex flex-col gap-1 border-t border-white/10 pt-1">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                >
+                  <User className="size-4" aria-hidden="true" />
+                  {tAuth("profile")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={isPending}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                >
+                  <LogOut className="size-4" aria-hidden="true" />
+                  {tAuth("signOut")}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsLoginOpen(true);
+                }}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              >
+                <LogIn className="size-4" aria-hidden="true" />
+                {tAuth("loginButton")}
+              </button>
+            )}
           </div>
         </nav>
       )}
+
+      <LoginModal open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </div>
   );
 }
