@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { getAboutContent } from "@/features/about/api/about-service";
 import { getPosts } from "@/features/posts/api/post-service";
 import {
   getLocalizedSlug,
@@ -41,10 +42,11 @@ interface RouteOptions {
 // slug per locale — static routes like "/" and "/about" just ignore the
 // locale argument and return the same path for all of them.
 //
-// `locales` defaults to every configured locale (right for static routes,
-// which are genuinely translated everywhere via next-intl messages) but
-// posts pass only the locales they actually have their own content in —
-// otherwise a pt-only post's /en/ and /es/ URLs (which just show the pt
+// `locales` defaults to every configured locale (right for "/", whose
+// content — the post listing chrome — is genuinely translated everywhere
+// via next-intl messages) but routes with per-locale DB content (posts,
+// /about) pass only the locales they actually have their own content in —
+// otherwise a pt-only page's /en/ and /es/ URLs (which just show the pt
 // fallback) would get listed as if they were real translations, hreflang-
 // pointing search engines at duplicate content under the wrong language.
 function buildEntriesForRoute(
@@ -66,7 +68,7 @@ function buildEntriesForRoute(
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = await getSiteUrl();
-  const posts = await getPosts();
+  const [posts, about] = await Promise.all([getPosts(), getAboutContent()]);
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -75,11 +77,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 1,
     }),
-    ...buildEntriesForRoute(siteUrl, () => "/about", {
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    }),
+    ...buildEntriesForRoute(
+      siteUrl,
+      () => "/about",
+      {
+        lastModified: about ? new Date(about.updatedAt) : now,
+        changeFrequency: "monthly",
+        priority: 0.5,
+      },
+      // pt-only fallback when the API is unreachable — the pt page always
+      // exists, while advertising en/es without knowing they're real
+      // translations risks the exact duplicate-content listing this
+      // parameter exists to avoid.
+      about ? getTranslatedLocales(about) : ["pt"]
+    ),
   ];
 
   const postRoutes: MetadataRoute.Sitemap = posts.flatMap((post) =>
