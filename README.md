@@ -12,7 +12,7 @@ Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the Nes
 ## Highlights
 
 - **Server-first App Router.** Data fetching and auth checks happen in Server Components and Server Actions by default; `"use client"` is scoped to the smallest leaf that actually needs interactivity (a form, a dropdown, a polling listener).
-- **Sub-path i18n that crawlers can actually index.** `next-intl` serves pt (default, unprefixed), `/en`, and `/es` as genuinely distinct URLs via a `proxy.ts` routing middleware — not a cookie that only a browser ever sends. `sitemap.ts` emits one entry per locale per route with real `hreflang` alternates.
+- **Sub-path i18n that crawlers can actually index.** `next-intl` serves pt (default, unprefixed), `/en`, and `/es` as genuinely distinct URLs via a `proxy.ts` routing middleware — not a cookie that only a browser ever sends. `sitemap.ts` emits entries with real `hreflang` alternates — for posts, only for locales the post is genuinely translated into. Content itself is per-locale too: posts *and* the About page store optional en/es variants next to the required pt text, falling back to pt with a visible notice when a translation is missing.
 - **Cross-domain OAuth via the Token Callback Pattern.** Google/GitHub login can't rely on vertex-api setting a cookie directly — it's on a different domain, so the cookie would be scoped to a domain this app's own `cookies()` calls could never see. Instead, the backend redirects the popup to `/auth/callback` with a short-lived, single-use exchange code (never the real token) in the URL; this app trades it for the real session token server-to-server and sets its own cookie. See `src/app/[locale]/auth/callback/` and `exchangeOAuthCodeAction`.
 - **Technical SEO.** Dynamic `sitemap.xml`/`robots.txt`, `BlogPosting` JSON-LD on post pages, locale-aware canonical URLs, and Open Graph metadata generated per post.
 - **Mobile-first, verified rather than assumed.** Responsive layout changes in this codebase were checked against real narrow-viewport renders, not just class names that look plausible.
@@ -24,7 +24,7 @@ Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the Nes
 - Tailwind CSS v4
 - [next-intl](https://next-intl.dev) for routing-based i18n
 - react-hook-form + zod
-- MDX, react-markdown, rehype-pretty-code for post content
+- react-markdown (+ remark-gfm, rehype-highlight/rehype-pretty-code) for post content — Markdown stored in the database, not MDX files
 - `@next/third-parties` for Google Analytics
 
 ## Getting started
@@ -68,7 +68,7 @@ See [`.env.example`](./.env.example) for the full, documented list. In short:
 
 | Variable | Used by | Notes |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | root layout, `sitemap.ts`, `robots.ts`, post pages | Must be the real production URL in deployment, or canonical/OG URLs silently point at `localhost`. |
+| `NEXT_PUBLIC_SITE_URL` | root layout (`metadataBase`), fallback in `src/lib/site-url.ts` | Canonical/OG/sitemap/robots URLs are derived from the request's Host header at runtime (`src/lib/site-url.ts`), so they always match the domain that actually served the request. This var only feeds the root layout's static `metadataBase` and the no-request fallback — still set it to the real production URL in deployment. |
 | `VERTEX_API_URL` | Server Actions/Components | Server-only; never sent to the browser. |
 | `NEXT_PUBLIC_VERTEX_API_URL` | `LoginModal`, `LinkGithubButton` | Browser-readable — these open the OAuth popup directly against vertex-api. |
 | `NEXT_PUBLIC_GA_ID` | root layout | Optional; Analytics is skipped entirely if unset. |
