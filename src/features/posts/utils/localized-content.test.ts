@@ -5,6 +5,7 @@ import {
   getLocalizedMetaDescription,
   getLocalizedSlug,
   getLocalizedTitle,
+  getSlugSourceLocale,
   getTranslatedLocales,
 } from "./localized-content";
 
@@ -93,6 +94,35 @@ describe("getLocalizedSlug", () => {
       slugEs: "cafe-con-leche",
     };
     expect(getLocalizedSlug(post, "pt")).toBe("cafe-com-leite");
+  });
+});
+
+describe("getSlugSourceLocale", () => {
+  const post = {
+    slug: "cafe-com-leite",
+    slugEn: "coffee-with-milk",
+    slugEs: "cafe-con-leche",
+  };
+
+  it("identifies the pt slug", () => {
+    expect(getSlugSourceLocale(post, "cafe-com-leite")).toBe("pt");
+  });
+
+  it("identifies the English slug", () => {
+    expect(getSlugSourceLocale(post, "coffee-with-milk")).toBe("en");
+  });
+
+  it("identifies the Spanish slug", () => {
+    expect(getSlugSourceLocale(post, "cafe-con-leche")).toBe("es");
+  });
+
+  it("returns null for a slug that belongs to none of the locales", () => {
+    expect(getSlugSourceLocale(post, "espresso")).toBeNull();
+  });
+
+  it("prefers pt when a translated slug duplicates the pt one", () => {
+    const duplicated = { slug: "espresso", slugEn: "espresso", slugEs: null };
+    expect(getSlugSourceLocale(duplicated, "espresso")).toBe("pt");
   });
 });
 

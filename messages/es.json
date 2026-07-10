@@ -61,7 +61,9 @@
     "backToBlog": "Volver al Blog",
     "readPost": "Leer {title}",
     "tableOfContents": "En este artículo",
-    "translationFallbackNotice": "Este artículo aún no ha sido traducido a este idioma. Mostrando la versión original en portugués."
+    "translationFallbackNotice": "Este artículo aún no ha sido traducido a este idioma. Mostrando la versión original en portugués.",
+    "crossLanguageNotice": "Estás leyendo la versión en {language, select, pt {portugués} en {inglés} other {original}} de este artículo.",
+    "crossLanguageLink": "Léelo en Español"
   },
   "Home": {
     "heroTitleLine1": "Ingeniería de Software,",

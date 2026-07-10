@@ -86,12 +86,27 @@ export function LanguageSwitcher() {
 
     async function loadPost() {
       try {
-        const url = new URL(`${API_URL}/posts/${slug}`);
-        url.searchParams.set("locale", locale);
-        const response = await fetch(url);
-        if (!response.ok) return;
-        const data: Post = await response.json();
-        if (!cancelled) setFetchedPost({ slug, post: data });
+        // The slug in the URL isn't necessarily the current locale's own —
+        // a shared link re-prefixed by locale detection can land e.g. a pt
+        // slug under /en (see the post page's cross-locale handling), and
+        // GET /posts/:slug only matches the requested locale's slug. Try
+        // the current locale first, then the others; any hit returns the
+        // full post with every locale's slug fields, which is all
+        // handleSelect needs.
+        const localesToTry = [
+          locale,
+          ...LOCALES.map((item) => item.code).filter((code) => code !== locale),
+        ];
+
+        for (const candidate of localesToTry) {
+          const url = new URL(`${API_URL}/posts/${slug}`);
+          url.searchParams.set("locale", candidate);
+          const response = await fetch(url);
+          if (!response.ok) continue;
+          const data: Post = await response.json();
+          if (!cancelled) setFetchedPost({ slug, post: data });
+          return;
+        }
       } catch {
         // Network error — post stays null, and the click handler treats
         // an unresolved post as "don't navigate" rather than guessing.

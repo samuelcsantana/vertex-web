@@ -33,6 +33,22 @@ export function getLocalizedSlug(
   return post.slug;
 }
 
+// The inverse of getLocalizedSlug: which locale a given slug belongs to,
+// or null if it isn't one of this post's slugs at all. pt wins ties (it's
+// the original, required version) — if an admin gave a translation the
+// same slug as the pt one, that slug never 404s under any locale anyway.
+// Used to recover from locale-detection redirects that re-prefix a shared
+// URL without translating its slug (see getPostBySlugCrossLocale).
+export function getSlugSourceLocale(
+  post: Pick<Post, "slug" | "slugEn" | "slugEs">,
+  slug: string
+): Locale | null {
+  if (post.slug === slug) return "pt";
+  if (post.slugEn === slug) return "en";
+  if (post.slugEs === slug) return "es";
+  return null;
+}
+
 // The manually-written meta description for a given locale, or null if
 // that locale has none of its own. Deliberately does NOT fall back to
 // another locale's text the way getLocalizedTitle/Content/Slug do — a
