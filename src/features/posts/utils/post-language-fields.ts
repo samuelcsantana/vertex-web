@@ -12,6 +12,8 @@ export function getPostLanguageFields(language: PostLanguage) {
         contentField: "contentEn",
         slugField: "slugEn",
         metaDescriptionField: "metaDescriptionEn",
+        coverUrlField: "coverUrlEn",
+        coverAltField: "coverAltEn",
       } as const;
     case "es":
       return {
@@ -19,6 +21,8 @@ export function getPostLanguageFields(language: PostLanguage) {
         contentField: "contentEs",
         slugField: "slugEs",
         metaDescriptionField: "metaDescriptionEs",
+        coverUrlField: "coverUrlEs",
+        coverAltField: "coverAltEs",
       } as const;
     default:
       return {
@@ -26,6 +30,8 @@ export function getPostLanguageFields(language: PostLanguage) {
         contentField: "content",
         slugField: "slug",
         metaDescriptionField: "metaDescription",
+        coverUrlField: "coverUrl",
+        coverAltField: "coverAlt",
       } as const;
   }
 }

@@ -143,6 +143,7 @@
     "preview": "Vista previa",
     "nothingToPreview": "Nada para previsualizar todavía.",
     "coverUrlLabel": "Imagen de Portada (URL)",
+    "coverFallbackHint": "Deja en blanco para reutilizar la portada en portugués.",
     "coverAltLabel": "Texto Alternativo de la Portada",
     "coverAltPlaceholder": "Describe la imagen para lectores de pantalla",
     "coverAltHint": "Déjalo en blanco si la imagen es puramente decorativa.",

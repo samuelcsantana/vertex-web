@@ -21,6 +21,8 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { extractHeadings } from "@/features/posts/utils/extract-headings";
 import {
   getLocalizedContent,
+  getLocalizedCoverAlt,
+  getLocalizedCoverUrl,
   getLocalizedMetaDescription,
   getLocalizedSlug,
   getLocalizedTitle,
@@ -73,7 +75,8 @@ export async function generateMetadata({
   // with no image at all. Built fully absolute here (not left relative for
   // metadataBase to resolve) so it's correct even if this page's own
   // openGraph.images ever stops matching the layout's metadataBase.
-  const ogImageUrl = post.coverUrl ?? `${siteUrl}/og-fallback.png`;
+  const ogImageUrl =
+    getLocalizedCoverUrl(post, contentLocale) ?? `${siteUrl}/og-fallback.png`;
 
   // If this locale has no translation of its own, what's being rendered is
   // the pt fallback content under this locale's URL — point the canonical
@@ -177,6 +180,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const displayTitle = getLocalizedTitle(post, contentLocale);
   const displayContent = getLocalizedContent(post, contentLocale);
+  const displayCoverUrl = getLocalizedCoverUrl(post, contentLocale);
+  const displayCoverAlt = getLocalizedCoverAlt(post, contentLocale);
   const headings = extractHeadings(displayContent);
   const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
@@ -199,7 +204,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: displayTitle,
-    image: [post.coverUrl ?? `${siteUrl}/og-fallback.png`],
+    image: [displayCoverUrl ?? `${siteUrl}/og-fallback.png`],
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
     author: [
@@ -261,11 +266,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {t("backToBlog")}
           </Link>
 
-          {post.coverUrl && (
+          {displayCoverUrl && (
             // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
             <img
-              src={post.coverUrl}
-              alt={post.coverAlt ?? ""}
+              src={displayCoverUrl}
+              alt={displayCoverAlt ?? ""}
               referrerPolicy="no-referrer"
               className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
             />

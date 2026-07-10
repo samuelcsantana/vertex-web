@@ -18,11 +18,18 @@ interface PostActionResult {
   error?: string;
 }
 
-// The form field defaults to "" (no cover set), but the backend's
-// coverUrl is z.string().url().optional() — an empty string would fail
-// that validation, so it needs to become "not sent" instead.
-function normalizeCoverUrl<T extends { coverUrl?: string }>(data: T) {
-  return { ...data, coverUrl: data.coverUrl || undefined };
+// The form fields default to "" (no cover set), but the backend's
+// cover URLs are z.string().url().optional() — an empty string would
+// fail that validation, so each needs to become "not sent" instead.
+function normalizeCoverUrl<
+  T extends { coverUrl?: string; coverUrlEn?: string; coverUrlEs?: string },
+>(data: T) {
+  return {
+    ...data,
+    coverUrl: data.coverUrl || undefined,
+    coverUrlEn: data.coverUrlEn || undefined,
+    coverUrlEs: data.coverUrlEs || undefined,
+  };
 }
 
 // Both the home page and the dashboard listing live under the [locale]

@@ -143,6 +143,7 @@
     "preview": "Visualizar",
     "nothingToPreview": "Nada para visualizar ainda.",
     "coverUrlLabel": "Imagem de Capa (URL)",
+    "coverFallbackHint": "Deixe em branco para reaproveitar a capa em português.",
     "coverAltLabel": "Texto Alternativo da Capa",
     "coverAltPlaceholder": "Descreva a imagem para quem usa leitor de tela",
     "coverAltHint": "Deixe em branco se a imagem for puramente decorativa.",

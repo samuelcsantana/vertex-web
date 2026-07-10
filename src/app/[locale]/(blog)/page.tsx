@@ -11,7 +11,11 @@ import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
-import { getLocalizedTitle } from "@/features/posts/utils/localized-content";
+import {
+  getLocalizedCoverAlt,
+  getLocalizedCoverUrl,
+  getLocalizedTitle,
+} from "@/features/posts/utils/localized-content";
 import { getProfile } from "@/features/auth/api/profile-service";
 
 interface BlogPageProps {
@@ -105,17 +109,19 @@ export default async function BlogPage({ params }: BlogPageProps) {
         ) : (
           posts.map((post) => {
             const displayTitle = getLocalizedTitle(post, locale);
+            const displayCoverUrl = getLocalizedCoverUrl(post, locale);
+            const displayCoverAlt = getLocalizedCoverAlt(post, locale);
 
             return (
               <div
                 key={post.id}
                 className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
               >
-                {post.coverUrl && (
+                {displayCoverUrl && (
                   // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
                   <img
-                    src={post.coverUrl}
-                    alt={post.coverAlt ?? ""}
+                    src={displayCoverUrl}
+                    alt={displayCoverAlt ?? ""}
                     referrerPolicy="no-referrer"
                     className="pointer-events-none aspect-video w-full object-cover"
                   />

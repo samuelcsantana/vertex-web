@@ -29,7 +29,11 @@ export const createPostFormSchema = z.object({
   isPublished: z.boolean(),
   allowComments: z.boolean(),
   coverUrl: z.union([z.string().url("URL inválida"), z.literal("")]),
+  coverUrlEn: z.union([z.string().url("URL inválida"), z.literal("")]),
+  coverUrlEs: z.union([z.string().url("URL inválida"), z.literal("")]),
   coverAlt: z.string().optional(),
+  coverAltEn: z.string().optional(),
+  coverAltEs: z.string().optional(),
   // 160 chars matches Google's typical meta description truncation point.
   // Per locale, same as title/content — a locale without its own falls
   // back to an auto-generated excerpt of that locale's own content, not
