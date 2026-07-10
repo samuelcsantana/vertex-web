@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import { Ban, ShieldCheck, Trash2 } from "lucide-react";
 
+import { Link } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import {
   deleteUserAction,
@@ -49,7 +50,12 @@ export function UserRow({ user, isSelf }: UserRowProps) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-900/30 px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+        {/* The identity block links to the moderation detail page; the
+            action buttons stay outside the link. */}
+        <Link
+          href={`/dashboard/users/${user.id}`}
+          className="flex min-w-0 items-center gap-3 rounded-lg transition-opacity hover:opacity-80"
+        >
           {user.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
             <img
@@ -92,7 +98,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
               })}
             </p>
           </div>
-        </div>
+        </Link>
 
         <div className="flex shrink-0 items-center gap-2">
           {isSelf ? (
