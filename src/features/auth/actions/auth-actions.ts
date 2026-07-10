@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
+import { z } from "zod";
 
 import { redirect } from "@/i18n/routing";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login-schema";
@@ -156,6 +157,101 @@ export async function exchangeOAuthCodeAction(
 
   if (!token) {
     return { success: false };
+  }
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(AUTH_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SEVEN_DAYS_IN_SECONDS,
+  });
+
+  revalidatePath("/", "layout");
+
+  return { success: true };
+}
+
+interface OtpActionResult {
+  success: boolean;
+  error?: string;
+}
+
+// Passwordless login, step 1: vertex-api emails a 6-digit code to this
+// address (creating nothing yet — the user record only materializes on a
+// successful verify). The locale rides along so the email arrives in the
+// language the visitor is browsing in.
+export async function requestOtpCodeAction(
+  email: string
+): Promise<OtpActionResult> {
+  const parsed = z.email().safeParse(email);
+
+  if (!parsed.success) {
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("invalidEmail") };
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/auth/otp/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: parsed.data, locale: await getLocale() }),
+      cache: "no-store",
+    });
+  } catch {
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
+  }
+
+  if (!response.ok) {
+    return {
+      success: false,
+      error: await apiErrorMessage(response, "otpRequestFailed"),
+    };
+  }
+
+  return { success: true };
+}
+
+// Passwordless login, step 2: trades the emailed code for the real access
+// token. Same cookie shape as exchangeOAuthCodeAction — the API returns the
+// token in the body because a cookie set by its own response would be
+// scoped to the wrong domain (see that action's comment).
+export async function verifyOtpCodeAction(
+  email: string,
+  code: string
+): Promise<OtpActionResult> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/auth/otp/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code }),
+      cache: "no-store",
+    });
+  } catch {
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("network") };
+  }
+
+  if (!response.ok) {
+    return {
+      success: false,
+      error: await apiErrorMessage(response, "otpVerifyFailed"),
+    };
+  }
+
+  const body = await response.json().catch(() => null);
+  const token = body?.access_token;
+
+  if (!token) {
+    const t = await apiErrorsTranslator();
+    return { success: false, error: t("unexpectedResponse") };
   }
 
   const cookieStore = await cookies();

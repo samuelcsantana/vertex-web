@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { Code2, X } from "lucide-react";
 
 import { useRouter } from "@/i18n/routing";
-import { loginAction } from "@/features/auth/actions/auth-actions";
+import {
+  loginAction,
+  requestOtpCodeAction,
+  verifyOtpCodeAction,
+} from "@/features/auth/actions/auth-actions";
 import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 import {
   isOAuthErrorBroadcast,
@@ -21,6 +25,15 @@ interface LoginModalProps {
   open: boolean;
   onClose: () => void;
 }
+
+// OTP (code by email) is the primary email method for visitors; the
+// password form stays for the accounts that have one, behind a discreet
+// link. The view survives close/reopen on purpose: a backdrop click while
+// waiting for the code shouldn't throw away the code-entry step (the code
+// stays valid for 10 minutes).
+type LoginView = "otp-email" | "otp-code" | "password";
+
+const OTP_RESEND_COOLDOWN_SECONDS = 60;
 
 // Best-effort only: Google/GitHub's own OAuth pages send a strict
 // Cross-Origin-Opener-Policy header that permanently severs our reference
@@ -51,11 +64,28 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
   const [isConnectingGithub, setIsConnectingGithub] = useState(false);
+  const [view, setView] = useState<LoginView>("otp-email");
+  const [otpEmail, setOtpEmail] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
   const titleId = useId();
   const emailId = useId();
   const passwordId = useId();
+  const codeId = useId();
   const errorId = useId();
   const dialogRef = useDialogBehavior(open, onClose);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      return;
+    }
+
+    const timeout = window.setTimeout(
+      () => setResendCooldown((seconds) => seconds - 1),
+      1000
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, [resendCooldown]);
 
   // The /auth/callback page — loaded inside the popup once vertex-api
   // redirects it there with the token after Google/GitHub OAuth — sets the
@@ -131,6 +161,11 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     watchForAbandonedPopup(popup, setIsConnectingGithub);
   }
 
+  function switchView(next: LoginView) {
+    setView(next);
+    setError(null);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -141,6 +176,55 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       email: String(formData.get("email") ?? ""),
       password: String(formData.get("password") ?? ""),
     });
+
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error ?? t("genericLoginError"));
+      return;
+    }
+
+    onClose();
+    router.refresh();
+  }
+
+  async function requestCode(email: string): Promise<boolean> {
+    setError(null);
+    setIsSubmitting(true);
+
+    const result = await requestOtpCodeAction(email);
+
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error ?? t("genericLoginError"));
+      return false;
+    }
+
+    setResendCooldown(OTP_RESEND_COOLDOWN_SECONDS);
+    return true;
+  }
+
+  async function handleOtpEmailSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const email = String(new FormData(event.currentTarget).get("email") ?? "");
+
+    if (await requestCode(email)) {
+      setOtpEmail(email);
+      setView("otp-code");
+    }
+  }
+
+  async function handleOtpCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    const code = String(new FormData(event.currentTarget).get("code") ?? "");
+    const result = await verifyOtpCodeAction(otpEmail, code);
 
     setIsSubmitting(false);
 
@@ -237,46 +321,166 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
-          <label htmlFor={emailId} className="sr-only">
-            {t("emailPlaceholder")}
-          </label>
-          <input
-            type="email"
-            name="email"
-            id={emailId}
-            required
-            placeholder={t("emailPlaceholder")}
-            aria-describedby={error ? errorId : undefined}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
-          />
-          <label htmlFor={passwordId} className="sr-only">
-            {t("passwordPlaceholder")}
-          </label>
-          <input
-            type="password"
-            name="password"
-            id={passwordId}
-            required
-            placeholder={t("passwordPlaceholder")}
-            aria-describedby={error ? errorId : undefined}
-            className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
-          />
-
-          {error && (
-            <p id={errorId} role="alert" className="text-sm text-red-400">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+        {view === "otp-email" && (
+          <form
+            onSubmit={handleOtpEmailSubmit}
+            className="flex flex-col gap-3"
+            noValidate
           >
-            {isSubmitting ? t("signingIn") : t("signIn")}
-          </button>
-        </form>
+            <label htmlFor={emailId} className="sr-only">
+              {t("emailPlaceholder")}
+            </label>
+            <input
+              type="email"
+              name="email"
+              id={emailId}
+              required
+              defaultValue={otpEmail}
+              placeholder={t("emailPlaceholder")}
+              aria-describedby={error ? errorId : undefined}
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+            />
+
+            {error && (
+              <p id={errorId} role="alert" className="text-sm text-red-400">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+            >
+              {isSubmitting ? t("sendingCode") : t("sendCode")}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => switchView("password")}
+              className="mx-auto mt-1 text-xs text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+            >
+              {t("usePassword")}
+            </button>
+          </form>
+        )}
+
+        {view === "otp-code" && (
+          <form
+            onSubmit={handleOtpCodeSubmit}
+            className="flex flex-col gap-3"
+            noValidate
+          >
+            <p className="text-center text-sm text-slate-400">
+              {t("codeSentTo", { email: otpEmail })}
+            </p>
+            <label htmlFor={codeId} className="sr-only">
+              {t("codePlaceholder")}
+            </label>
+            <input
+              type="text"
+              name="code"
+              id={codeId}
+              required
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="\d{6}"
+              maxLength={6}
+              placeholder={t("codePlaceholder")}
+              aria-describedby={error ? errorId : undefined}
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-center text-lg tracking-[0.5em] text-slate-100 placeholder:text-sm placeholder:tracking-normal placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+            />
+
+            {error && (
+              <p id={errorId} role="alert" className="text-sm text-red-400">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+            >
+              {isSubmitting ? t("verifyingCode") : t("verifyCode")}
+            </button>
+
+            <div className="mt-1 flex items-center justify-center gap-4 text-xs">
+              <button
+                type="button"
+                disabled={isSubmitting || resendCooldown > 0}
+                onClick={() => requestCode(otpEmail)}
+                className="text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline disabled:no-underline disabled:opacity-50"
+              >
+                {resendCooldown > 0
+                  ? t("resendCodeIn", { seconds: resendCooldown })
+                  : t("resendCode")}
+              </button>
+              <button
+                type="button"
+                onClick={() => switchView("otp-email")}
+                className="text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+              >
+                {t("changeEmail")}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {view === "password" && (
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3"
+            noValidate
+          >
+            <label htmlFor={emailId} className="sr-only">
+              {t("emailPlaceholder")}
+            </label>
+            <input
+              type="email"
+              name="email"
+              id={emailId}
+              required
+              placeholder={t("emailPlaceholder")}
+              aria-describedby={error ? errorId : undefined}
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+            />
+            <label htmlFor={passwordId} className="sr-only">
+              {t("passwordPlaceholder")}
+            </label>
+            <input
+              type="password"
+              name="password"
+              id={passwordId}
+              required
+              placeholder={t("passwordPlaceholder")}
+              aria-describedby={error ? errorId : undefined}
+              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+            />
+
+            {error && (
+              <p id={errorId} role="alert" className="text-sm text-red-400">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+            >
+              {isSubmitting ? t("signingIn") : t("signIn")}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => switchView("otp-email")}
+              className="mx-auto mt-1 text-xs text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+            >
+              {t("useEmailCode")}
+            </button>
+          </form>
+        )}
       </div>
     </div>,
     document.body
