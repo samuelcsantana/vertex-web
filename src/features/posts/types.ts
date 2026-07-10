@@ -3,6 +3,7 @@ import type { Topic } from "@/features/topics/types";
 export interface PostAuthor {
   id: string;
   name: string | null;
+  displayName: string | null;
   avatarUrl: string | null;
 }
 

@@ -6,6 +6,7 @@ import { redirect } from "@/i18n/routing";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { LinkGithubButton } from "@/features/auth/components/LinkGithubButton";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
+import { ProfileForm } from "@/features/users/components/ProfileForm";
 import { deleteOwnAccountAction } from "@/features/users/actions/user-actions";
 
 export default async function ProfilePage() {
@@ -35,14 +36,6 @@ export default async function ProfilePage() {
 
         <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/30 p-6">
           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {profile.name && (
-              <div>
-                <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">
-                  {t("name")}
-                </dt>
-                <dd className="mt-1 text-sm text-slate-100">{profile.name}</dd>
-              </div>
-            )}
             <div>
               <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">
                 {t("email")}
@@ -58,6 +51,15 @@ export default async function ProfilePage() {
               </dd>
             </div>
           </dl>
+
+          <div className="mt-6 border-t border-slate-800 pt-6">
+            <ProfileForm
+              initialName={profile.name ?? ""}
+              initialDisplayName={profile.displayName ?? ""}
+              initialAvatarUrl={profile.avatarUrl ?? ""}
+              email={profile.email}
+            />
+          </div>
         </div>
 
         <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/30 p-6">

@@ -173,6 +173,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     ? {
         id: profile.sub,
         name: profile.name,
+        displayName: profile.displayName,
         avatarUrl: profile.avatarUrl,
         role: profile.role,
       }
@@ -318,10 +319,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   />
                 ) : (
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
-                    {(post.author.name?.trim()?.[0] ?? "?").toUpperCase()}
+                    {(
+                      (post.author.displayName ?? post.author.name)?.trim()?.[0] ??
+                      "?"
+                    ).toUpperCase()}
                   </span>
                 )}
-                <span className="font-medium text-slate-300">{post.author.name}</span>
+                <span className="font-medium text-slate-300">
+                  {post.author.displayName ?? post.author.name}
+                </span>
               </div>
             )}
 

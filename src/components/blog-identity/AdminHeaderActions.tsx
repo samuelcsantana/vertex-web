@@ -10,6 +10,7 @@ import { logoutAction } from "@/features/auth/actions/auth-actions";
 interface AdminHeaderActionsProfile {
   email: string;
   name: string | null;
+  displayName: string | null;
   avatarUrl: string | null;
 }
 
@@ -79,8 +80,8 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
     );
   }
 
-  const displayName = profile.name ?? profile.email;
-  const initial = (profile.name?.trim()?.[0] ?? profile.email[0] ?? "?").toUpperCase();
+  const displayName = profile.displayName ?? profile.name ?? profile.email;
+  const initial = (displayName.trim()[0] ?? "?").toUpperCase();
 
   return (
     <div ref={containerRef} className="relative shrink-0">
