@@ -123,7 +123,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     src={displayCoverUrl}
                     alt={displayCoverAlt ?? ""}
                     referrerPolicy="no-referrer"
-                    className="pointer-events-none aspect-video w-full object-cover"
+                    className="pointer-events-none aspect-[1200/630] w-full object-cover"
                   />
                 )}
 
