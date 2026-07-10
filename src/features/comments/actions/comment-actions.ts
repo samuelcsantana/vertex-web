@@ -22,10 +22,19 @@ interface DeleteCommentResult {
 }
 
 export async function getCommentsAction(postId: string): Promise<Comment[]> {
+  // The route is public, but forwarding the session (when there is one)
+  // lets the API enrich the payload for admins — each author's email for
+  // moderation. Anonymous behavior is unchanged.
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
   let response: Response;
 
   try {
     response = await fetch(`${API_URL}/posts/${postId}/comments`, {
+      headers: accessToken
+        ? { Cookie: `access_token=${accessToken}` }
+        : undefined,
       cache: "no-store",
     });
   } catch {

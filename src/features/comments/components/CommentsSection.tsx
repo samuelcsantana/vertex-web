@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MessageCircle, Trash2 } from "lucide-react";
 
+import { Link } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
 import {
@@ -162,10 +163,10 @@ export function CommentsSection({
             const authorName =
               comment.author.displayName ?? comment.author.name;
             const initial = (authorName?.trim()?.[0] ?? "?").toUpperCase();
+            const isAdminViewer = currentUser?.role === "admin";
             const canDelete =
               !!currentUser &&
-              (currentUser.id === comment.authorId ||
-                currentUser.role === "admin");
+              (currentUser.id === comment.authorId || isAdminViewer);
 
             return (
               <div
@@ -188,15 +189,32 @@ export function CommentsSection({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <span className="text-sm font-medium text-slate-100">
-                        {authorName ?? t("anonymousUser")}
-                      </span>
+                      {/* Admins get a link into the moderation page and the
+                          author's email; the API only includes email in
+                          admin-identified responses, never publicly. */}
+                      {isAdminViewer ? (
+                        <Link
+                          href={`/dashboard/users/${comment.author.id}`}
+                          className="text-sm font-medium text-slate-100 underline-offset-4 hover:text-emerald-400 hover:underline"
+                        >
+                          {authorName ?? t("anonymousUser")}
+                        </Link>
+                      ) : (
+                        <span className="text-sm font-medium text-slate-100">
+                          {authorName ?? t("anonymousUser")}
+                        </span>
+                      )}
                       <span className="ml-2 text-xs text-slate-400">
                         {format.dateTime(new Date(comment.createdAt), {
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}
                       </span>
+                      {isAdminViewer && comment.author.email && (
+                        <span className="ml-2 text-xs text-slate-400">
+                          · {comment.author.email}
+                        </span>
+                      )}
                     </div>
                     {canDelete && (
                       <ConfirmDialog
