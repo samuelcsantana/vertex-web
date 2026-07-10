@@ -12,6 +12,7 @@ export interface UserProfile {
   displayName: string | null;
   avatarUrl: string | null;
   githubId: string | null;
+  googleId: string | null;
   iat: number;
   exp: number;
 }

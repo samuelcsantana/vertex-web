@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { redirect } from "@/i18n/routing";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { LinkGithubButton } from "@/features/auth/components/LinkGithubButton";
+import { LinkGoogleButton } from "@/features/auth/components/LinkGoogleButton";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { ProfileForm } from "@/features/users/components/ProfileForm";
 import { deleteOwnAccountAction } from "@/features/users/actions/user-actions";
@@ -68,7 +69,8 @@ export default async function ProfilePage() {
             {t("linkedAccountsDescription")}
           </p>
 
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-3">
+            <LinkGoogleButton googleLinked={Boolean(profile.googleId)} />
             <LinkGithubButton githubLinked={Boolean(profile.githubId)} />
           </div>
         </div>
