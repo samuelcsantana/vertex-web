@@ -19,6 +19,10 @@ export const API_ERROR_CODES = [
   "SLUG_IN_USE",
   "GITHUB_ALREADY_LINKED",
   "GITHUB_EMAIL_CONFLICT",
+  "OTP_INVALID",
+  "OTP_EXPIRED",
+  "OTP_TOO_MANY_ATTEMPTS",
+  "OTP_COOLDOWN",
 ] as const;
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
