@@ -272,7 +272,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               src={displayCoverUrl}
               alt={displayCoverAlt ?? ""}
               referrerPolicy="no-referrer"
-              className="mb-8 h-64 w-full rounded-2xl object-cover sm:h-80"
+              className="mb-8 aspect-[1200/630] h-auto w-full rounded-2xl object-cover"
             />
           )}
 
