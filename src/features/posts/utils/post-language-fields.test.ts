@@ -9,6 +9,8 @@ describe("getPostLanguageFields", () => {
       contentField: "content",
       slugField: "slug",
       metaDescriptionField: "metaDescription",
+      coverUrlField: "coverUrl",
+      coverAltField: "coverAlt",
     });
   });
 
@@ -18,6 +20,8 @@ describe("getPostLanguageFields", () => {
       contentField: "contentEn",
       slugField: "slugEn",
       metaDescriptionField: "metaDescriptionEn",
+      coverUrlField: "coverUrlEn",
+      coverAltField: "coverAltEn",
     });
   });
 
@@ -27,6 +31,8 @@ describe("getPostLanguageFields", () => {
       contentField: "contentEs",
       slugField: "slugEs",
       metaDescriptionField: "metaDescriptionEs",
+      coverUrlField: "coverUrlEs",
+      coverAltField: "coverAltEs",
     });
   });
 });

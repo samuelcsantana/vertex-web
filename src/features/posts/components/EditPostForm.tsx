@@ -84,7 +84,11 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
       isPublished: initialData.isPublished,
       allowComments: initialData.allowComments,
       coverUrl: initialData.coverUrl ?? "",
+      coverUrlEn: initialData.coverUrlEn ?? "",
+      coverUrlEs: initialData.coverUrlEs ?? "",
       coverAlt: initialData.coverAlt ?? "",
+      coverAltEn: initialData.coverAltEn ?? "",
+      coverAltEs: initialData.coverAltEs ?? "",
       metaDescription: initialData.metaDescription ?? "",
       metaDescriptionEn: initialData.metaDescriptionEn ?? "",
       metaDescriptionEs: initialData.metaDescriptionEs ?? "",
@@ -92,8 +96,14 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
     },
   });
 
-  const { titleField, contentField, slugField, metaDescriptionField } =
-    getPostLanguageFields(activeLanguage);
+  const {
+    titleField,
+    contentField,
+    slugField,
+    metaDescriptionField,
+    coverUrlField,
+    coverAltField,
+  } = getPostLanguageFields(activeLanguage);
 
   const content = watch(contentField);
 
@@ -356,44 +366,74 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="coverUrl" className="text-sm font-medium text-slate-300">
+          <label
+            htmlFor={coverUrlField}
+            className="text-sm font-medium text-slate-300"
+          >
             {t("coverUrlLabel")}
           </label>
-          <input
-            id="coverUrl"
-            placeholder="https://exemplo.com/imagem.jpg"
-            aria-invalid={!!errors.coverUrl}
-            aria-describedby={errors.coverUrl ? "coverUrl-error" : undefined}
-            className={inputClasses}
-            {...register("coverUrl")}
-          />
-          {errors.coverUrl && (
-            <p id="coverUrl-error" role="alert" className="text-sm text-red-400">
-              {errors.coverUrl.message}
+          {LANGUAGES.map((language) => {
+            const field = getPostLanguageFields(language).coverUrlField;
+            return (
+              <input
+                key={field}
+                id={field}
+                placeholder="https://exemplo.com/imagem.jpg"
+                hidden={activeLanguage !== language}
+                aria-invalid={!!errors[field]}
+                aria-describedby={errors[field] ? `${field}-error` : undefined}
+                className={inputClasses}
+                {...register(field)}
+              />
+            );
+          })}
+          {/* pt's cover is the fallback for en/es (see
+              getLocalizedCoverUrl) — only mention that on the tabs where
+              leaving the field blank actually triggers it. */}
+          {activeLanguage !== "pt" && (
+            <p className="text-xs text-slate-400">{t("coverFallbackHint")}</p>
+          )}
+          {errors[coverUrlField] && (
+            <p
+              id={`${coverUrlField}-error`}
+              role="alert"
+              className="text-sm text-red-400"
+            >
+              {errors[coverUrlField]?.message}
             </p>
           )}
           <AttachImageButton
             label={t("uploadCoverImage")}
             onUploaded={(url) =>
-              setValue("coverUrl", url, {
+              setValue(coverUrlField, url, {
                 shouldDirty: true,
                 shouldValidate: true,
               })
             }
           />
-          <CoverImagePreview url={watch("coverUrl")} />
+          <CoverImagePreview url={watch(coverUrlField)} />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="coverAlt" className="text-sm font-medium text-slate-300">
+          <label
+            htmlFor={coverAltField}
+            className="text-sm font-medium text-slate-300"
+          >
             {t("coverAltLabel")}
           </label>
-          <input
-            id="coverAlt"
-            placeholder={t("coverAltPlaceholder")}
-            className={inputClasses}
-            {...register("coverAlt")}
-          />
+          {LANGUAGES.map((language) => {
+            const field = getPostLanguageFields(language).coverAltField;
+            return (
+              <input
+                key={field}
+                id={field}
+                placeholder={t("coverAltPlaceholder")}
+                hidden={activeLanguage !== language}
+                className={inputClasses}
+                {...register(field)}
+              />
+            );
+          })}
           <p className="text-xs text-slate-400">{t("coverAltHint")}</p>
         </div>
 

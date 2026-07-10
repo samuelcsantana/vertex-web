@@ -15,6 +15,8 @@ const validPost = {
   isPublished: true,
   allowComments: true,
   coverUrl: "",
+  coverUrlEn: "",
+  coverUrlEs: "",
   metaDescription: "",
   metaDescriptionEn: "",
   metaDescriptionEs: "",
@@ -69,6 +71,35 @@ describe("createPostFormSchema", () => {
     const result = createPostFormSchema.safeParse({
       ...validPost,
       coverUrl: "https://example.com/cover.jpg",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts empty per-locale cover URLs (no locale-specific cover)", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      coverUrlEn: "",
+      coverUrlEs: "",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it.each(["coverUrlEn", "coverUrlEs"])(
+    "rejects a non-empty %s that isn't a valid URL",
+    (field) => {
+      const result = createPostFormSchema.safeParse({
+        ...validPost,
+        [field]: "not-a-url",
+      });
+      expect(result.success).toBe(false);
+    }
+  );
+
+  it("accepts valid per-locale cover URLs", () => {
+    const result = createPostFormSchema.safeParse({
+      ...validPost,
+      coverUrlEn: "https://example.com/cover-en.jpg",
+      coverUrlEs: "https://example.com/cover-es.jpg",
     });
     expect(result.success).toBe(true);
   });

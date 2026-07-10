@@ -143,6 +143,7 @@
     "preview": "Preview",
     "nothingToPreview": "Nothing to preview yet.",
     "coverUrlLabel": "Cover Image (URL)",
+    "coverFallbackHint": "Leave blank to reuse the Portuguese cover.",
     "coverAltLabel": "Cover Alt Text",
     "coverAltPlaceholder": "Describe the image for screen reader users",
     "coverAltHint": "Leave blank if the image is purely decorative.",

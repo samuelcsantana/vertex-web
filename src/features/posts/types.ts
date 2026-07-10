@@ -22,8 +22,16 @@ export interface Post {
   contentEs: string | null;
   isPublished: boolean;
   allowComments: boolean;
+  // Cover image + alt are per locale (covers can carry embedded text,
+  // e.g. the article title in the art) — same optional-with-pt-fallback
+  // pattern as title/content; see localized-content.ts's
+  // getLocalizedCoverUrl/getLocalizedCoverAlt.
   coverUrl: string | null;
+  coverUrlEn: string | null;
+  coverUrlEs: string | null;
   coverAlt: string | null;
+  coverAltEn: string | null;
+  coverAltEs: string | null;
   // Manually-written search-result snippet, per locale — a locale
   // without its own falls back to an auto-generated excerpt of that
   // locale's own content, not another locale's text (see
@@ -52,7 +60,11 @@ export interface CreatePostInput {
   isPublished: boolean;
   allowComments: boolean;
   coverUrl?: string;
+  coverUrlEn?: string;
+  coverUrlEs?: string;
   coverAlt?: string;
+  coverAltEn?: string;
+  coverAltEs?: string;
   metaDescription?: string;
   metaDescriptionEn?: string;
   metaDescriptionEs?: string;

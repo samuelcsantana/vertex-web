@@ -49,6 +49,28 @@ export function getSlugSourceLocale(
   return null;
 }
 
+export function getLocalizedCoverUrl(
+  post: Pick<Post, "coverUrl" | "coverUrlEn" | "coverUrlEs">,
+  locale: string
+) {
+  if (locale === "en" && post.coverUrlEn) return post.coverUrlEn;
+  if (locale === "es" && post.coverUrlEs) return post.coverUrlEs;
+  return post.coverUrl;
+}
+
+// Resolved independently from the image on purpose: the common "one
+// image, translated alts" case needs an en/es alt to apply to the
+// pt-fallback image. The reverse mismatch (locale-specific image with a
+// pt-fallback alt) is on the author to fill in.
+export function getLocalizedCoverAlt(
+  post: Pick<Post, "coverAlt" | "coverAltEn" | "coverAltEs">,
+  locale: string
+) {
+  if (locale === "en" && post.coverAltEn) return post.coverAltEn;
+  if (locale === "es" && post.coverAltEs) return post.coverAltEs;
+  return post.coverAlt;
+}
+
 // The manually-written meta description for a given locale, or null if
 // that locale has none of its own. Deliberately does NOT fall back to
 // another locale's text the way getLocalizedTitle/Content/Slug do — a
