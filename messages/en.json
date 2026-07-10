@@ -49,6 +49,8 @@
     "sendComment": "Send Comment",
     "sending": "Sending...",
     "loginToComment": "Sign in to comment",
+    "joinConversationTitle": "Join the conversation",
+    "joinConversationDescription": "Sign in with your account to comment on this article.",
     "genericCommentError": "Unable to post the comment.",
     "genericCommentDeleteError": "Unable to delete the comment.",
     "deleteComment": "Delete comment",

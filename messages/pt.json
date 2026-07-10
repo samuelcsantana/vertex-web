@@ -49,6 +49,8 @@
     "sendComment": "Enviar Comentário",
     "sending": "Enviando...",
     "loginToComment": "Faça login para comentar",
+    "joinConversationTitle": "Participe da conversa",
+    "joinConversationDescription": "Entre com sua conta para comentar neste artigo.",
     "genericCommentError": "Não foi possível enviar o comentário.",
     "genericCommentDeleteError": "Não foi possível excluir o comentário.",
     "deleteComment": "Excluir comentário",
