@@ -158,7 +158,9 @@
     "saveChanges": "Salvar alterações",
     "attachImage": "Anexar Imagem",
     "uploading": "Enviando...",
-    "uploadError": "Falha ao enviar a imagem."
+    "uploadError": "Falha ao enviar a imagem.",
+    "uploadCoverImage": "Enviar imagem de capa",
+    "coverPreviewAlt": "Prévia da imagem de capa"
   },
   "Profile": {
     "heading": "Perfil",

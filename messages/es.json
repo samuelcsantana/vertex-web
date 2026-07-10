@@ -158,7 +158,9 @@
     "saveChanges": "Guardar cambios",
     "attachImage": "Adjuntar Imagen",
     "uploading": "Subiendo...",
-    "uploadError": "Error al subir la imagen."
+    "uploadError": "Error al subir la imagen.",
+    "uploadCoverImage": "Subir imagen de portada",
+    "coverPreviewAlt": "Vista previa de la imagen de portada"
   },
   "Profile": {
     "heading": "Perfil",

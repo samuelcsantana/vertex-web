@@ -7,10 +7,12 @@ import { Paperclip } from "lucide-react";
 import { uploadImage } from "@/features/posts/api/upload-image";
 
 interface AttachImageButtonProps {
-  onUploaded: (markdown: string) => void;
+  onUploaded: (publicUrl: string) => void;
+  /** Overrides the default "attach image" label (e.g. for the cover-image use). */
+  label?: string;
 }
 
-export function AttachImageButton({ onUploaded }: AttachImageButtonProps) {
+export function AttachImageButton({ onUploaded, label }: AttachImageButtonProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function AttachImageButton({ onUploaded }: AttachImageButtonProps) {
 
     try {
       const publicUrl = await uploadImage(file);
-      onUploaded(`\n![Imagem](${publicUrl})\n`);
+      onUploaded(publicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("uploadError"));
     } finally {
@@ -54,7 +56,7 @@ export function AttachImageButton({ onUploaded }: AttachImageButtonProps) {
         className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400 disabled:opacity-50"
       >
         <Paperclip className="size-3.5" />
-        {isUploading ? t("uploading") : t("attachImage")}
+        {isUploading ? t("uploading") : (label ?? t("attachImage"))}
       </button>
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
