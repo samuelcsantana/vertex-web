@@ -43,7 +43,8 @@ export function UserRow({ user, isSelf }: UserRowProps) {
     }
   }
 
-  const initial = (user.name?.trim()?.[0] ?? user.email[0] ?? "?").toUpperCase();
+  const shownName = user.displayName ?? user.name ?? user.email;
+  const initial = (shownName.trim()[0] ?? "?").toUpperCase();
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-900/30 px-4 py-3">
@@ -65,7 +66,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="truncate text-sm font-medium text-slate-100">
-                {user.name ?? user.email}
+                {shownName}
               </span>
               <span
                 className={
@@ -118,7 +119,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
               <ConfirmDialog
                 title={t("confirmDeleteUserTitle")}
                 description={t("confirmDeleteUserDescription", {
-                  name: user.name ?? user.email,
+                  name: shownName,
                 })}
                 confirmLabel={t("removeUser")}
                 action={handleDelete}

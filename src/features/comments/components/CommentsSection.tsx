@@ -17,6 +17,7 @@ import type { UserRole } from "@/features/auth/api/profile-service";
 interface CommentsSectionCurrentUser {
   id: string;
   name: string | null;
+  displayName: string | null;
   avatarUrl: string | null;
   role: UserRole;
 }
@@ -109,6 +110,7 @@ export function CommentsSection({
         author: {
           id: currentUser.id,
           name: currentUser.name,
+          displayName: currentUser.displayName,
           avatarUrl: currentUser.avatarUrl,
         },
       },
@@ -157,7 +159,9 @@ export function CommentsSection({
           )
         ) : (
           comments.map((comment) => {
-            const initial = (comment.author.name?.trim()?.[0] ?? "?").toUpperCase();
+            const authorName =
+              comment.author.displayName ?? comment.author.name;
+            const initial = (authorName?.trim()?.[0] ?? "?").toUpperCase();
             const canDelete =
               !!currentUser &&
               (currentUser.id === comment.authorId ||
@@ -185,7 +189,7 @@ export function CommentsSection({
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <span className="text-sm font-medium text-slate-100">
-                        {comment.author.name ?? t("anonymousUser")}
+                        {authorName ?? t("anonymousUser")}
                       </span>
                       <span className="ml-2 text-xs text-slate-400">
                         {format.dateTime(new Date(comment.createdAt), {
