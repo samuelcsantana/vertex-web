@@ -10,6 +10,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
 import { AttachImageButton } from "@/features/posts/components/AttachImageButton";
+import { CoverImagePreview } from "@/features/posts/components/CoverImagePreview";
 import { TopicCheckboxGroup } from "@/features/posts/components/TopicCheckboxGroup";
 import { CodeBlock } from "@/components/blog-identity/CodeBlock";
 import { createPostAction } from "@/features/posts/actions/post-actions";
@@ -227,7 +228,9 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
               {CONTENT_LABELS[activeLanguage]}
             </label>
             {viewMode === "write" && (
-              <AttachImageButton onUploaded={insertImageMarkdown} />
+              <AttachImageButton
+                onUploaded={(url) => insertImageMarkdown(`\n![Imagem](${url})\n`)}
+              />
             )}
           </div>
 
@@ -362,6 +365,16 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
               {errors.coverUrl.message}
             </p>
           )}
+          <AttachImageButton
+            label={t("uploadCoverImage")}
+            onUploaded={(url) =>
+              setValue("coverUrl", url, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+          />
+          <CoverImagePreview url={watch("coverUrl")} />
         </div>
 
         <div className="flex flex-col gap-1.5">

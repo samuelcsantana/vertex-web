@@ -158,7 +158,9 @@
     "saveChanges": "Save changes",
     "attachImage": "Attach Image",
     "uploading": "Uploading...",
-    "uploadError": "Failed to upload the image."
+    "uploadError": "Failed to upload the image.",
+    "uploadCoverImage": "Upload cover image",
+    "coverPreviewAlt": "Cover image preview"
   },
   "Profile": {
     "heading": "Profile",
