@@ -292,6 +292,26 @@ export async function checkGithubLinkedAction(): Promise<boolean> {
   return true;
 }
 
+// Mirror of checkGithubLinkedAction for the Google link flow.
+export async function checkGoogleLinkedAction(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+
+  if (!accessToken) {
+    return false;
+  }
+
+  const profile = await getProfile(accessToken);
+
+  if (!profile?.googleId) {
+    return false;
+  }
+
+  revalidatePath("/", "layout");
+
+  return true;
+}
+
 export async function logoutAction(redirectTo?: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE_NAME);
