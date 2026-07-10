@@ -2,14 +2,14 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ArrowLeft, Info } from "lucide-react";
+import { ArrowLeft, Info, Languages } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
 import { Link, getPathname } from "@/i18n/routing";
-import { getPostBySlug } from "@/features/posts/api/post-service";
+import { getPostBySlugCrossLocale } from "@/features/posts/api/post-service";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
 import { getProfile } from "@/features/auth/api/profile-service";
@@ -44,15 +44,20 @@ export async function generateMetadata({
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const locale = await getLocale();
-  const post = await getPostBySlug(slug, locale);
+  const resolved = await getPostBySlugCrossLocale(slug, locale);
 
-  if (!post) {
+  if (!resolved) {
     return {};
   }
 
+  // contentLocale === locale except when the slug belongs to another
+  // locale (a shared link re-prefixed by locale detection) — then the
+  // page renders that locale's content, so the metadata must describe it.
+  const { post, contentLocale } = resolved;
+
   const siteUrl = await getSiteUrl();
-  const title = getLocalizedTitle(post, locale);
-  const content = getLocalizedContent(post, locale);
+  const title = getLocalizedTitle(post, contentLocale);
+  const content = getLocalizedContent(post, contentLocale);
   // A manually-written description for this locale wins when set — it's
   // meant to carry the technical keywords a curiosity-driven opening
   // paragraph often doesn't, for SEO. Otherwise fall back to an excerpt
@@ -61,7 +66,7 @@ export async function generateMetadata({
   // text, which could describe different words than what's actually
   // rendered on the page.
   const description =
-    getLocalizedMetaDescription(post, locale) ||
+    getLocalizedMetaDescription(post, contentLocale) ||
     `${stripMarkdown(content).slice(0, 100)}...`;
   // Posts without their own cover fall back to the site icon (rendered onto
   // a proper 1200x630 canvas at public/og-fallback.png) rather than sharing
@@ -77,7 +82,11 @@ export async function generateMetadata({
   // distinct page whose URL and content language disagree.
   const translatedLocales = getTranslatedLocales(post);
   const isTranslated = (translatedLocales as string[]).includes(locale);
-  const canonicalLocale = isTranslated ? locale : "pt";
+  // On a cross-locale slug the rendered content is contentLocale's own
+  // version, so that locale's URL is the real page this one duplicates —
+  // not the current locale's translation, which shows different text.
+  const canonicalLocale =
+    contentLocale !== locale ? contentLocale : isTranslated ? locale : "pt";
   const canonicalUrl = `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
 
   // Only advertise an hreflang alternate for locales this post genuinely
@@ -119,11 +128,20 @@ export async function generateMetadata({
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const locale = await getLocale();
-  const post = await getPostBySlug(slug, locale);
+  const resolved = await getPostBySlugCrossLocale(slug, locale);
 
-  if (!post) {
+  if (!resolved) {
     notFound();
   }
+
+  // contentLocale diverges from locale only when the slug belongs to
+  // another locale: a shared link's locale-detection redirect (proxy.ts)
+  // re-prefixes the path without translating the slug, e.g. a pt link
+  // opened by a visitor whose saved locale is en lands on
+  // /en/blog/<pt-slug>. Render the content the link promised (the slug's
+  // own locale) and offer a link over to this locale's version below,
+  // instead of the 404 this used to be.
+  const { post, contentLocale } = resolved;
 
   // GET /posts/:slug didn't used to join the author at all (posts.authorId
   // was the only thing on the row) — vertex-api's postsRelations/
@@ -157,8 +175,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       }
     : null;
 
-  const displayTitle = getLocalizedTitle(post, locale);
-  const displayContent = getLocalizedContent(post, locale);
+  const displayTitle = getLocalizedTitle(post, contentLocale);
+  const displayContent = getLocalizedContent(post, contentLocale);
   const headings = extractHeadings(displayContent);
   const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
@@ -170,6 +188,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const isTranslated = (getTranslatedLocales(post) as string[]).includes(
     locale
   );
+
+  // Cross-locale slug: content renders in the slug's own language, and
+  // the notice below offers this locale's version — but only link it when
+  // that version genuinely exists; otherwise the "translated" URL would
+  // just serve the pt fallback of what's already on screen.
+  const isCrossLanguage = contentLocale !== locale;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -185,7 +209,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
       },
     ],
-    mainEntityOfPage: `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, locale)}`, locale })}`,
+    // The slug's own locale, not the URL's — on a cross-locale slug this
+    // matches the metadata canonical (the page whose content is rendered).
+    mainEntityOfPage: `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, contentLocale)}`, locale: contentLocale })}`,
   };
 
   return (
@@ -247,11 +273,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
 
-          {!isTranslated && (
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
-              <Info className="mt-0.5 size-4 shrink-0" />
-              <p>{t("translationFallbackNotice")}</p>
+          {isCrossLanguage ? (
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-300">
+              <Languages className="mt-0.5 size-4 shrink-0" />
+              <p>
+                {t("crossLanguageNotice", { language: contentLocale })}
+                {isTranslated && (
+                  <>
+                    {" "}
+                    <Link
+                      href={`/blog/${getLocalizedSlug(post, locale)}`}
+                      className="font-medium underline underline-offset-2 transition-colors hover:text-white"
+                    >
+                      {t("crossLanguageLink")}
+                    </Link>
+                  </>
+                )}
+              </p>
             </div>
+          ) : (
+            !isTranslated && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+                <Info className="mt-0.5 size-4 shrink-0" />
+                <p>{t("translationFallbackNotice")}</p>
+              </div>
+            )
           )}
 
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
