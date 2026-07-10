@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
-import { Trash2 } from "lucide-react";
+import { MessageCircle, Trash2 } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
@@ -67,8 +67,10 @@ export function CommentsSection({
 
   if (!allowComments) {
     return (
-      <div className="mt-12 rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-center">
-        <p className="text-sm text-slate-400">{t("commentsDisabled")}</p>
+      <div className="mt-12 border-t border-slate-800 pt-10">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-center">
+          <p className="text-sm text-slate-400">{t("commentsDisabled")}</p>
+        </div>
       </div>
     );
   }
@@ -131,14 +133,28 @@ export function CommentsSection({
   }
 
   return (
-    <div className="mt-12">
-      <h2 className="text-lg font-bold text-white">{t("comments")}</h2>
+    <div className="mt-12 border-t border-slate-800 pt-10">
+      <h2 className="text-lg font-bold text-white">
+        {t("comments")}
+        {!isLoading && comments.length > 0 && (
+          <span className="ml-2 text-sm font-normal text-slate-400">
+            ({comments.length})
+          </span>
+        )}
+      </h2>
 
       <div className="mt-4 flex flex-col gap-4">
         {isLoading ? (
           <p className="text-sm text-slate-400">{t("loadingComments")}</p>
         ) : comments.length === 0 ? (
-          <p className="text-sm text-slate-400">{t("beFirstToComment")}</p>
+          // Logged out with no comments renders only the sign-in card
+          // below — an empty-state card stacked on top of it would just
+          // be two near-identical panels saying the same thing.
+          currentUser && (
+            <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-center">
+              <p className="text-sm text-slate-400">{t("beFirstToComment")}</p>
+            </div>
+          )
         ) : (
           comments.map((comment) => {
             const initial = (comment.author.name?.trim()?.[0] ?? "?").toUpperCase();
@@ -241,13 +257,24 @@ export function CommentsSection({
           </form>
         ) : (
           <>
-            <button
-              type="button"
-              onClick={() => setIsLoginOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03] sm:w-fit"
-            >
-              {t("loginToComment")}
-            </button>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/30 px-6 py-8 text-center">
+              <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-emerald-500/10">
+                <MessageCircle aria-hidden className="size-5 text-emerald-400" />
+              </span>
+              <p className="mt-3 text-sm font-semibold text-slate-100">
+                {t("joinConversationTitle")}
+              </p>
+              <p className="mt-1 text-sm text-slate-400">
+                {t("joinConversationDescription")}
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsLoginOpen(true)}
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03]"
+              >
+                {t("loginToComment")}
+              </button>
+            </div>
             <LoginModal open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
           </>
         )}
