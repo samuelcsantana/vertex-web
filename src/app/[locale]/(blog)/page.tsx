@@ -10,6 +10,7 @@ import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
+import { CoverImage } from "@/features/posts/components/CoverImage";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import {
   getLocalizedCoverAlt,
@@ -118,11 +119,12 @@ export default async function BlogPage({ params }: BlogPageProps) {
                 className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
               >
                 {displayCoverUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
-                  <img
+                  <CoverImage
                     src={displayCoverUrl}
                     alt={displayCoverAlt ?? ""}
-                    referrerPolicy="no-referrer"
+                    // The grid's real column widths inside max-w-6xl: 4 cols
+                    // ≥xl, 3 ≥lg, 2 ≥sm, full width below.
+                    sizes="(min-width: 1280px) 252px, (min-width: 1024px) 346px, (min-width: 640px) 50vw, 100vw"
                     className="pointer-events-none aspect-[1200/630] w-full object-cover"
                   />
                 )}

@@ -2,6 +2,7 @@ import {
   getPresignedUploadUrlAction,
   type UploadContentType,
 } from "@/features/posts/actions/upload-actions";
+import { downscaleImage } from "@/lib/downscale-image";
 
 const ALLOWED_CONTENT_TYPES: UploadContentType[] = [
   "image/jpeg",
@@ -18,7 +19,19 @@ export async function uploadImage(file: File): Promise<string> {
     throw new Error("Unsupported image type. Use JPEG, PNG, or WebP.");
   }
 
-  const result = await getPresignedUploadUrlAction(file.name, file.type);
+  // Shrink camera-original files in the browser before they ever hit the
+  // bucket; the output type is always within the allowed set (WebP, or the
+  // input's own format where WebP encoding isn't available).
+  const optimizedFile = await downscaleImage(file);
+
+  if (!isAllowedContentType(optimizedFile.type)) {
+    throw new Error("Unsupported image type. Use JPEG, PNG, or WebP.");
+  }
+
+  const result = await getPresignedUploadUrlAction(
+    optimizedFile.name,
+    optimizedFile.type
+  );
 
   if (!result.success || !result.presignedUrl) {
     throw new Error(result.error ?? "Failed to request an upload URL.");
@@ -29,8 +42,8 @@ export async function uploadImage(file: File): Promise<string> {
   try {
     uploadResponse = await fetch(result.presignedUrl, {
       method: "PUT",
-      headers: { "Content-Type": file.type },
-      body: file,
+      headers: { "Content-Type": optimizedFile.type },
+      body: optimizedFile,
     });
   } catch {
     // A rejected fetch here (as opposed to a resolved-but-non-ok response)

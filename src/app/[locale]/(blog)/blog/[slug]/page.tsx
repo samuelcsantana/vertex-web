@@ -10,6 +10,7 @@ import "highlight.js/styles/github-dark.css";
 
 import { Link, getPathname } from "@/i18n/routing";
 import { getPostBySlugCrossLocale } from "@/features/posts/api/post-service";
+import { CoverImage } from "@/features/posts/components/CoverImage";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
 import { getProfile } from "@/features/auth/api/profile-service";
@@ -268,11 +269,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </Link>
 
           {displayCoverUrl && (
-            // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, not a next/image remote-pattern candidate
-            <img
+            <CoverImage
               src={displayCoverUrl}
               alt={displayCoverAlt ?? ""}
-              referrerPolicy="no-referrer"
+              // Reading column is max-w-3xl (768px); below that, full width.
+              sizes="(min-width: 768px) 768px, 100vw"
+              priority
               className="mb-8 aspect-[1200/630] h-auto w-full rounded-2xl object-cover"
             />
           )}
