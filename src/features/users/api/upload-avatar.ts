@@ -1,6 +1,11 @@
 import { requestAvatarUploadUrlAction } from "@/features/users/actions/user-actions";
+import { downscaleImage } from "@/lib/downscale-image";
 
 const ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+// Avatars never render larger than small circles, so 512px already covers
+// any retina variant of them.
+const AVATAR_MAX_DIMENSION = 512;
 
 // Mirrors src/features/posts/api/upload-image.ts, but through the
 // user-scoped avatar presign route (the blog-media one is admin-only).
@@ -9,7 +14,18 @@ export async function uploadAvatarImage(file: File): Promise<string> {
     throw new Error("Unsupported image type. Use JPEG, PNG, or WebP.");
   }
 
-  const result = await requestAvatarUploadUrlAction(file.name, file.type);
+  const optimizedFile = await downscaleImage(file, {
+    maxDimension: AVATAR_MAX_DIMENSION,
+  });
+
+  if (!ALLOWED_CONTENT_TYPES.includes(optimizedFile.type)) {
+    throw new Error("Unsupported image type. Use JPEG, PNG, or WebP.");
+  }
+
+  const result = await requestAvatarUploadUrlAction(
+    optimizedFile.name,
+    optimizedFile.type
+  );
 
   if (!result.success || !result.presignedUrl) {
     throw new Error(result.error ?? "Failed to request an upload URL.");
@@ -20,8 +36,8 @@ export async function uploadAvatarImage(file: File): Promise<string> {
   try {
     uploadResponse = await fetch(result.presignedUrl, {
       method: "PUT",
-      headers: { "Content-Type": file.type },
-      body: file,
+      headers: { "Content-Type": optimizedFile.type },
+      body: optimizedFile,
     });
   } catch {
     throw new Error("Failed to upload the image. Please try again.");
