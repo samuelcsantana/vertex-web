@@ -43,6 +43,10 @@ export function CoverImage({
         height={630}
         sizes={sizes}
         priority={priority}
+        // Default quality (75) visibly bands smooth, dark-gradient cover
+        // designs; 90 keeps those clean while still resizing/re-encoding
+        // to AVIF/WebP at the rendered size like the rest of the site.
+        quality={90}
         className={className}
       />
     );
