@@ -11,6 +11,9 @@ import {
   getLocalizedContent,
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
+import { splitMarkdownSections } from "@/features/posts/utils/split-markdown-sections";
+import { TableOfContents } from "@/components/blog-identity/TableOfContents";
+import { GLASS_CARD } from "@/components/blog-identity/glassStyles";
 import { getSiteUrl } from "@/lib/site-url";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
@@ -71,6 +74,8 @@ export default async function AboutPage() {
   // visibly shrink the intended opening heading — so that approach (used
   // on the post page) isn't used here.
   const startsWithHeading = /^#{1,6}\s+/.test(content.trimStart());
+  const { intro, sections } = splitMarkdownSections(content);
+  const hasToc = sections.length > 0;
 
   const siteUrl = await getSiteUrl();
   // This is the page Google's search results currently surface for
@@ -96,20 +101,64 @@ export default async function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-3xl lg:mx-0">
-        <AboutProfileHeader />
+      <div
+        className={
+          hasToc
+            ? "lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8"
+            : ""
+        }
+      >
+        <div className="mx-auto max-w-3xl lg:mx-0">
+          <AboutProfileHeader />
 
-        {!isTranslated && (
-          <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
-            <Info className="mt-0.5 size-4 shrink-0" />
-            <p>{tAbout("translationFallbackNotice")}</p>
-          </div>
-        )}
+          {!isTranslated && (
+            <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <p>{tAbout("translationFallbackNotice")}</p>
+            </div>
+          )}
 
-        <article className="prose prose-invert lg:prose-lg">
           {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-        </article>
+
+          <div className="prose prose-invert mb-10 max-w-2xl text-lg">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            {sections.map((section, index) => (
+              <section
+                key={section.id}
+                id={section.id}
+                className={`scroll-mt-24 p-9 ${GLASS_CARD}`}
+              >
+                <div className="mb-4 flex items-center gap-2.5">
+                  <span className="font-mono text-xs text-emerald-300/70">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h2 className="text-xl font-semibold text-white">
+                    {section.heading}
+                  </h2>
+                </div>
+                <div className="prose prose-invert prose-sm sm:prose-base">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {section.body}
+                  </ReactMarkdown>
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+
+        {hasToc && (
+          <TableOfContents
+            headings={sections.map((section) => ({
+              id: section.id,
+              text: section.heading,
+              level: 2 as const,
+            }))}
+            label={tAbout("tableOfContentsLabel")}
+          />
+        )}
       </div>
     </div>
   );

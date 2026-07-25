@@ -7,6 +7,7 @@ import { MessageCircle, Trash2 } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
+import { GLASS_CARD_SUBTLE } from "@/components/blog-identity/glassStyles";
 import {
   createCommentAction,
   deleteCommentAction,
@@ -70,7 +71,7 @@ export function CommentsSection({
   if (!allowComments) {
     return (
       <div className="mt-12 border-t border-slate-800 pt-10">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-center">
+        <div className={`p-6 text-center ${GLASS_CARD_SUBTLE}`}>
           <p className="text-sm text-slate-400">{t("commentsDisabled")}</p>
         </div>
       </div>
@@ -171,7 +172,7 @@ export function CommentsSection({
             return (
               <div
                 key={comment.id}
-                className="flex gap-3 rounded-2xl border border-slate-800 bg-slate-900/30 p-4"
+                className={`flex gap-3 p-4 ${GLASS_CARD_SUBTLE}`}
               >
                 {comment.author.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
@@ -279,7 +280,7 @@ export function CommentsSection({
           </form>
         ) : (
           <>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/30 px-6 py-8 text-center">
+            <div className={`px-6 py-8 text-center ${GLASS_CARD_SUBTLE}`}>
               <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-emerald-500/10">
                 <MessageCircle aria-hidden className="size-5 text-emerald-400" />
               </span>

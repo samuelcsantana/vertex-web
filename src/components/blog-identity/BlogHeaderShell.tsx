@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BlogMobileNav } from "@/components/blog-identity/BlogMobileNav";
+import { GLASS_PILL } from "@/components/blog-identity/glassStyles";
 
 export function BlogHeaderShell({
   rightSlot,
@@ -43,7 +44,7 @@ export function BlogHeaderShell({
             page as it scrolls — some mobile browsers (older Samsung Internet
             in particular) smear/haze backdrop-blur during scroll without
             this hint. Unverified on the actual device that reported it. */}
-        <div className="transform-gpu flex h-16 items-center justify-between gap-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 shadow-[0_0_40px_-12px_rgba(16,185,129,0.25)] backdrop-blur-xl will-change-transform sm:gap-2 sm:px-6">
+        <div className={`transform-gpu flex h-16 items-center justify-between gap-1 px-4 will-change-transform sm:gap-2 sm:px-6 ${GLASS_PILL}`}>
           <Link
             href="/"
             className="shrink-0 font-mono text-sm font-bold tracking-tight min-[400px]:text-base sm:text-lg"

@@ -6,6 +6,7 @@ import { LogIn, LogOut, Menu, User, X } from "lucide-react";
 
 import { Link, useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
+import { GLASS_CARD } from "@/components/blog-identity/glassStyles";
 import { LoginModal } from "./LoginModal";
 
 interface BlogMobileNavProps {
@@ -46,13 +47,15 @@ export function BlogMobileNav({
         onClick={() => setIsOpen((open) => !open)}
         aria-label={isOpen ? t("closeMenu") : t("openMenu")}
         aria-expanded={isOpen}
-        className="flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-800/60 text-slate-300 transition-colors hover:text-white"
+        className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:text-white"
       >
         {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
       </button>
 
       {isOpen && (
-        <nav className="absolute inset-x-4 top-20 z-50 flex flex-col gap-1 rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-xl backdrop-blur-xl">
+        <nav
+          className={`absolute inset-x-4 top-20 z-50 flex flex-col gap-1 p-2 shadow-xl ${GLASS_CARD}`}
+        >
           {navLinks.map((link) => (
             <Link
               key={link.href}
