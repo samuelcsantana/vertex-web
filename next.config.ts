@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
     remotePatterns: mediaBaseUrl
       ? [new URL(`${mediaBaseUrl.replace(/\/+$/, "")}/**`)]
       : [],
+    // Default (75) visibly bands/flattens covers that lean on smooth, dark
+    // gradients — 90 is reserved for CoverImage specifically; everything
+    // else keeps using the default.
+    qualities: [75, 90],
   },
 };
 
