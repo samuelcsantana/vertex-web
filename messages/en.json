@@ -219,7 +219,12 @@
     "editDescription": "Update the content shown at /about.",
     "contentLabel": "Content (Markdown)",
     "contentSaved": "Content saved successfully.",
-    "translationFallbackNotice": "This page hasn't been translated into this language yet. Showing the original Portuguese version."
+    "translationFallbackNotice": "This page hasn't been translated into this language yet. Showing the original Portuguese version.",
+    "avatarAlt": "Photo of Samuel Santana",
+    "roleTagline": "Senior Software Engineer",
+    "profileGithub": "GitHub profile",
+    "profileLinkedin": "LinkedIn profile",
+    "profileEmail": "Send email"
   },
   "Metadata": {
     "siteDescription": "Samuel Santana's technical blog on software architecture, web performance, and frontend engineering."
