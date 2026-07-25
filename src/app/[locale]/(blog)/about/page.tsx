@@ -11,6 +11,7 @@ import {
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
 import { getSiteUrl } from "@/lib/site-url";
+import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
 export async function generateMetadata(): Promise<Metadata> {
   const about = await getAboutContent();
@@ -70,6 +71,19 @@ export default async function AboutPage() {
   // on the post page) isn't used here.
   const startsWithHeading = /^#{1,6}\s+/.test(content.trimStart());
 
+  const siteUrl = await getSiteUrl();
+  // This is the page Google's search results currently surface for
+  // "samuel santana dev" — carrying the Person schema (with sameAs) here,
+  // not just on post pages, gives the entity graph its clearest signal on
+  // the exact URL that's already ranking.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Samuel Santana",
+    url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
+    sameAs: SOCIAL_PROFILE_URLS,
+  };
+
   return (
     // Same outer/inner wrapper split as blog/[slug]/page.tsx: the outer box
     // matches the header's own effective width so this page's content
@@ -77,6 +91,10 @@ export default async function AboutPage() {
     // was a single mx-auto max-w-3xl centered on the *full* page width,
     // ~200px out of step with the header on wide screens).
     <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:max-w-6xl xl:px-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-3xl lg:mx-0">
         {!isTranslated && (
           <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">

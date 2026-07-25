@@ -30,6 +30,7 @@ import {
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
 import { getSiteUrl } from "@/lib/site-url";
+import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -214,6 +215,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "Person",
         name: post.author?.name ?? "Samuel Santana",
         url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
+        // Tells Google's entity graph this Person is the same individual
+        // behind these external profiles — the key signal for disambiguating
+        // this "Samuel Santana" from other people sharing the name.
+        sameAs: SOCIAL_PROFILE_URLS,
       },
     ],
     // The slug's own locale, not the URL's — on a cross-locale slug this
