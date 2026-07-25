@@ -6,6 +6,7 @@ import { Info } from "lucide-react";
 
 import { getPathname } from "@/i18n/routing";
 import { getAboutContent } from "@/features/about/api/about-service";
+import { AboutProfileHeader } from "@/features/about/components/AboutProfileHeader";
 import {
   getLocalizedContent,
   getTranslatedLocales,
@@ -96,6 +97,8 @@ export default async function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-3xl lg:mx-0">
+        <AboutProfileHeader />
+
         {!isTranslated && (
           <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
             <Info className="mt-0.5 size-4 shrink-0" />
