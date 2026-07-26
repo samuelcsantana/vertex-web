@@ -34,12 +34,17 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
 import { getProfile } from "@/features/auth/api/profile-service";
 
-// Bounded to a sane tooltip/line-clamp length rather than showing the
-// full article — this is a listing-page teaser, not the post itself.
+// Bounded to a sane line-clamp length for the visible teaser text — the
+// full plain-text article (getFullText below) is what the hover tooltip
+// shows instead, since a listing card obviously can't fit the whole thing.
 const EXCERPT_LENGTH = 180;
 
+function getFullText(post: Post, locale: string): string {
+  return stripMarkdown(getLocalizedContent(post, locale));
+}
+
 function getExcerpt(post: Post, locale: string): string {
-  const stripped = stripMarkdown(getLocalizedContent(post, locale));
+  const stripped = getFullText(post, locale);
   return stripped.length > EXCERPT_LENGTH
     ? `${stripped.slice(0, EXCERPT_LENGTH).trimEnd()}…`
     : stripped;
@@ -177,6 +182,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               const displayCoverUrl = getLocalizedCoverUrl(featuredPost, locale);
               const displayCoverAlt = getLocalizedCoverAlt(featuredPost, locale);
               const excerpt = getExcerpt(featuredPost, locale);
+              const fullText = getFullText(featuredPost, locale);
               const readingMinutes = estimateReadingMinutes(
                 getLocalizedContent(featuredPost, locale)
               );
@@ -205,7 +211,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     </h2>
 
                     <p
-                      title={excerpt}
+                      title={fullText}
                       className="pointer-events-none line-clamp-3 text-sm text-slate-400"
                     >
                       {excerpt}
@@ -251,6 +257,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               const displayCoverUrl = getLocalizedCoverUrl(post, locale);
               const displayCoverAlt = getLocalizedCoverAlt(post, locale);
               const excerpt = getExcerpt(post, locale);
+              const fullText = getFullText(post, locale);
               const readingMinutes = estimateReadingMinutes(
                 getLocalizedContent(post, locale)
               );
@@ -313,7 +320,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     </h2>
 
                     <p
-                      title={excerpt}
+                      title={fullText}
                       className="pointer-events-none mt-2 line-clamp-3 text-sm text-slate-400"
                     >
                       {excerpt}
