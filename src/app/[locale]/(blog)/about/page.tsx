@@ -129,7 +129,11 @@ export default async function AboutPage() {
               <section
                 key={section.id}
                 id={section.id}
-                className={`scroll-mt-24 p-9 ${GLASS_CARD}`}
+                // target: (pure CSS, no JS) rings the card the URL hash
+                // currently points at — without it, jumping to a short
+                // section here reads as "landing" on whichever card fills
+                // most of the viewport, not the one the TOC link named.
+                className={`scroll-mt-24 p-9 ring-emerald-400/60 transition-shadow target:ring-2 ${GLASS_CARD}`}
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="font-mono text-xs text-emerald-300/70">
