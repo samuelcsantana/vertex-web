@@ -34,9 +34,7 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
 import { getProfile } from "@/features/auth/api/profile-service";
 
-// Bounded to a sane line-clamp length for the visible teaser text — the
-// full plain-text article (getFullText below) is what the hover tooltip
-// shows instead, since a listing card obviously can't fit the whole thing.
+// Bounded to a sane line-clamp length for the visible teaser text.
 const EXCERPT_LENGTH = 180;
 
 function getFullText(post: Post, locale: string): string {
@@ -182,7 +180,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
               const displayCoverUrl = getLocalizedCoverUrl(featuredPost, locale);
               const displayCoverAlt = getLocalizedCoverAlt(featuredPost, locale);
               const excerpt = getExcerpt(featuredPost, locale);
-              const fullText = getFullText(featuredPost, locale);
               const readingMinutes = estimateReadingMinutes(
                 getLocalizedContent(featuredPost, locale)
               );
@@ -194,15 +191,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
 
-                    {/* title lives here, not on the h2/p below — those are
+                    {/* title lives here, not on the h2 below — that's
                         pointer-events-none so clicks fall through to this
-                        full-card link, which means they're also invisible
-                        to the browser's native hover-tooltip engine. This
-                        Link is the one element that actually receives the
+                        full-card link, which means it's also invisible to
+                        the browser's native hover-tooltip engine. This Link
+                        is the one element that actually receives the
                         hover, so it's the one that has to carry it. */}
                     <Link
                       href={`/blog/${featuredPost.slug}`}
-                      title={fullText}
+                      title={displayTitle}
                       className="absolute inset-0"
                     >
                       <span className="sr-only">
@@ -258,7 +255,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
               const displayCoverUrl = getLocalizedCoverUrl(post, locale);
               const displayCoverAlt = getLocalizedCoverAlt(post, locale);
               const excerpt = getExcerpt(post, locale);
-              const fullText = getFullText(post, locale);
               const readingMinutes = estimateReadingMinutes(
                 getLocalizedContent(post, locale)
               );
@@ -291,7 +287,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         same note on the featured card above. */}
                     <Link
                       href={`/blog/${post.slug}`}
-                      title={fullText}
+                      title={displayTitle}
                       className="absolute inset-0 rounded-3xl"
                     >
                       <span className="sr-only">
