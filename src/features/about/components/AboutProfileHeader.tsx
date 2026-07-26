@@ -33,12 +33,15 @@ function LinkedinIcon(props: { className?: string }) {
   );
 }
 
-// Strips the scheme (and LinkedIn's trailing slash) so the row shows the
-// same host+path a visitor would type, e.g. "github.com/samuelcsantana" —
-// derived from SOCIAL_PROFILES rather than hardcoded so it can't drift
-// from the actual href.
+// Just the username — the last path segment — rather than the full
+// host+path: with the icon/label already naming the service, "GitHub
+// samuelcsantana" reads cleaner than repeating "github.com" too, and
+// stays short enough to never need truncation. Derived from
+// SOCIAL_PROFILES rather than hardcoded so it can't drift from the
+// actual href.
 function displayHandle(url: string): string {
-  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const trimmed = url.replace(/\/$/, "");
+  return trimmed.slice(trimmed.lastIndexOf("/") + 1);
 }
 
 const SOCIAL_LINKS = [
