@@ -62,16 +62,15 @@ export default async function AboutPage() {
     ? (getTranslatedLocales(about) as string[]).includes(locale)
     : true;
 
-  // The About content is expected to open with its own "# Heading" (and is
-  // styled/sized as one) — in that case it already is the page's real h1
-  // and a second one would just duplicate it in the heading outline. The
-  // sr-only fallback below only renders when the content doesn't start
-  // with a heading, so there's always exactly one h1, never zero or two.
-  // Unlike the blog post page there's no separate title field to draw an
-  // h1 from, and remapping the body's own headings down a level would
-  // visibly shrink the intended opening heading — so that approach (used
-  // on the post page) isn't used here.
-  const startsWithHeading = /^#{1,6}\s+/.test(content.trimStart());
+  // The About content is expected to (optionally) open with its own real
+  // "# Heading" before any "##" section — in that case it already is the
+  // page's real h1 and a second one would just duplicate it in the
+  // heading outline. Only a single "#" counts: a "##" is a section
+  // heading (rendered as an h2 card title below, see splitMarkdownSections),
+  // not a page-level h1, so it must NOT suppress the sr-only fallback —
+  // content that starts straight in with "## Sobre mim" still needs that
+  // fallback to end up with exactly one h1, not zero.
+  const startsWithHeading = /^#\s+/.test(content.trimStart());
   // The intro (everything before the first "##") keeps its own opening
   // "# heading" — that's what the startsWithHeading/h1 logic above is
   // about — while the "##" sections become the numbered cards below.
