@@ -4,7 +4,18 @@ import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { FileText, Hash, List, Pencil, Plus, Settings, Trash2, Users } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  FileText,
+  Hash,
+  List,
+  Pencil,
+  Plus,
+  Settings,
+  Trash2,
+  Users,
+} from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
@@ -12,12 +23,32 @@ import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { CoverImage } from "@/features/posts/components/CoverImage";
 import { TopicPills } from "@/features/posts/components/TopicPills";
+import type { Post } from "@/features/posts/types";
 import {
+  getLocalizedContent,
   getLocalizedCoverAlt,
   getLocalizedCoverUrl,
   getLocalizedTitle,
 } from "@/features/posts/utils/localized-content";
+import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
+import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
 import { getProfile } from "@/features/auth/api/profile-service";
+
+// Bounded to a sane line-clamp length for the visible teaser text — the
+// full plain-text article (getFullText below) is what the hover tooltip
+// shows instead, since a listing card obviously can't fit the whole thing.
+const EXCERPT_LENGTH = 180;
+
+function getFullText(post: Post, locale: string): string {
+  return stripMarkdown(getLocalizedContent(post, locale));
+}
+
+function getExcerpt(post: Post, locale: string): string {
+  const stripped = getFullText(post, locale);
+  return stripped.length > EXCERPT_LENGTH
+    ? `${stripped.slice(0, EXCERPT_LENGTH).trimEnd()}…`
+    : stripped;
+}
 
 interface BlogPageProps {
   params: Promise<{ locale: string }>;
@@ -42,6 +73,43 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
   const tPost = await getTranslations("Post");
+
+  // Shared between the featured card and the grid so the edit/delete
+  // overlay (hover-revealed, admin-only) isn't copy-pasted across both
+  // layouts — same controls, same confirm dialog, just a different card
+  // shape around them.
+  function renderAdminActions(post: Post) {
+    return (
+      <div className="relative z-10 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+        <Link
+          href={`/dashboard/posts/${post.id}/edit`}
+          aria-label={t("editArticle")}
+          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+        >
+          <Pencil className="size-3.5" />
+          {t("editArticle")}
+        </Link>
+        <ConfirmDialog
+          title={t("confirmDeleteTitle")}
+          description={t("confirmDeleteDescription")}
+          confirmLabel={t("confirmContinue")}
+          action={deletePostAction.bind(null, post.id)}
+          trigger={
+            <button
+              type="button"
+              aria-label={t("deleteArticle")}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
+            >
+              <Trash2 className="size-3.5" />
+              {t("deleteArticle")}
+            </button>
+          }
+        />
+      </div>
+    );
+  }
+
+  const [featuredPost, ...restPosts] = posts;
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -104,94 +172,172 @@ export default async function BlogPage({ params }: BlogPageProps) {
         </div>
       )}
 
-      <section className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
-        {posts.length === 0 ? (
-          <p className="col-span-full text-slate-400">{t("noPostsYet")}</p>
-        ) : (
-          posts.map((post) => {
-            const displayTitle = getLocalizedTitle(post, locale);
-            const displayCoverUrl = getLocalizedCoverUrl(post, locale);
-            const displayCoverAlt = getLocalizedCoverAlt(post, locale);
+      {posts.length === 0 ? (
+        <p className="mt-16 text-slate-400">{t("noPostsYet")}</p>
+      ) : (
+        <>
+          {featuredPost &&
+            (() => {
+              const displayTitle = getLocalizedTitle(featuredPost, locale);
+              const displayCoverUrl = getLocalizedCoverUrl(featuredPost, locale);
+              const displayCoverAlt = getLocalizedCoverAlt(featuredPost, locale);
+              const excerpt = getExcerpt(featuredPost, locale);
+              const fullText = getFullText(featuredPost, locale);
+              const readingMinutes = estimateReadingMinutes(
+                getLocalizedContent(featuredPost, locale)
+              );
 
-            return (
-              <div
-                key={post.id}
-                className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
-              >
-                {displayCoverUrl && (
-                  <CoverImage
-                    src={displayCoverUrl}
-                    alt={displayCoverAlt ?? ""}
-                    // The grid's real column widths inside max-w-6xl: 4 cols
-                    // ≥xl, 3 ≥lg, 2 ≥sm, full width below.
-                    sizes="(min-width: 1280px) 252px, (min-width: 1024px) 346px, (min-width: 640px) 50vw, 100vw"
-                    className="pointer-events-none aspect-[1200/630] w-full object-cover"
-                  />
-                )}
+              return (
+                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 sm:grid-cols-2">
+                  <div className="flex flex-col justify-center gap-4 p-8">
+                    {isAdmin && renderAdminActions(featuredPost)}
 
-                <div className="p-6">
-                  {isAdmin && (
-                    <div className="relative z-10 mb-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                      <Link
-                        href={`/dashboard/posts/${post.id}/edit`}
-                        aria-label={t("editArticle")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+                    <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
+
+                    <Link
+                      href={`/blog/${featuredPost.slug}`}
+                      className="absolute inset-0"
+                    >
+                      <span className="sr-only">
+                        {tPost("readPost", { title: displayTitle })}
+                      </span>
+                    </Link>
+
+                    <h2
+                      title={displayTitle}
+                      className="pointer-events-none line-clamp-2 text-2xl font-bold text-slate-100 transition-colors group-hover:text-emerald-400 sm:text-3xl"
+                    >
+                      {displayTitle}
+                    </h2>
+
+                    <p
+                      title={fullText}
+                      className="pointer-events-none line-clamp-3 text-sm text-slate-400"
+                    >
+                      {excerpt}
+                    </p>
+
+                    <div className="pointer-events-none flex items-center gap-3 font-mono text-xs text-slate-400">
+                      <time
+                        dateTime={featuredPost.createdAt}
+                        className="flex items-center gap-1.5"
                       >
-                        <Pencil className="size-3.5" />
-                        {t("editArticle")}
-                      </Link>
-                      <ConfirmDialog
-                        title={t("confirmDeleteTitle")}
-                        description={t("confirmDeleteDescription")}
-                        confirmLabel={t("confirmContinue")}
-                        action={deletePostAction.bind(null, post.id)}
-                        trigger={
-                          <button
-                            type="button"
-                            aria-label={t("deleteArticle")}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
-                          >
-                            <Trash2 className="size-3.5" />
-                            {t("deleteArticle")}
-                          </button>
-                        }
+                        <Calendar className="size-3.5" />
+                        {format(parseISO(featuredPost.createdAt), "MMMM d, yyyy", {
+                          locale: dateLocale,
+                        })}
+                      </time>
+                      <span className="size-1 rounded-full bg-slate-700" />
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="size-3.5" />
+                        {readingMinutes} min
+                      </span>
+                    </div>
+                  </div>
+
+                  {displayCoverUrl && (
+                    <div className="relative overflow-hidden sm:h-full">
+                      <CoverImage
+                        src={displayCoverUrl}
+                        alt={displayCoverAlt ?? ""}
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                        priority
+                        className="pointer-events-none aspect-[1200/630] size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 sm:aspect-auto"
                       />
+                      <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+          <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
+            {restPosts.map((post) => {
+              const displayTitle = getLocalizedTitle(post, locale);
+              const displayCoverUrl = getLocalizedCoverUrl(post, locale);
+              const displayCoverAlt = getLocalizedCoverAlt(post, locale);
+              const excerpt = getExcerpt(post, locale);
+              const fullText = getFullText(post, locale);
+              const readingMinutes = estimateReadingMinutes(
+                getLocalizedContent(post, locale)
+              );
+
+              return (
+                <div
+                  key={post.id}
+                  className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
+                >
+                  {displayCoverUrl && (
+                    <div className="relative aspect-[1200/630] overflow-hidden">
+                      <CoverImage
+                        src={displayCoverUrl}
+                        alt={displayCoverAlt ?? ""}
+                        // The grid's real column widths inside max-w-6xl: 4 cols
+                        // ≥xl, 3 ≥lg, 2 ≥sm, full width below.
+                        sizes="(min-width: 1280px) 252px, (min-width: 1024px) 346px, (min-width: 640px) 50vw, 100vw"
+                        className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
                     </div>
                   )}
 
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="absolute inset-0 rounded-3xl"
-                  >
-                    <span className="sr-only">
-                      {tPost("readPost", { title: displayTitle })}
-                    </span>
-                  </Link>
+                  <div className="p-6">
+                    {isAdmin && (
+                      <div className="mb-4">{renderAdminActions(post)}</div>
+                    )}
 
-                  <h2 className="pointer-events-none text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
-                    {displayTitle}
-                  </h2>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="absolute inset-0 rounded-3xl"
+                    >
+                      <span className="sr-only">
+                        {tPost("readPost", { title: displayTitle })}
+                      </span>
+                    </Link>
 
-                  <time
-                    dateTime={post.createdAt}
-                    className="pointer-events-none mt-2 block text-sm text-slate-400"
-                  >
-                    {format(parseISO(post.createdAt), "MMMM d, yyyy", {
-                      locale: dateLocale,
-                    })}
-                  </time>
+                    <div className="pointer-events-none mb-2 flex items-center gap-2.5 font-mono text-xs text-slate-400">
+                      <time
+                        dateTime={post.createdAt}
+                        className="flex items-center gap-1"
+                      >
+                        <Calendar className="size-3.5" />
+                        {format(parseISO(post.createdAt), "MMMM d, yyyy", {
+                          locale: dateLocale,
+                        })}
+                      </time>
+                      <span className="size-1 rounded-full bg-slate-700" />
+                      <span className="flex items-center gap-1">
+                        <Clock className="size-3.5" />
+                        {readingMinutes} min
+                      </span>
+                    </div>
 
-                  <TopicPills
-                    topics={post.topics}
-                    limit={2}
-                    className="pointer-events-none mt-3"
-                  />
+                    <h2
+                      title={displayTitle}
+                      className="pointer-events-none line-clamp-2 text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400"
+                    >
+                      {displayTitle}
+                    </h2>
+
+                    <p
+                      title={fullText}
+                      className="pointer-events-none mt-2 line-clamp-3 text-sm text-slate-400"
+                    >
+                      {excerpt}
+                    </p>
+
+                    <TopicPills
+                      topics={post.topics}
+                      limit={2}
+                      className="pointer-events-none mt-3"
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
-      </section>
+              );
+            })}
+          </section>
+        </>
+      )}
     </div>
   );
 }
