@@ -114,15 +114,15 @@ export function AboutProfileHeader() {
             key={label}
             href={href}
             {...(external ? { target: "_blank", rel: "me noopener noreferrer" } : {})}
-            className="group/link flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-3 text-slate-300 transition-all duration-300 hover:border-white/15 hover:bg-white/[0.05] hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:bg-emerald-950/30 focus-visible:outline-none"
+            className="group/link flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-slate-300 transition-all duration-300 hover:border-white/15 hover:bg-white/[0.05] hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:bg-emerald-950/30 focus-visible:outline-none"
           >
-            <span className="flex items-center gap-3">
+            <span className="flex shrink-0 items-center gap-2">
               <Icon className="size-4 text-slate-400 transition-colors group-hover/link:text-emerald-400" />
               {label}
             </span>
-            <span className="flex items-center gap-1 text-xs text-slate-500 transition-colors group-hover/link:text-cyan-400">
-              {handle}
-              <ArrowUpRight className="size-3 -translate-x-2 opacity-0 transition-all group-hover/link:translate-x-0 group-hover/link:opacity-100" />
+            <span className="flex min-w-0 items-center gap-1 text-xs text-slate-500 transition-colors group-hover/link:text-cyan-400">
+              <span className="truncate">{handle}</span>
+              <ArrowUpRight className="size-3 shrink-0 -translate-x-2 opacity-0 transition-all group-hover/link:translate-x-0 group-hover/link:opacity-100" />
             </span>
           </a>
         ))}
