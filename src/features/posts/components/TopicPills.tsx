@@ -23,13 +23,13 @@ export function TopicPills({ topics, className, limit }: TopicPillsProps) {
       {visibleTopics.map((topic) => (
         <span
           key={topic.id}
-          className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[11px] font-medium text-emerald-400"
+          className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400"
         >
           {topic.name}
         </span>
       ))}
       {hiddenCount > 0 && (
-        <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 font-mono text-[11px] font-medium text-slate-400">
+        <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400">
           +{hiddenCount}
         </span>
       )}

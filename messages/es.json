@@ -224,8 +224,7 @@
     "roleTagline": "Ingeniero de Software Senior",
     "profileGithub": "Perfil de GitHub",
     "profileLinkedin": "Perfil de LinkedIn",
-    "profileEmail": "Enviar correo",
-    "tableOfContentsLabel": "En esta página"
+    "profileEmail": "Enviar correo"
   },
   "Metadata": {
     "siteDescription": "Blog técnico de Samuel Santana sobre arquitectura de software, rendimiento web e ingeniería frontend."

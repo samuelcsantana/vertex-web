@@ -8,7 +8,6 @@ import { FileText, Hash, List, Pencil, Plus, Settings, Trash2, Users } from "luc
 
 import { Link, routing } from "@/i18n/routing";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
-import { GLASS_CARD, GLASS_CARD_SUBTLE } from "@/components/blog-identity/glassStyles";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { CoverImage } from "@/features/posts/components/CoverImage";
@@ -96,9 +95,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
       </section>
 
       {isAdmin && (
-        <div
-          className={`relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 p-4 ${GLASS_CARD}`}
-        >
+        <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
           <div className="flex items-center gap-2">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
               <Settings className="size-4" />
@@ -156,9 +153,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               const displayCoverAlt = getLocalizedCoverAlt(featuredPost, locale);
 
               return (
-                <div
-                  className={`group relative mt-16 grid grid-cols-1 overflow-hidden sm:grid-cols-2 ${GLASS_CARD}`}
-                >
+                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 sm:grid-cols-2">
                   <div className="flex flex-col justify-center gap-4 p-8">
                     {isAdmin && renderAdminActions(featuredPost)}
 
@@ -173,13 +168,13 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    <h2 className="pointer-events-none text-2xl font-bold text-white transition-colors group-hover:text-emerald-400 sm:text-3xl">
+                    <h2 className="pointer-events-none text-2xl font-bold text-slate-100 transition-colors group-hover:text-emerald-400 sm:text-3xl">
                       {displayTitle}
                     </h2>
 
                     <time
                       dateTime={featuredPost.createdAt}
-                      className="pointer-events-none font-mono text-sm text-slate-400"
+                      className="pointer-events-none text-sm text-slate-400"
                     >
                       {format(parseISO(featuredPost.createdAt), "MMMM d, yyyy", {
                         locale: dateLocale,
@@ -209,7 +204,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               return (
                 <div
                   key={post.id}
-                  className={`group relative overflow-hidden transition-all duration-300 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 ${GLASS_CARD_SUBTLE}`}
+                  className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
                 >
                   {displayCoverUrl && (
                     <CoverImage
@@ -229,7 +224,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="absolute inset-0 rounded-2xl"
+                      className="absolute inset-0 rounded-3xl"
                     >
                       <span className="sr-only">
                         {tPost("readPost", { title: displayTitle })}
