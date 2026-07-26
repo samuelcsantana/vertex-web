@@ -11,6 +11,7 @@ import {
   getLocalizedContent,
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
+import { splitMarkdownSections } from "@/features/posts/utils/split-markdown-sections";
 import { getSiteUrl } from "@/lib/site-url";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
@@ -71,6 +72,10 @@ export default async function AboutPage() {
   // visibly shrink the intended opening heading — so that approach (used
   // on the post page) isn't used here.
   const startsWithHeading = /^#{1,6}\s+/.test(content.trimStart());
+  // The intro (everything before the first "##") keeps its own opening
+  // "# heading" — that's what the startsWithHeading/h1 logic above is
+  // about — while the "##" sections become the numbered cards below.
+  const { intro, sections } = splitMarkdownSections(content);
 
   const siteUrl = await getSiteUrl();
   // This is the page Google's search results currently surface for
@@ -86,30 +91,54 @@ export default async function AboutPage() {
   };
 
   return (
-    // Same outer/inner wrapper split as blog/[slug]/page.tsx: the outer box
-    // matches the header's own effective width so this page's content
-    // shares its left edge with the header logo above it (previously this
-    // was a single mx-auto max-w-3xl centered on the *full* page width,
-    // ~200px out of step with the header on wide screens).
-    <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 lg:max-w-6xl xl:px-0">
+    <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-3xl lg:mx-0">
-        <AboutProfileHeader />
 
-        {!isTranslated && (
-          <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
-            <Info className="mt-0.5 size-4 shrink-0" />
-            <p>{tAbout("translationFallbackNotice")}</p>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+        <div className="lg:col-span-8">
+          {!isTranslated && (
+            <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              <p>{tAbout("translationFallbackNotice")}</p>
+            </div>
+          )}
+
+          <div className="prose prose-invert lg:prose-lg mb-10 max-w-none">
+            {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
           </div>
-        )}
 
-        <article className="prose prose-invert lg:prose-lg">
-          {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-        </article>
+          <div className="flex flex-col gap-6">
+            {sections.map((section, index) => (
+              <section
+                key={section.id}
+                id={section.id}
+                className="group scroll-mt-24 rounded-3xl border border-white/10 bg-slate-900/30 p-8 shadow-[0_8px_30px_rgb(16,185,129,0.02)] backdrop-blur-lg transition-all duration-500 target:ring-2 target:ring-emerald-400/60 hover:border-white/20 hover:bg-slate-900/50 hover:shadow-[0_8px_30px_rgb(16,185,129,0.05)] md:p-10"
+              >
+                <div className="mb-6 flex items-center gap-4 border-b border-white/5 pb-4">
+                  <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text font-mono text-sm font-semibold text-transparent">
+                    0{index + 1}.
+                  </span>
+                  <h2 className="text-2xl font-bold tracking-tight text-slate-100 transition-colors group-hover:text-white">
+                    {section.heading}
+                  </h2>
+                </div>
+                <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {section.body}
+                  </ReactMarkdown>
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+
+        <aside className="lg:sticky lg:top-24 lg:col-span-4">
+          <AboutProfileHeader />
+        </aside>
       </div>
     </div>
   );
