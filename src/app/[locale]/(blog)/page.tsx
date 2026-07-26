@@ -194,8 +194,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
 
+                    {/* title lives here, not on the h2/p below — those are
+                        pointer-events-none so clicks fall through to this
+                        full-card link, which means they're also invisible
+                        to the browser's native hover-tooltip engine. This
+                        Link is the one element that actually receives the
+                        hover, so it's the one that has to carry it. */}
                     <Link
                       href={`/blog/${featuredPost.slug}`}
+                      title={fullText}
                       className="absolute inset-0"
                     >
                       <span className="sr-only">
@@ -203,17 +210,11 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    <h2
-                      title={displayTitle}
-                      className="pointer-events-none line-clamp-2 text-2xl font-bold text-slate-100 transition-colors group-hover:text-emerald-400 sm:text-3xl"
-                    >
+                    <h2 className="pointer-events-none line-clamp-2 text-2xl font-bold text-slate-100 transition-colors group-hover:text-emerald-400 sm:text-3xl">
                       {displayTitle}
                     </h2>
 
-                    <p
-                      title={fullText}
-                      className="pointer-events-none line-clamp-3 text-sm text-slate-400"
-                    >
+                    <p className="pointer-events-none line-clamp-3 text-sm text-slate-400">
                       {excerpt}
                     </p>
 
@@ -286,8 +287,11 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       <div className="mb-4">{renderAdminActions(post)}</div>
                     )}
 
+                    {/* title lives here, not on the h2/p below — see the
+                        same note on the featured card above. */}
                     <Link
                       href={`/blog/${post.slug}`}
+                      title={fullText}
                       className="absolute inset-0 rounded-3xl"
                     >
                       <span className="sr-only">
@@ -312,17 +316,11 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </div>
 
-                    <h2
-                      title={displayTitle}
-                      className="pointer-events-none line-clamp-2 text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400"
-                    >
+                    <h2 className="pointer-events-none line-clamp-2 text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
                       {displayTitle}
                     </h2>
 
-                    <p
-                      title={fullText}
-                      className="pointer-events-none mt-2 line-clamp-3 text-sm text-slate-400"
-                    >
+                    <p className="pointer-events-none mt-2 line-clamp-3 text-sm text-slate-400">
                       {excerpt}
                     </p>
 
