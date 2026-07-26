@@ -97,7 +97,7 @@ export default async function AboutPage() {
       />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-        <div className="lg:col-span-8">
+        <div className="order-last lg:order-none lg:col-span-8">
           {!isTranslated && (
             <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
               <Info className="mt-0.5 size-4 shrink-0" />
