@@ -186,8 +186,18 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
               return (
                 <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 sm:grid-cols-2">
-                  <div className="flex flex-col justify-center gap-4 p-8">
-                    {isAdmin && renderAdminActions(featuredPost)}
+                  <div className="relative flex flex-col justify-center gap-4 p-8">
+                    {/* Absolutely positioned so it never adds height to this
+                        column — it used to sit in normal flex flow, which
+                        reserved space even at opacity-0 and made the image
+                        column (sm:h-full, matched to this column's height
+                        via grid stretch) crop taller/differently for admins
+                        than for anonymous visitors. */}
+                    {isAdmin && (
+                      <div className="absolute right-8 top-8 z-10">
+                        {renderAdminActions(featuredPost)}
+                      </div>
+                    )}
 
                     <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
 
