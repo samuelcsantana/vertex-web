@@ -116,7 +116,10 @@ export async function generateMetadata({
       description,
       url: canonicalUrl,
       type: "article",
-      publishedTime: post.createdAt,
+      // publishedAt is null only for drafts, which never reach this page
+      // (findPublishedBySlug filters isPublished: true) — the fallback
+      // only matters for posts published before this field existed.
+      publishedTime: post.publishedAt ?? post.createdAt,
       modifiedTime: post.updatedAt,
       authors: [post.author?.name ?? "Samuel Santana"],
       images: [{ url: ogImageUrl }],
@@ -208,7 +211,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@type": "BlogPosting",
     headline: displayTitle,
     image: [displayCoverUrl ?? `${siteUrl}/og-fallback.png`],
-    datePublished: post.createdAt,
+    datePublished: post.publishedAt ?? post.createdAt,
     dateModified: post.updatedAt,
     author: [
       {
@@ -338,7 +341,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
             )}
 
-            <span>{t("publishedOn", { date: formatDate(post.createdAt, locale) })}</span>
+            <span>
+              {t("publishedOn", {
+                date: formatDate(post.publishedAt ?? post.createdAt, locale),
+              })}
+            </span>
             {wasEdited && (
               <span>{t("editedOn", { date: formatDate(post.updatedAt, locale) })}</span>
             )}

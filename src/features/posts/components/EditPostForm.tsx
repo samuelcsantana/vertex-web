@@ -439,14 +439,47 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
 
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
-        <label className="flex items-center gap-2 text-sm text-slate-300">
-          <input
-            type="checkbox"
-            className="size-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500/70"
-            {...register("isPublished")}
-          />
-          {t("published")}
-        </label>
+        {/* Two mutually-exclusive buttons rather than a single checkbox —
+            this choice now has a real consequence beyond visibility: a
+            draft's publishedAt is left unset on the backend until this is
+            switched to "publish now", so the public site never shows the
+            day the draft was started as its publish date. Once a post has
+            genuinely gone live, publishedAt is already locked in — flipping
+            this back and forth afterwards only unpublishes/republishes it,
+            it won't reset that original date (see PostsService.update). */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-slate-300">
+            {t("publishStatusLabel")}
+          </span>
+          <div className="flex w-fit items-center gap-1 rounded-full border border-slate-800 bg-slate-950 p-1">
+            <button
+              type="button"
+              onClick={() =>
+                setValue("isPublished", true, { shouldDirty: true })
+              }
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                watch("isPublished")
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {t("publishNow")}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setValue("isPublished", false, { shouldDirty: true })
+              }
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                !watch("isPublished")
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {t("saveAsDraft")}
+            </button>
+          </div>
+        </div>
 
         <label className="flex items-center gap-2 text-sm text-slate-300">
           <input

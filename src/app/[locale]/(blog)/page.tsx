@@ -227,13 +227,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <div className="pointer-events-none flex items-center gap-3 font-mono text-xs text-slate-400">
                       <time
-                        dateTime={featuredPost.createdAt}
+                        dateTime={featuredPost.publishedAt ?? featuredPost.createdAt}
                         className="flex items-center gap-1.5"
                       >
                         <Calendar className="size-3.5" />
-                        {format(parseISO(featuredPost.createdAt), "MMMM d, yyyy", {
-                          locale: dateLocale,
-                        })}
+                        {format(
+                          parseISO(featuredPost.publishedAt ?? featuredPost.createdAt),
+                          "MMMM d, yyyy",
+                          { locale: dateLocale }
+                        )}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
                       <span className="flex items-center gap-1.5">
@@ -307,13 +309,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <div className="pointer-events-none mb-2 flex items-center gap-2.5 font-mono text-xs text-slate-400">
                       <time
-                        dateTime={post.createdAt}
+                        dateTime={post.publishedAt ?? post.createdAt}
                         className="flex items-center gap-1"
                       >
                         <Calendar className="size-3.5" />
-                        {format(parseISO(post.createdAt), "MMMM d, yyyy", {
-                          locale: dateLocale,
-                        })}
+                        {format(
+                          parseISO(post.publishedAt ?? post.createdAt),
+                          "MMMM d, yyyy",
+                          { locale: dateLocale }
+                        )}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
                       <span className="flex items-center gap-1">

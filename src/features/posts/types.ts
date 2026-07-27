@@ -45,6 +45,10 @@ export interface Post {
   author: PostAuthor;
   createdAt: string;
   updatedAt: string;
+  // null for drafts; server-stamped once, the first time isPublished flips
+  // to true (see vertex-api's PostsService) — this is the date the public
+  // site actually shows as "published on", never the draft's createdAt.
+  publishedAt: string | null;
   topics: Topic[];
 }
 
