@@ -42,7 +42,7 @@ cp .env.example .env.local   # fill in the values you need — see below
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000). The default locale (pt) serves at the root; `/en` and `/es` are the other two.
+Visit [http://localhost:3021](http://localhost:3021). The default locale (pt) serves at the root; `/en` and `/es` are the other two.
 
 ### Other scripts
 
@@ -54,6 +54,16 @@ npm run test:watch       # vitest in watch mode
 npm run test:coverage    # vitest with a coverage report
 npm run test:e2e         # playwright — needs a running dev server *and* vertex-api
 ```
+
+## Docker
+
+This repo pairs with [vertex-api](https://github.com/samuelcsantana/vertex-api) (the backend, on port `3020`) — vertex-web itself runs on port `3021` in local dev. This is a local-dev convenience only; production still deploys to Vercel, and the image is a plain `npm run build` + `npm start` (no `output: "standalone"`) specifically to keep that deployment untouched.
+
+```bash
+docker compose up -d --build
+```
+
+There's no `api` service in this compose file — vertex-api is a separate repo/container; point the env vars below at wherever it's actually running. `NEXT_PUBLIC_VERTEX_API_URL` is inlined into the client bundle at **build** time (a Docker build `arg`, same as `VITE_*`-style Vite vars), while `VERTEX_API_URL` is server-only and read at **runtime** (a normal `environment:` var) — see `docker-compose.yml` and `Dockerfile`.
 
 ## Testing
 
