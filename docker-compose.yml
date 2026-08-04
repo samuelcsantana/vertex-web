@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        # Baked into the client bundle at build time — see the Dockerfile
+        # comment. Point this at wherever vertex-api's build actually runs
+        # if it's not on the default local port.
+        NEXT_PUBLIC_VERTEX_API_URL: http://localhost:3020
+    restart: unless-stopped
+    environment:
+      # Server-only, read at runtime (not inlined into the bundle) — point
+      # this at wherever the vertex-api sibling repo is actually running.
+      # This compose file intentionally has no `api` service of its own:
+      # vertex-api is a separate repo/container, started via its own
+      # `docker compose up` (see its README).
+      VERTEX_API_URL: http://localhost:3020
+    ports:
+      - '3021:3021'
