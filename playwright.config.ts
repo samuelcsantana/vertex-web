@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:3021",
     trace: "on-first-retry",
     // Pinned so locale-routing tests are deterministic: next-intl's locale
     // detection negotiates from Accept-Language on a visitor's first request
@@ -29,7 +29,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run dev",
-    url: "http://localhost:3000",
+    url: "http://localhost:3021",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
