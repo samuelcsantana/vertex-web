@@ -10,8 +10,8 @@ import type { Options as RehypePrettyCodeOptions } from "rehype-pretty-code";
 const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_BASE_URL;
 
 const nextConfig: NextConfig = {
-  // No `cacheComponents: true` here, deliberately — it was tried and reverted.
-  // docs/rendering-strategies.md records the attempt: next-intl 4.13.1 resolves
+  // No `cacheComponents: true` here, deliberately — it was tried and reverted:
+  // next-intl 4.13.1 resolves
   // its config per request, so every server component that translates counts
   // as uncached data and nothing prerenders. Revisit when next-intl supports
   // Cache Components.

@@ -40,7 +40,6 @@ export async function generateMetadata({
   // getLocale() was to still resolve a usable locale while the layout body is
   // about to notFound() a garbage [locale] segment; the hasLocale() fallback
   // here preserves exactly that without reading the request.
-  // See docs/rendering-strategies.md.
   const { locale: requestedLocale } = await params;
   const locale = hasLocale(routing.locales, requestedLocale)
     ? requestedLocale
@@ -89,8 +88,8 @@ export default async function RootLayout({
   // (getMessages, getTranslations) otherwise resolves the locale from the
   // request headers and forces per-request rendering, which is why nothing
   // under [locale] was prerendered before. Routes that still need per-request
-  // data — auth cookies, host-derived canonical URLs — opt out individually;
-  // docs/rendering-strategies.md lists which ones and why.
+  // data — auth cookies, host-derived canonical URLs — opt out individually with
+  // `export const dynamic = "force-dynamic"`.
   setRequestLocale(locale);
 
   const messages = await getMessages();

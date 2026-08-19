@@ -25,7 +25,7 @@ export default async function BlogHomeLayout({
     // admin-only controls inside a page share a single /api/me request
     // instead of each resolving auth for itself. Nothing in this layout
     // touches the request any more, which is what makes the pages below
-    // prerenderable — see docs/rendering-strategies.md.
+    // prerenderable.
     <CurrentUserProvider>
       <div className="relative flex min-h-screen flex-col text-slate-300">
         <BlogBackground />

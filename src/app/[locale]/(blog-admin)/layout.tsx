@@ -13,7 +13,7 @@ import { getProfile } from "@/features/auth/api/profile-service";
 // that moved the cookie read elsewhere would silently make these routes
 // cacheable. These pages show one user their own private data, so SSR is a
 // requirement here, not an optimisation: ISR or SSG would mean serving one
-// admin's dashboard to whoever asks next. See docs/rendering-strategies.md.
+// admin's dashboard to whoever asks next.
 export const dynamic = "force-dynamic";
 
 async function AdminHeader() {
