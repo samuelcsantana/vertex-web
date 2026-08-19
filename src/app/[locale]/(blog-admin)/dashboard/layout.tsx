@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { getLocale } from "next-intl/server";
 
@@ -12,11 +13,7 @@ import { getProfile } from "@/features/auth/api/profile-service";
 // backend call (getProfile -> GET /auth/profile), not just cookie presence.
 // /profile lives outside this subtree on purpose — any logged-in user can
 // view their own profile, not just admins.
-export default async function DashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+async function AdminGate({ children }: Readonly<{ children: React.ReactNode }>) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
   const profile = accessToken ? await getProfile(accessToken) : null;
@@ -26,4 +23,21 @@ export default async function DashboardLayout({
   }
 
   return <>{children}</>;
+}
+
+export default function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  // The role check has to happen per request, so it lives inside its own
+  // Suspense boundary rather than in the layout body: that keeps the gate
+  // request-time while letting the surrounding chrome prerender. The fallback
+  // is deliberately empty — anything rendered here would be visible for a
+  // moment to a non-admin who is about to be redirected away.
+  return (
+    <Suspense fallback={null}>
+      <AdminGate>{children}</AdminGate>
+    </Suspense>
+  );
 }

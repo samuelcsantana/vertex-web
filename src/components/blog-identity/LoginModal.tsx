@@ -11,6 +11,7 @@ import {
   requestOtpCodeAction,
   verifyOtpCodeAction,
 } from "@/features/auth/actions/auth-actions";
+import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 import {
   isOAuthErrorBroadcast,
@@ -57,6 +58,10 @@ function watchForAbandonedPopup(
 
 export function LoginModal({ open, onClose }: LoginModalProps) {
   const router = useRouter();
+  // The header reads auth from /api/me, not from the server render, so
+  // router.refresh() alone no longer flips it to the signed-in state after a
+  // successful login — the cookie changed but no React state did.
+  const { refresh: refreshCurrentUser } = useCurrentUser();
   const t = useTranslations("Auth");
   const tCommon = useTranslations("Common");
   const tApiErrors = useTranslations("ApiErrors");
@@ -185,6 +190,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     onClose();
+    refreshCurrentUser();
     router.refresh();
   }
 
@@ -234,6 +240,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     }
 
     onClose();
+    refreshCurrentUser();
     router.refresh();
   }
 

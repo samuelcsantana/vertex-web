@@ -6,6 +6,7 @@ import { ChevronDown, LogOut } from "lucide-react";
 
 import { Link, useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
+import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 interface AdminHeaderActionsProfile {
   email: string;
@@ -27,6 +28,7 @@ interface AdminHeaderActionsProps {
 
 export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsProps) {
   const router = useRouter();
+  const { refresh: refreshCurrentUser } = useCurrentUser();
   const t = useTranslations("Auth");
   const [isPending, startTransition] = useTransition();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,6 +63,12 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
     setIsMenuOpen(false);
     startTransition(async () => {
       await logoutAction(redirectTo);
+      // On the public pages auth lives in client state, so clearing the
+      // cookie is not enough to put the header back to logged-out. In the
+      // (blog-admin) tree there is no provider and this is a no-op — that
+      // side still resolves the profile server-side, and router.refresh()
+      // covers it.
+      refreshCurrentUser();
       router.refresh();
     });
   }
