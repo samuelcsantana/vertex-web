@@ -98,12 +98,21 @@ its own call, because `BlogFooter` translates.
 Metadata cannot be deferred behind Suspense, so any route whose metadata needs the host is per-request, full stop.
 
 The alternative is to treat the canonical origin as a constant (`NEXT_PUBLIC_SITE_URL`, pointed at the www variant
-the apex already redirects to) rather than an observation of what served the request. Worth weighing when that is
-decided: host-derivation means *every* host that serves the app self-canonicalises, including Vercel preview
-deployments — and `robots.ts` derives the sitemap URL the same way, with no preview-specific disallow. The
-original bug it fixed was the env var pointing at the apex domain, which is a value problem, not a mechanism
-problem. Against that: the current behaviour was verified live against LinkedIn's crawler, and the replacement has
-not been.
+the apex already redirects to) rather than an observation of what served the request. The honest state of that
+argument:
+
+- **For the constant:** the original bug it fixed was the env var pointing at the apex domain, which is a value
+  problem, not a mechanism problem. A canonical URL is a decision about which URL is authoritative, not an
+  observation of which host answered.
+- **Against, and this one is verified:** the current behaviour was tested live against LinkedIn's crawler. The
+  replacement has not been.
+- **An argument that does *not* hold up:** that host-derivation leaks preview deployments into the index. Checked
+  on a real preview — Vercel puts previews behind SSO and serves them with `X-Robots-Tag: noindex`, so a crawler
+  never sees the self-referencing canonical or the sitemap that `robots.ts` derives the same way. Worth recording
+  because it was raised as a reason to switch, and it is not one.
+
+Which leaves the trade-off narrower than it first looked: a verified SEO behaviour on one side, two routes that
+cannot be prerendered on the other.
 
 **`/blog/[slug]` additionally:** the page resolves the signed-in user for `CommentsSection`, not just for admin
 controls. That is a real per-request dependency and a larger refactor than the header was — the comments UI would
