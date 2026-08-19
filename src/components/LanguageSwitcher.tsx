@@ -70,8 +70,8 @@ export function LanguageSwitcher() {
   // the whole chrome).
   // Keyed by the slug it was fetched for, so a stale response from a post
   // page the user has since navigated away from (this component stays
-  // mounted across /blog/[slug] navigations — see the (blog) route group's
-  // shared layout.tsx note in CLAUDE.md) is never mistaken for the current
+  // mounted across /blog/[slug] navigations, because the (blog) route group's
+  // shared layout.tsx renders it above the page) is never mistaken for the current
   // post's data, without needing a synchronous setState reset in the effect.
   const [fetchedPost, setFetchedPost] = useState<{
     slug: string;
