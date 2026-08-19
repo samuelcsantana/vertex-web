@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import {
+  getMessages,
+  getTranslations,
+  setRequestLocale,
+} from "next-intl/server";
 import { notFound } from "next/navigation";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
@@ -21,12 +25,25 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // getLocale() (not params.locale) so this matches every page-level
-  // generateMetadata in the app: it always resolves to a valid, negotiated
-  // locale even while the layout body itself is about to notFound() a
-  // garbage [locale] segment.
-  const locale = await getLocale();
+interface LocaleParams {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: LocaleParams): Promise<Metadata> {
+  // params.locale, NOT getLocale(): getLocale() resolves the locale from the
+  // request headers, which is a dynamic API. Because this is the root layout,
+  // that single call opted *every* route in the app into per-request
+  // rendering — including the ones that have no per-request data at all, so
+  // generateStaticParams below prerendered nothing. The original reason for
+  // getLocale() was to still resolve a usable locale while the layout body is
+  // about to notFound() a garbage [locale] segment; the hasLocale() fallback
+  // here preserves exactly that without reading the request.
+  const { locale: requestedLocale } = await params;
+  const locale = hasLocale(routing.locales, requestedLocale)
+    ? requestedLocale
+    : routing.defaultLocale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
 
   return {
@@ -53,9 +70,8 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-interface RootLayoutProps {
+interface RootLayoutProps extends LocaleParams {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }
 
 export default async function RootLayout({
@@ -67,6 +83,14 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  // Opts this subtree back into static rendering. Every next-intl server API
+  // (getMessages, getTranslations) otherwise resolves the locale from the
+  // request headers and forces per-request rendering, which is why nothing
+  // under [locale] was prerendered before. Routes that still need per-request
+  // data — auth cookies, host-derived canonical URLs — opt out individually with
+  // `export const dynamic = "force-dynamic"`.
+  setRequestLocale(locale);
 
   const messages = await getMessages();
 

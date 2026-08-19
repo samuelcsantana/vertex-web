@@ -1,25 +1,13 @@
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import {
-  Calendar,
-  Clock,
-  FileText,
-  Hash,
-  List,
-  Pencil,
-  Plus,
-  Settings,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
-import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
-import { deletePostAction } from "@/features/posts/actions/post-actions";
+import { HomeAdminPanel } from "@/features/posts/components/HomeAdminPanel";
+import { PostAdminActions } from "@/features/posts/components/PostAdminActions";
 import { getPosts } from "@/features/posts/api/post-service";
 import { CoverImage } from "@/features/posts/components/CoverImage";
 import { TopicPills } from "@/features/posts/components/TopicPills";
@@ -32,7 +20,6 @@ import {
 } from "@/features/posts/utils/localized-content";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
-import { getProfile } from "@/features/auth/api/profile-service";
 
 // Bounded to a sane line-clamp length for the visible teaser text.
 const EXCERPT_LENGTH = 180;
@@ -59,53 +46,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
     notFound();
   }
 
-  // Cookie presence alone only proves "logged in", not "admin" — any Google
-  // account can sign in since GoogleStrategy auto-provisions unknown emails
-  // (role defaults to "user" unless it matches ADMIN_EMAIL). This card and
-  // the per-post edit/delete controls below must gate on the real role.
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  const profile = accessToken ? await getProfile(accessToken) : null;
-  const isAdmin = profile?.role === "admin";
+  // Required by next-intl for this page to be prerendered: without it every
+  // getTranslations call below resolves the locale from the request headers
+  // and the page falls back to per-request rendering.
+  setRequestLocale(locale);
+
   const posts = await getPosts();
   const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
   const tPost = await getTranslations("Post");
-
-  // Shared between the featured card and the grid so the edit/delete
-  // overlay (hover-revealed, admin-only) isn't copy-pasted across both
-  // layouts — same controls, same confirm dialog, just a different card
-  // shape around them.
-  function renderAdminActions(post: Post) {
-    return (
-      <div className="relative z-10 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-        <Link
-          href={`/dashboard/posts/${post.id}/edit`}
-          aria-label={t("editArticle")}
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
-        >
-          <Pencil className="size-3.5" />
-          {t("editArticle")}
-        </Link>
-        <ConfirmDialog
-          title={t("confirmDeleteTitle")}
-          description={t("confirmDeleteDescription")}
-          confirmLabel={t("confirmContinue")}
-          action={deletePostAction.bind(null, post.id)}
-          trigger={
-            <button
-              type="button"
-              aria-label={t("deleteArticle")}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
-            >
-              <Trash2 className="size-3.5" />
-              {t("deleteArticle")}
-            </button>
-          }
-        />
-      </div>
-    );
-  }
 
   const [featuredPost, ...restPosts] = posts;
 
@@ -122,53 +71,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
         <p className="max-w-2xl text-lg text-slate-400">{t("heroDescription")}</p>
       </section>
 
-      {isAdmin && (
-        <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
-              <Settings className="size-4" />
-            </div>
-            <p className="text-sm font-medium text-white">{t("adminPanelActive")}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/dashboard/posts/new"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
-            >
-              <Plus className="size-3.5" />
-              {t("newArticle")}
-            </Link>
-            <Link
-              href="/dashboard/posts"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-            >
-              <List className="size-3.5" />
-              {t("managePosts")}
-            </Link>
-            <Link
-              href="/dashboard/topics"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-            >
-              <Hash className="size-3.5" />
-              {t("topics")}
-            </Link>
-            <Link
-              href="/dashboard/about"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-            >
-              <FileText className="size-3.5" />
-              {t("editAbout")}
-            </Link>
-            <Link
-              href="/dashboard/users"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
-            >
-              <Users className="size-3.5" />
-              {t("manageUsers")}
-            </Link>
-          </div>
-        </div>
-      )}
+      <HomeAdminPanel />
 
       {posts.length === 0 ? (
         <p className="mt-16 text-slate-400">{t("noPostsYet")}</p>
@@ -193,11 +96,10 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         column (sm:h-full, matched to this column's height
                         via grid stretch) crop taller/differently for admins
                         than for anonymous visitors. */}
-                    {isAdmin && (
-                      <div className="absolute right-8 top-8 z-10">
-                        {renderAdminActions(featuredPost)}
-                      </div>
-                    )}
+                    <PostAdminActions
+                      postId={featuredPost.id}
+                      className="absolute right-8 top-8 z-10"
+                    />
 
                     <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
 
@@ -291,9 +193,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                   )}
 
                   <div className="p-6">
-                    {isAdmin && (
-                      <div className="mb-4">{renderAdminActions(post)}</div>
-                    )}
+                    <PostAdminActions postId={post.id} className="mb-4" />
 
                     {/* title lives here, not on the h2/p below — see the
                         same note on the featured card above. */}
