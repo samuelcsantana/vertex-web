@@ -8,6 +8,7 @@ on:
 
 jobs:
   test:
+    name: unit
     runs-on: ubuntu-latest
 
     steps:
@@ -25,3 +26,82 @@ jobs:
 
       - name: Run unit tests
         run: npm test
+
+  # Two jobs rather than one, split by whether a spec depends on an origin this repository does not
+  # deploy. The specs are identical in kind; what differs is who can break them. Folding both into a
+  # single job would mean a PR touching the blog goes red when cygnus.samuelsantana.dev has a blip,
+  # and nobody reading the red X could tell which happened.
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Chromium only — playwright.config.ts declares one project, so pulling the other engines
+      # would be download time spent on browsers nothing runs in.
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # Built here rather than inside playwright's webServer command, so a compile error reads as a
+      # build failure instead of a server that never came up.
+      - name: Build
+        run: npm run build
+
+      - name: Run end-to-end tests
+        run: npx playwright test --grep-invert @external
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-e2e
+          path: playwright-report/
+          retention-days: 7
+
+  e2e-federation:
+    name: e2e (federation, external origin)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      # Fails when cygnus.samuelsantana.dev is unreachable, and that is the intended behaviour: this
+      # app's /micro-frontends page genuinely stops working when that origin does. A mocked remote
+      # would turn the one property worth testing into a tautology.
+      - name: Run federation tests against the live remote
+        run: npx playwright test --grep @external
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-federation
+          path: playwright-report/
+          retention-days: 7

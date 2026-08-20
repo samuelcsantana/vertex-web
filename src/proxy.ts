@@ -43,5 +43,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|embed-demo|_next|_vercel|.*\\..*).*)"],
+  // embed-demo and micro-frontends are technical demos with their own root layout and no localized
+  // twin — routing them through next-intl would only prefix them with a locale that means nothing.
+  matcher: ["/((?!api|embed-demo|micro-frontends|_next|_vercel|.*\\..*).*)"],
 };
