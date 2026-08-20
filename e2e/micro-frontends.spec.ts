@@ -9,9 +9,10 @@ import { expect, test } from "@playwright/test";
  * mocked it away would assert nothing worth asserting. Point `NEXT_PUBLIC_CYGNUS_REMOTE_ENTRY` at a
  * locally served `cygnus/dist/mf/remoteEntry.js` to run it offline.
  *
- * Like the rest of e2e/, not wired into CI.
+ * Tagged `@external` for that reason. CI runs these in their own job, so an outage at the other
+ * origin cannot be mistaken for a regression in this one.
  */
-test.describe("Module Federation host", () => {
+test.describe("Module Federation host", { tag: "@external" }, () => {
   test("keeps the remote out of the server render", async ({ request }) => {
     // The whole claim is runtime resolution. If the widget's markup were in the HTML, the remote
     // would have been resolved at build time and this would be a bundling demo.
