@@ -11,13 +11,31 @@ import { BlogLoginTrigger } from "./BlogLoginTrigger";
 // including pages with no request-dependent content of their own. Moving it
 // here is what lets those pages be prerendered.
 //
-// The trade-off: the signed-in owner briefly sees the logged-out header
-// before /api/me answers. For everyone else the first paint is already the
-// final state, which is the opposite of the old behaviour, where every
-// visitor waited on a vertex-api round trip that only ever mattered to one
-// person.
+// The trade-off this created, and how it is paid: the prerendered HTML is identical for every
+// visitor, so it cannot know who is asking. The first version assumed "signed out" while waiting
+// for /api/me, which is right for everyone except the one person who is signed in — who saw the
+// logged-out header flip to the account menu on every single load.
+//
+// So the header no longer guesses. Until `isResolved`, it renders neither state: the slot holds
+// its space and asserts nothing. Resolution comes from a local hint applied in a layout effect,
+// before paint and before the network — so both answers arrive at hydration, and neither visitor
+// watches the header change its mind. /api/me still overrules it a moment later.
 export function BlogHeader() {
-  const { user, isAuthenticated } = useCurrentUser();
+  const { user, isAuthenticated, isResolved } = useCurrentUser();
+
+  if (!isResolved) {
+    return (
+      <BlogHeaderShell
+        rightSlot={
+          // Matches the login button's footprint so resolving it does not shift the header.
+          // aria-hidden because "we do not know yet" is not information a screen reader needs —
+          // the real control is announced when it appears, a few milliseconds later.
+          <div aria-hidden className="h-9 w-9 shrink-0 sm:w-[6.5rem]" />
+        }
+        isAuthenticated={false}
+      />
+    );
+  }
 
   if (!isAuthenticated) {
     return (
