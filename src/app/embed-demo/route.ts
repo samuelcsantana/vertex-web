@@ -12,10 +12,18 @@
  * HTML with no framework participating in the integration.
  *
  * proxy.ts excludes this path from locale routing, since a technical demo has no localized twin.
+ *
+ * String.raw, not a plain template literal, and that is load-bearing. A template literal processes
+ * escape sequences, so the page script's `join("\n")` was emitted as a real newline inside a string
+ * literal — a SyntaxError that killed every listener on this page while the embedded widgets kept
+ * working perfectly. The symptom pointed at the widget; the cause was here, one layer up.
+ *
+ * With String.raw the HTML is emitted byte for byte. The only sequences that still need care are ` and
+ * ${, which this document does not contain.
  */
 export const dynamic = "force-static";
 
-const PAGE = `
+const PAGE = String.raw`
 <!doctype html>
 <html lang="pt-BR">
   <head>
