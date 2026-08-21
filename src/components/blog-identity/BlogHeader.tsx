@@ -21,7 +21,7 @@ import { BlogLoginTrigger } from "./BlogLoginTrigger";
 // before paint and before the network — so both answers arrive at hydration, and neither visitor
 // watches the header change its mind. /api/me still overrules it a moment later.
 export function BlogHeader() {
-  const { user, isAuthenticated, isResolved } = useCurrentUser();
+  const { identity, isAuthenticated, isResolved } = useCurrentUser();
 
   if (!isResolved) {
     return (
@@ -43,12 +43,18 @@ export function BlogHeader() {
     );
   }
 
-  // Cookie presence alone is what gates the admin UI; the profile can come
-  // back empty (backend hiccup) without flipping the header back to
-  // logged-out — AdminHeaderActions degrades to a plain logout button.
+  // Cookie presence alone is what gates the admin UI; the identity can be
+  // missing (backend hiccup, or a browser with no hint yet) without flipping
+  // the header back to logged-out — AdminHeaderActions degrades to a plain
+  // logout button.
+  //
+  // `identity` rather than `user`: on a returning visitor it is already
+  // populated from the local hint at hydration, so the name and avatar paint
+  // with the rest of the header instead of ~780ms later, when the signed-in
+  // /api/me round trip lands. Presentation only — nothing here decides access.
   return (
     <BlogHeaderShell
-      rightSlot={<AdminHeaderActions profile={user ?? undefined} />}
+      rightSlot={<AdminHeaderActions identity={identity ?? undefined} />}
       isAuthenticated
     />
   );

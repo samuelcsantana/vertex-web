@@ -10,25 +10,22 @@ import { useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
-interface AdminHeaderActionsProfile {
-  email: string;
-  name: string | null;
-  displayName: string | null;
-  avatarUrl: string | null;
-}
+import type { HeaderIdentity } from "@/features/auth/components/CurrentUserProvider";
 
 interface AdminHeaderActionsProps {
   // When omitted, logging out simply re-renders the current page instead
   // of navigating away — used on public pages (home, post reading) where
   // there's nothing forcing the visitor off the page once logged out.
   redirectTo?: string;
-  // Optional: the profile fetch can come back empty (backend hiccup) even
-  // with a valid session cookie, so this degrades to a plain "Sair" button
-  // rather than blocking logout.
-  profile?: AdminHeaderActionsProfile;
+  // Already resolved by the caller, from /api/me or from the local hint — this
+  // component does not care which, and must not, since one of the two is a
+  // guess. Optional because the profile fetch can come back empty (backend
+  // hiccup) on a browser with no hint either, and that degrades to a plain
+  // "Sair" button rather than blocking logout.
+  identity?: HeaderIdentity;
 }
 
-export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsProps) {
+export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsProps) {
   const router = useRouter();
   const { refresh: refreshCurrentUser } = useCurrentUser();
   const t = useTranslations("Auth");
@@ -75,7 +72,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
     });
   }
 
-  if (!profile) {
+  if (!identity) {
     return (
       <button
         type="button"
@@ -90,7 +87,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
     );
   }
 
-  const displayName = profile.displayName ?? profile.name ?? profile.email;
+  const { displayName, avatarUrl } = identity;
   const initial = (displayName.trim()[0] ?? "?").toUpperCase();
 
   return (
@@ -103,10 +100,10 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
         aria-expanded={isMenuOpen}
         className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800 py-1 pr-0.5 pl-0.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 sm:py-1.5 sm:pr-3 sm:pl-1.5"
       >
-        {profile.avatarUrl ? (
+        {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
           <img
-            src={profile.avatarUrl}
+            src={avatarUrl}
             alt=""
             referrerPolicy="no-referrer"
             className="size-7 shrink-0 rounded-full object-cover"
