@@ -11,13 +11,28 @@ import {
 
 import type { CurrentUser } from "@/features/auth/types";
 import {
+  anonymousSessionHint,
   readSessionHint,
+  resolveDisplayName,
   subscribeToSessionHint,
   writeSessionHint,
 } from "@/features/auth/session-hint";
 
+/** What the header needs to draw an account control: a name to show and, maybe, a picture. */
+export interface HeaderIdentity {
+  displayName: string;
+  avatarUrl: string | null;
+}
+
 interface CurrentUserContextValue {
   user: CurrentUser | null;
+  // The name and avatar to paint *now*, from /api/me when it has answered and from the local hint
+  // until then. Separate from `user` on purpose: the hint has no id, email or role, and nothing
+  // that decides what a visitor may do should ever be able to read a forgeable store.
+  //
+  // Measured on the live site: a signed-in /api/me takes ~750-860ms, so a header that waits for it
+  // shows a nameless control for ~780ms after first paint. This is what closes that gap.
+  identity: HeaderIdentity | null;
   // Not the same as `user !== null`: a signed-in visitor whose profile call
   // fails is authenticated without a resolved profile. The header renders the
   // account menu in that case rather than falling back to a login button.
@@ -44,6 +59,7 @@ interface CurrentUserContextValue {
 // prop, so components shared between both trees must not blow up there.
 const CurrentUserContext = createContext<CurrentUserContextValue>({
   user: null,
+  identity: null,
   isAuthenticated: false,
   isLoading: false,
   isResolved: true,
@@ -96,7 +112,7 @@ export function CurrentUserProvider({
   const hint = useSyncExternalStore(
     subscribeToSessionHint,
     readSessionHint,
-    () => false
+    anonymousSessionHint
   );
 
   const [user, setUser] = useState<CurrentUser | null>(null);
@@ -130,8 +146,9 @@ export function CurrentUserProvider({
         setServerAnswer(authenticated);
         setIsLoading(false);
         // The authoritative answer overwrites the guess in both directions: a session that expired
-        // elsewhere clears the hint, a first sign-in on this browser sets it.
-        writeSessionHint(authenticated);
+        // elsewhere clears the hint, a first sign-in on this browser sets it — now including the
+        // name and avatar, so the next load paints them at hydration instead of after the fetch.
+        writeSessionHint(authenticated, data.user ?? null);
       } catch {
         // An aborted fetch means a newer request is already in flight (or the
         // tree unmounted) — leaving state untouched is correct in both cases.
@@ -152,11 +169,20 @@ export function CurrentUserProvider({
     return () => controller.abort();
   }, [reloadToken]);
 
-  const isAuthenticated = serverAnswer ?? hint;
+  const isAuthenticated = serverAnswer ?? hint.isAuthenticated;
+
+  // /api/me wins the moment it lands; until then the hint stands in. Null means neither has an
+  // identity to offer — an anonymous visitor, or a signed-in one on a browser that has not
+  // completed a load yet.
+  const identity: HeaderIdentity | null = user
+    ? { displayName: resolveDisplayName(user), avatarUrl: user.avatarUrl }
+    : hint.displayName !== null
+      ? { displayName: hint.displayName, avatarUrl: hint.avatarUrl }
+      : null;
 
   return (
     <CurrentUserContext.Provider
-      value={{ user, isAuthenticated, isLoading, isResolved, refresh }}
+      value={{ user, identity, isAuthenticated, isLoading, isResolved, refresh }}
     >
       {children}
     </CurrentUserContext.Provider>

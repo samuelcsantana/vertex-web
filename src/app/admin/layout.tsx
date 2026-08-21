@@ -18,6 +18,7 @@ import { BlogFooter } from "@/components/blog-identity/BlogFooter";
 import { AdminHeaderActions } from "@/components/blog-identity/AdminHeaderActions";
 import { AdminLanguageSwitcher } from "@/components/AdminLanguageSwitcher";
 import { getProfile } from "@/features/auth/api/profile-service";
+import { resolveDisplayName } from "@/features/auth/session-hint";
 import { applyAdminLocale } from "@/i18n/admin-locale";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
@@ -48,12 +49,17 @@ async function AdminHeader() {
   const accessToken = cookieStore.get("access_token")?.value;
   const profile = accessToken ? await getProfile(accessToken) : null;
 
+  // Resolved server-side here, unlike the public header: this tree has no
+  // CurrentUserProvider and no hint to fall back on, and it is per-request
+  // anyway, so there is nothing to gain by deferring it to the client.
+  const identity = profile
+    ? { displayName: resolveDisplayName(profile), avatarUrl: profile.avatarUrl }
+    : undefined;
+
   return (
     <BlogHeaderShell
       localeSwitcher={<AdminLanguageSwitcher />}
-      rightSlot={
-        <AdminHeaderActions redirectTo="/" profile={profile ?? undefined} />
-      }
+      rightSlot={<AdminHeaderActions redirectTo="/" identity={identity} />}
       isAuthenticated
       logoutRedirectTo="/"
     />

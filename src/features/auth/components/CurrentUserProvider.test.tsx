@@ -9,16 +9,29 @@ import {
 const HINT_KEY = "vertex.session-hint";
 
 function Probe() {
-  const { isAuthenticated, isResolved, isLoading } = useCurrentUser();
+  const { isAuthenticated, isResolved, isLoading, identity } = useCurrentUser();
 
   return (
     <output>
       {isResolved ? "resolved" : "unresolved"}:
       {isAuthenticated ? "authenticated" : "anonymous"}:
-      {isLoading ? "loading" : "done"}
+      {isLoading ? "loading" : "done"}:
+      {identity ? `${identity.displayName}|${identity.avatarUrl ?? "no-avatar"}` : "no-identity"}
     </output>
   );
 }
+
+const SIGNED_IN = {
+  isAuthenticated: true,
+  user: {
+    id: "u1",
+    email: "a@b.co",
+    role: "user",
+    name: "Ada",
+    displayName: "Ada L.",
+    avatarUrl: "https://cdn.example/a.png",
+  },
+};
 
 /** A fetch that stays pending, so assertions land in the window before /api/me answers. */
 function pendingFetch() {
@@ -86,11 +99,27 @@ describe("CurrentUserProvider", () => {
     await waitFor(() => expect(window.localStorage.getItem(HINT_KEY)).toBeNull());
   });
 
-  it("writes the hint once the server confirms a session", async () => {
-    vi.stubGlobal(
-      "fetch",
-      jsonFetch({ user: { email: "a@b.co", name: null, displayName: null, avatarUrl: null }, isAuthenticated: true })
+  it("writes the identity into the hint once the server confirms a session", async () => {
+    vi.stubGlobal("fetch", jsonFetch(SIGNED_IN));
+
+    render(
+      <CurrentUserProvider>
+        <Probe />
+      </CurrentUserProvider>
     );
+
+    await waitFor(() =>
+      expect(JSON.parse(window.localStorage.getItem(HINT_KEY)!)).toEqual({
+        displayName: "Ada L.",
+        avatarUrl: "https://cdn.example/a.png",
+      })
+    );
+  });
+
+  it("stores the boolean alone when the session has no resolved profile", async () => {
+    // Authenticated cookie, failed profile call. Writing an empty identity here
+    // would erase a good one from a previous load for no gain.
+    vi.stubGlobal("fetch", jsonFetch({ user: null, isAuthenticated: true }));
 
     render(
       <CurrentUserProvider>
@@ -99,6 +128,82 @@ describe("CurrentUserProvider", () => {
     );
 
     await waitFor(() => expect(window.localStorage.getItem(HINT_KEY)).toBe("1"));
+  });
+
+  it("paints the stored identity before the network answers", async () => {
+    // The measured point of the whole change: on the live site a signed-in
+    // /api/me takes ~750-860ms, and the header used to show a nameless control
+    // for that whole window.
+    window.localStorage.setItem(
+      HINT_KEY,
+      JSON.stringify({ displayName: "Ada L.", avatarUrl: "https://cdn.example/a.png" })
+    );
+    vi.stubGlobal("fetch", pendingFetch());
+
+    render(
+      <CurrentUserProvider>
+        <Probe />
+      </CurrentUserProvider>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toContain(
+        "Ada L.|https://cdn.example/a.png"
+      )
+    );
+  });
+
+  it("still reads a hint written before it carried an identity", async () => {
+    // Every browser that visited before this field existed has "1" stored. It
+    // has to keep meaning "authenticated, identity unknown" rather than
+    // becoming unparseable and reading as signed out.
+    window.localStorage.setItem(HINT_KEY, "1");
+    vi.stubGlobal("fetch", pendingFetch());
+
+    render(
+      <CurrentUserProvider>
+        <Probe />
+      </CurrentUserProvider>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toContain("authenticated")
+    );
+    expect(screen.getByRole("status").textContent).toContain("no-identity");
+  });
+
+  it("treats an unparseable hint as no hint, not as a signed-out answer", async () => {
+    window.localStorage.setItem(HINT_KEY, "{not json");
+    vi.stubGlobal("fetch", pendingFetch());
+
+    render(
+      <CurrentUserProvider>
+        <Probe />
+      </CurrentUserProvider>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toContain("resolved")
+    );
+    expect(screen.getByRole("status").textContent).toContain("no-identity");
+  });
+
+  it("lets the server's identity overwrite a stale stored one", async () => {
+    window.localStorage.setItem(
+      HINT_KEY,
+      JSON.stringify({ displayName: "Old Name", avatarUrl: "https://cdn.example/old.png" })
+    );
+    vi.stubGlobal("fetch", jsonFetch(SIGNED_IN));
+
+    render(
+      <CurrentUserProvider>
+        <Probe />
+      </CurrentUserProvider>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toContain("Ada L.")
+    );
   });
 
   it("keeps the hint when the request fails, because a dropped request is not a logout", async () => {
