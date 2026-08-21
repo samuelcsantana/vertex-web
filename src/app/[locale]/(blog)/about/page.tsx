@@ -12,7 +12,7 @@ import {
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
 import { splitMarkdownSections } from "@/features/posts/utils/split-markdown-sections";
-import { getSiteUrl } from "@/lib/site-url";
+import { SITE_URL } from "@/lib/site-url";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const locale = await getLocale();
-  const siteUrl = await getSiteUrl();
 
   // Same duplicate-content reasoning as blog/[slug]/page.tsx's
   // generateMetadata: a locale without its own translation serves the pt
@@ -36,11 +35,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     alternates: {
-      canonical: `${siteUrl}${getPathname({ href: "/about", locale: canonicalLocale })}`,
+      canonical: `${SITE_URL}${getPathname({ href: "/about", locale: canonicalLocale })}`,
       languages: Object.fromEntries(
         translatedLocales.map((loc) => [
           loc,
-          `${siteUrl}${getPathname({ href: "/about", locale: loc })}`,
+          `${SITE_URL}${getPathname({ href: "/about", locale: loc })}`,
         ])
       ),
     },
@@ -76,7 +75,6 @@ export default async function AboutPage() {
   // about — while the "##" sections become the numbered cards below.
   const { intro, sections } = splitMarkdownSections(content);
 
-  const siteUrl = await getSiteUrl();
   // This is the page Google's search results currently surface for
   // "samuel santana dev" — carrying the Person schema (with sameAs) here,
   // not just on post pages, gives the entity graph its clearest signal on
@@ -85,7 +83,7 @@ export default async function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Samuel Santana",
-    url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
+    url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
     sameAs: SOCIAL_PROFILE_URLS,
   };
 

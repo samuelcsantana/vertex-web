@@ -29,7 +29,7 @@ import {
   getLocalizedTitle,
   getTranslatedLocales,
 } from "@/features/posts/utils/localized-content";
-import { getSiteUrl } from "@/lib/site-url";
+import { SITE_URL } from "@/lib/site-url";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
 interface BlogPostPageProps {
@@ -59,7 +59,6 @@ export async function generateMetadata({
   // page renders that locale's content, so the metadata must describe it.
   const { post, contentLocale } = resolved;
 
-  const siteUrl = await getSiteUrl();
   const title = getLocalizedTitle(post, contentLocale);
   const content = getLocalizedContent(post, contentLocale);
   // A manually-written description for this locale wins when set — it's
@@ -78,7 +77,7 @@ export async function generateMetadata({
   // metadataBase to resolve) so it's correct even if this page's own
   // openGraph.images ever stops matching the layout's metadataBase.
   const ogImageUrl =
-    getLocalizedCoverUrl(post, contentLocale) ?? `${siteUrl}/og-fallback.png`;
+    getLocalizedCoverUrl(post, contentLocale) ?? `${SITE_URL}/og-fallback.png`;
 
   // If this locale has no translation of its own, what's being rendered is
   // the pt fallback content under this locale's URL — point the canonical
@@ -92,7 +91,7 @@ export async function generateMetadata({
   // not the current locale's translation, which shows different text.
   const canonicalLocale =
     contentLocale !== locale ? contentLocale : isTranslated ? locale : "pt";
-  const canonicalUrl = `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
+  const canonicalUrl = `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, canonicalLocale)}`, locale: canonicalLocale })}`;
 
   // Only advertise an hreflang alternate for locales this post genuinely
   // has its own content in — same reasoning sitemap.ts's
@@ -100,7 +99,7 @@ export async function generateMetadata({
   const languageAlternates = Object.fromEntries(
     translatedLocales.map((loc) => [
       loc,
-      `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, loc)}`, locale: loc })}`,
+      `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, loc)}`, locale: loc })}`,
     ])
   );
 
@@ -191,7 +190,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const headings = extractHeadings(displayContent);
   const hasToc = headings.length > 0;
   const t = await getTranslations("Post");
-  const siteUrl = await getSiteUrl();
 
   // pt is a required field, so the fallback below always lands on the pt
   // version — this is only ever true when locale is "en" or "es" and the
@@ -210,14 +208,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: displayTitle,
-    image: [displayCoverUrl ?? `${siteUrl}/og-fallback.png`],
+    image: [displayCoverUrl ?? `${SITE_URL}/og-fallback.png`],
     datePublished: post.publishedAt ?? post.createdAt,
     dateModified: post.updatedAt,
     author: [
       {
         "@type": "Person",
         name: post.author?.name ?? "Samuel Santana",
-        url: `${siteUrl}${getPathname({ href: "/about", locale })}`,
+        url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
         // Tells Google's entity graph this Person is the same individual
         // behind these external profiles — the key signal for disambiguating
         // this "Samuel Santana" from other people sharing the name.
@@ -226,7 +224,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     ],
     // The slug's own locale, not the URL's — on a cross-locale slug this
     // matches the metadata canonical (the page whose content is rendered).
-    mainEntityOfPage: `${siteUrl}${getPathname({ href: `/blog/${getLocalizedSlug(post, contentLocale)}`, locale: contentLocale })}`,
+    mainEntityOfPage: `${SITE_URL}${getPathname({ href: `/blog/${getLocalizedSlug(post, contentLocale)}`, locale: contentLocale })}`,
   };
 
   return (
