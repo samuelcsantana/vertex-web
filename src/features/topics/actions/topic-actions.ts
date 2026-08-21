@@ -50,8 +50,8 @@ export async function createTopicAction(
     };
   }
 
-  revalidatePath("/dashboard/topics");
-  revalidatePath("/dashboard/posts");
+  revalidatePath("/admin/dashboard/topics");
+  revalidatePath("/admin/dashboard/posts");
 
   return { success: true };
 }
@@ -92,8 +92,8 @@ export async function updateTopicAction(
     };
   }
 
-  revalidatePath("/dashboard/topics");
-  revalidatePath("/dashboard/posts");
+  revalidatePath("/admin/dashboard/topics");
+  revalidatePath("/admin/dashboard/posts");
 
   return { success: true };
 }
@@ -116,6 +116,6 @@ export async function deleteTopicAction(id: string): Promise<void> {
     return;
   }
 
-  revalidatePath("/dashboard/topics");
-  revalidatePath("/dashboard/posts");
+  revalidatePath("/admin/dashboard/topics");
+  revalidatePath("/admin/dashboard/posts");
 }

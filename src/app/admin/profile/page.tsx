@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Trash2 } from "lucide-react";
 
 import { redirect } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { LinkGithubButton } from "@/features/auth/components/LinkGithubButton";
 import { LinkGoogleButton } from "@/features/auth/components/LinkGoogleButton";
@@ -11,17 +12,19 @@ import { ProfileForm } from "@/features/users/components/ProfileForm";
 import { deleteOwnAccountAction } from "@/features/users/actions/user-actions";
 
 export default async function ProfilePage() {
+  const locale = await applyAdminLocale();
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    throw redirect({ href: "/", locale: await getLocale() });
+    throw redirect({ href: "/", locale });
   }
 
   const profile = await getProfile(accessToken);
 
   if (!profile) {
-    throw redirect({ href: "/", locale: await getLocale() });
+    throw redirect({ href: "/", locale });
   }
 
   const t = await getTranslations("Profile");

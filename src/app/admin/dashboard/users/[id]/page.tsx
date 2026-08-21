@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
+import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
-
-import { Link } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { getUser, getUserComments } from "@/features/users/api/user-service";
 import { getProfile } from "@/features/auth/api/profile-service";
 import { UserModerationActions } from "@/features/users/components/UserModerationActions";
@@ -14,6 +14,8 @@ interface UserDetailPageProps {
 }
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
+  await applyAdminLocale();
+
   const { id } = await params;
   // dashboard/layout.tsx already guarantees an admin session got this far
   // (same note as the users listing).
@@ -40,13 +42,13 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
       <div className="mx-auto max-w-2xl lg:mx-0">
-        <Link
-          href="/dashboard/users"
+        <NextLink
+          href="/admin/dashboard/users"
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
         >
           <ArrowLeft className="size-4" />
           {t("backToUsers")}
-        </Link>
+        </NextLink>
 
         <div className="flex flex-wrap items-center gap-4">
           {user.avatarUrl ? (

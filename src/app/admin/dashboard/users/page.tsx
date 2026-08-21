@@ -1,13 +1,15 @@
 import { cookies } from "next/headers";
+import NextLink from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
-
-import { Link } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { UserRow } from "@/features/users/components/UserRow";
 import { getUsers } from "@/features/users/api/user-service";
 import { getProfile } from "@/features/auth/api/profile-service";
 
 export default async function DashboardUsersPage() {
+  await applyAdminLocale();
+
   // dashboard/layout.tsx already guarantees an admin session got this far,
   // so the token is present — it's only re-read here to fetch the list and
   // to know the current admin's own id (to hide self-ban/self-delete
@@ -23,13 +25,13 @@ export default async function DashboardUsersPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
       <div className="mx-auto max-w-2xl lg:mx-0">
-        <Link
-          href="/dashboard/posts"
+        <NextLink
+          href="/admin/dashboard/posts"
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
         >
           <ArrowLeft className="size-4" />
           {t("backToPanel")}
-        </Link>
+        </NextLink>
 
         <h1 className="text-4xl font-bold text-white">{t("manageUsersTitle")}</h1>
         <p className="mt-2 text-sm text-slate-400">{t("usersDescription")}</p>

@@ -3,7 +3,10 @@
 import { useTranslations } from "next-intl";
 import { FileText, Hash, List, Plus, Settings, Users } from "lucide-react";
 
-import { Link } from "@/i18n/routing";
+// next/link, not the localized one from @/i18n/routing: every link below
+// points into the admin panel, which lives outside the [locale] segment and
+// takes no locale prefix.
+import Link from "next/link";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 const secondaryLinkClasses =
@@ -30,25 +33,25 @@ export function HomeAdminPanel() {
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Link
-          href="/dashboard/posts/new"
+          href="/admin/dashboard/posts/new"
           className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
         >
           <Plus className="size-3.5" />
           {t("newArticle")}
         </Link>
-        <Link href="/dashboard/posts" className={secondaryLinkClasses}>
+        <Link href="/admin/dashboard/posts" className={secondaryLinkClasses}>
           <List className="size-3.5" />
           {t("managePosts")}
         </Link>
-        <Link href="/dashboard/topics" className={secondaryLinkClasses}>
+        <Link href="/admin/dashboard/topics" className={secondaryLinkClasses}>
           <Hash className="size-3.5" />
           {t("topics")}
         </Link>
-        <Link href="/dashboard/about" className={secondaryLinkClasses}>
+        <Link href="/admin/dashboard/about" className={secondaryLinkClasses}>
           <FileText className="size-3.5" />
           {t("editAbout")}
         </Link>
-        <Link href="/dashboard/users" className={secondaryLinkClasses}>
+        <Link href="/admin/dashboard/users" className={secondaryLinkClasses}>
           <Users className="size-3.5" />
           {t("manageUsers")}
         </Link>

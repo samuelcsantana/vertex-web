@@ -1,23 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/site-url";
 
-// "as-needed" means the default locale (pt) has no URL prefix, so
-// /dashboard and /profile alone cover it; en/es need their own prefixed
-// entries since they live at /en/dashboard, /es/profile, etc.
-const nonDefaultLocales = routing.locales.filter(
-  (locale) => locale !== routing.defaultLocale
-);
-
-const GATED_PATHS = ["/dashboard", "/profile"];
-
-const disallow = [
-  ...GATED_PATHS,
-  ...nonDefaultLocales.flatMap((locale) =>
-    GATED_PATHS.map((path) => `/${locale}${path}`)
-  ),
-];
+// One entry, because the panel has one URL. It used to live under the
+// [locale] segment, where "as-needed" gave the default locale no prefix and
+// the others their own — so covering /dashboard and /profile meant listing
+// six paths and keeping that list in step with the locale config. Everything
+// gated now sits under /admin, which has no locale variants to enumerate.
+const disallow = ["/admin"];
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { cookies } from "next/headers";
-import { getLocale } from "next-intl/server";
 
 import { redirect } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { getProfile } from "@/features/auth/api/profile-service";
 
 // proxy.ts only proves a cookie is present — it can't decode the JWT's role
@@ -19,7 +19,10 @@ async function AdminGate({ children }: Readonly<{ children: React.ReactNode }>) 
   const profile = accessToken ? await getProfile(accessToken) : null;
 
   if (profile?.role !== "admin") {
-    throw redirect({ href: "/", locale: await getLocale() });
+    // Back to the public site, which does put the locale in the path — so
+    // this redirect needs one, and takes the same cookie-resolved language
+    // the panel itself is being read in.
+    throw redirect({ href: "/", locale: await applyAdminLocale() });
   }
 
   return <>{children}</>;

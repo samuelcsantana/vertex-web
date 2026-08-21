@@ -53,7 +53,7 @@ export async function setUserBannedAction(
     };
   }
 
-  revalidatePath("/dashboard/users");
+  revalidatePath("/admin/dashboard/users");
 
   return { success: true };
 }
@@ -87,7 +87,7 @@ export async function deleteUserAction(id: string): Promise<UserActionResult> {
     };
   }
 
-  revalidatePath("/dashboard/users");
+  revalidatePath("/admin/dashboard/users");
 
   return { success: true };
 }

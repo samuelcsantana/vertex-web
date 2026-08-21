@@ -3,7 +3,10 @@
 import { useTranslations } from "next-intl";
 import { Pencil, Trash2 } from "lucide-react";
 
-import { Link } from "@/i18n/routing";
+// next/link, not the localized one from @/i18n/routing: every link below
+// points into the admin panel, which lives outside the [locale] segment and
+// takes no locale prefix.
+import Link from "next/link";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
@@ -35,7 +38,7 @@ export function PostAdminActions({ postId, className }: PostAdminActionsProps) {
     <div className={className}>
       <div className="relative z-10 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
         <Link
-          href={`/dashboard/posts/${postId}/edit`}
+          href={`/admin/dashboard/posts/${postId}/edit`}
           aria-label={t("editArticle")}
           className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
         >

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { LogIn, LogOut, Menu, User, X } from "lucide-react";
+import NextLink from "next/link";
 
 import { Link, useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
@@ -67,14 +68,17 @@ export function BlogMobileNav({
           <div className="mt-1 flex flex-col gap-1 border-t border-white/10 pt-1">
             {isAuthenticated ? (
               <>
-                <Link
-                  href="/profile"
+                {/* NextLink, not the localized one: the admin panel lives
+                    outside the [locale] segment, so this path takes no locale
+                    prefix and the localized Link would invent one. */}
+                <NextLink
+                  href="/admin/profile"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
                 >
                   <User className="size-4" aria-hidden="true" />
                   {tAuth("profile")}
-                </Link>
+                </NextLink>
                 <button
                   type="button"
                   onClick={handleLogout}

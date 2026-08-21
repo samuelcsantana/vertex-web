@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
-import { getLocale, getTranslations } from "next-intl/server";
+import NextLink from "next/link";
+import { getTranslations } from "next-intl/server";
 import { format, parseISO } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
-import { Link, redirect } from "@/i18n/routing";
+import { redirect } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
@@ -17,15 +19,16 @@ const badgeActive = `${badgeClasses} bg-emerald-500/10 text-emerald-400`;
 const badgeInactive = `${badgeClasses} bg-slate-800 text-slate-400`;
 
 export default async function DashboardPostsPage() {
+  const locale = await applyAdminLocale();
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    throw redirect({ href: "/", locale: await getLocale() });
+    throw redirect({ href: "/", locale });
   }
 
   const posts = await getDashboardPosts(accessToken);
-  const locale = await getLocale();
   const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Dashboard");
   const tHome = await getTranslations("Home");
@@ -39,13 +42,13 @@ export default async function DashboardPostsPage() {
       <div className="mx-auto max-w-3xl lg:mx-0">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-4xl font-bold text-white">{t("managePosts")}</h1>
-          <Link
-            href="/dashboard/posts/new"
+          <NextLink
+            href="/admin/dashboard/posts/new"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03]"
           >
             <Plus className="size-4" />
             {t("newArticleHeading")}
-          </Link>
+          </NextLink>
         </div>
       </div>
 
@@ -154,13 +157,13 @@ export default async function DashboardPostsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/dashboard/posts/${post.id}/edit`}
+                        <NextLink
+                          href={`/admin/dashboard/posts/${post.id}/edit`}
                           className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
                         >
                           <Pencil className="size-3.5" />
                           {t("edit")}
-                        </Link>
+                        </NextLink>
                         <ConfirmDialog
                           title={tHome("confirmDeleteTitle")}
                           description={tHome("confirmDeleteDescription")}
