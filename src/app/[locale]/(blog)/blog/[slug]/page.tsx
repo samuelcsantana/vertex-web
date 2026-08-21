@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -9,11 +8,13 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
 import { Link, getPathname } from "@/i18n/routing";
-import { getPostBySlugCrossLocale } from "@/features/posts/api/post-service";
+import {
+  getPostBySlugCrossLocale,
+  getPosts,
+} from "@/features/posts/api/post-service";
 import { CoverImage } from "@/features/posts/components/CoverImage";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { CommentsSection } from "@/features/comments/components/CommentsSection";
-import { getProfile } from "@/features/auth/api/profile-service";
 import { ShareButton } from "@/components/blog-identity/ShareButton";
 import { createHeadingComponents } from "@/components/blog-identity/markdownHeadingComponents";
 import { CodeBlock } from "@/components/blog-identity/CodeBlock";
@@ -34,6 +35,36 @@ import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
+}
+
+// Every published post, prerendered per locale at build time. Nothing in
+// this route reads the request any more, but without a param list Next has
+// nothing to build from: the first visitor to each URL would still pay for
+// the render, and only the ones after them would get the cached copy.
+//
+// The locale comes from the parent [locale] segment's own
+// generateStaticParams — Next calls this once per value it produced.
+//
+// dynamicParams stays at its default of true, which is what keeps a post
+// published after this build from 404ing: an unknown slug renders on demand
+// and is cached from then on. That also covers the cross-locale URLs
+// locale detection produces (a pt slug re-prefixed as /en/blog/<pt-slug>,
+// see getPostBySlugCrossLocale) — only the slug that belongs to each
+// locale is listed here.
+//
+// getPosts() returns [] when vertex-api is unreachable instead of throwing,
+// so a backend outage during a build degrades to the previous on-demand
+// behaviour rather than failing the deploy.
+export async function generateStaticParams({
+  params,
+}: {
+  params: { locale: string };
+}) {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({
+    slug: getLocalizedSlug(post, params.locale),
+  }));
 }
 
 const formatDate = (dateString: string, locale: string) =>
@@ -165,23 +196,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       60_000 ||
     new Date(post.createdAt).toDateString() !==
       new Date(post.updatedAt).toDateString();
-
-  // access_token is HttpOnly, so CommentsSection (a client component) can't
-  // check auth itself — resolve it here, same pattern as BlogHeader/
-  // AdminHeaderActions, and pass down the pieces it needs to render an
-  // optimistic comment (the create endpoint doesn't return an author join).
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  const profile = accessToken ? await getProfile(accessToken) : null;
-  const currentUser = profile
-    ? {
-        id: profile.sub,
-        name: profile.name,
-        displayName: profile.displayName,
-        avatarUrl: profile.avatarUrl,
-        role: profile.role,
-      }
-    : null;
 
   const displayTitle = getLocalizedTitle(post, contentLocale);
   const displayContent = getLocalizedContent(post, contentLocale);
@@ -367,7 +381,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <CommentsSection
             postId={post.id}
             allowComments={post.allowComments}
-            currentUser={currentUser}
           />
         </div>
 
