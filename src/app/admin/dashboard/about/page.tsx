@@ -1,17 +1,21 @@
 import { cookies } from "next/headers";
-import { getLocale, getTranslations } from "next-intl/server";
+import NextLink from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 
-import { Link, redirect } from "@/i18n/routing";
+import { redirect } from "@/i18n/routing";
+import { applyAdminLocale } from "@/i18n/admin-locale";
 import { EditAboutForm } from "@/features/about/components/EditAboutForm";
 import { getAboutContent } from "@/features/about/api/about-service";
 
 export default async function DashboardAboutPage() {
+  const locale = await applyAdminLocale();
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    throw redirect({ href: "/", locale: await getLocale() });
+    throw redirect({ href: "/", locale });
   }
 
   const about = await getAboutContent();
@@ -25,13 +29,13 @@ export default async function DashboardAboutPage() {
             link goes to /dashboard/posts (the hub); this one alone went
             all the way to the public homepage instead, contradicting its
             own "Voltar para o Painel" label. */}
-        <Link
-          href="/dashboard/posts"
+        <NextLink
+          href="/admin/dashboard/posts"
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
         >
           <ArrowLeft className="size-4" />
           {t("backToPanel")}
-        </Link>
+        </NextLink>
 
         <h1 className="text-4xl font-bold text-white">{tAbout("editHeading")}</h1>
         <p className="mt-2 text-sm text-slate-400">{tAbout("editDescription")}</p>

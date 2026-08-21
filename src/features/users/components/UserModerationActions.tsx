@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Ban, ShieldCheck, Trash2 } from "lucide-react";
 
-import { useRouter } from "@/i18n/routing";
+// next/navigation's router, not the localized one: the destination below is
+// in the admin panel, which lives outside the [locale] segment.
+import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import {
   deleteUserAction,
@@ -62,7 +64,7 @@ export function UserModerationActions({
       return;
     }
 
-    router.push("/dashboard/users");
+    router.push("/admin/dashboard/users");
   }
 
   return (

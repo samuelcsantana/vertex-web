@@ -7,10 +7,15 @@ import { BlogMobileNav } from "@/components/blog-identity/BlogMobileNav";
 
 export function BlogHeaderShell({
   rightSlot,
+  localeSwitcher = <LanguageSwitcher />,
   isAuthenticated,
   logoutRedirectTo,
 }: {
   rightSlot: ReactNode;
+  // The public site's picker navigates to a locale-prefixed URL. The admin
+  // panel has no such URLs, so it passes its own cookie-based picker rather
+  // than this header growing a flag for a difference that belongs to routing.
+  localeSwitcher?: ReactNode;
   // Below md the rightSlot (login trigger / account actions) is hidden and
   // BlogMobileNav renders the equivalent entries inside its dropdown, so
   // it needs to know which set to show and where logout should land.
@@ -70,7 +75,7 @@ export function BlogHeaderShell({
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-3">
-            <LanguageSwitcher />
+            {localeSwitcher}
             {/* Below md the bar can't fit logo + switcher + account actions
                 + hamburger (everything in it is shrink-0 by design), so the
                 rightSlot's login/account entries move into BlogMobileNav's

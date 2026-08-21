@@ -56,10 +56,11 @@ export async function updateAboutContentAction(
     };
   }
 
-  // Both /about and /dashboard/about live under the [locale] dynamic
-  // segment, so literal paths here only ever busted the unprefixed pt
-  // routes — /en/about and /es/about kept serving stale content until
-  // getAboutContent()'s own 60s revalidate window passed. Same reasoning
+  // /about lives under the [locale] dynamic segment, so a literal path
+  // here only ever busted the unprefixed pt route — /en/about and /es/about
+  // kept serving stale content until getAboutContent()'s own 60s revalidate
+  // window passed. (The editor at /admin/dashboard/about needs no
+  // invalidation of its own: it is force-dynamic.) Same reasoning
   // (and the same verified-working fix) as post-actions.ts's
   // revalidatePostListings: revalidatePath("/[locale]", "page") does not
   // actually bust the cache in this Next 16 + Turbopack setup, the

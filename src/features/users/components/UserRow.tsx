@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import { Ban, ShieldCheck, Trash2 } from "lucide-react";
 
-import { Link } from "@/i18n/routing";
+// next/link, not the localized one from @/i18n/routing: this row links into
+// the admin panel, which lives outside the [locale] segment and takes no
+// locale prefix.
+import Link from "next/link";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import {
   deleteUserAction,
@@ -53,7 +56,7 @@ export function UserRow({ user, isSelf }: UserRowProps) {
         {/* The identity block links to the moderation detail page; the
             action buttons stay outside the link. */}
         <Link
-          href={`/dashboard/users/${user.id}`}
+          href={`/admin/dashboard/users/${user.id}`}
           className="flex min-w-0 items-center gap-3 rounded-lg transition-opacity hover:opacity-80"
         >
           {user.avatarUrl ? (

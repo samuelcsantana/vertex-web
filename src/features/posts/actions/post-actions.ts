@@ -2,9 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { getLocale } from "next-intl/server";
-
-import { redirect } from "@/i18n/routing";
+import { redirect } from "next/navigation";
 import type { CreatePostInput } from "@/features/posts/types";
 import {
   apiErrorMessage,
@@ -32,12 +30,11 @@ function normalizeCoverUrl<
   };
 }
 
-// Both the home page and the dashboard listing live under the [locale]
-// dynamic segment (src/app/[locale]/(blog)/page.tsx and
-// .../(blog-admin)/dashboard/posts/page.tsx) — a literal revalidatePath("/")
-// only busts the cache entry for the exact path it's given, which is just
-// the unprefixed pt route. /en and /es visitors kept seeing stale data
-// until getPosts()'s own 60s revalidate window passed on its own.
+// The public listings live under the [locale] dynamic segment
+// (src/app/[locale]/(blog)/page.tsx) — a literal revalidatePath("/") only
+// busts the cache entry for the exact path it's given, which is just the
+// unprefixed pt route. /en and /es visitors kept seeing stale data until
+// getPosts()'s own 60s revalidate window passed on its own.
 //
 // The docs' officially recommended fix for a dynamic segment —
 // revalidatePath("/[locale]", "page") — was verified NOT to actually bust
@@ -89,7 +86,9 @@ export async function createPostAction(
   }
 
   revalidatePostListings();
-  throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
+  // A plain redirect, not the localized one: the admin panel sits outside
+  // the [locale] segment, so this path takes no locale prefix.
+  throw redirect("/admin/dashboard/posts");
 }
 
 export async function updatePostAction(
@@ -129,7 +128,9 @@ export async function updatePostAction(
   }
 
   revalidatePostListings();
-  throw redirect({ href: "/dashboard/posts", locale: await getLocale() });
+  // A plain redirect, not the localized one: the admin panel sits outside
+  // the [locale] segment, so this path takes no locale prefix.
+  throw redirect("/admin/dashboard/posts");
 }
 
 export async function deletePostAction(id: string): Promise<void> {

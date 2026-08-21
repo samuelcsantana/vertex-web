@@ -40,7 +40,7 @@ interface CurrentUserContextValue {
 }
 
 // The default makes useCurrentUser() safe outside a provider: the
-// (blog-admin) tree resolves the profile server-side and passes it down as a
+// admin tree resolves the profile server-side and passes it down as a
 // prop, so components shared between both trees must not blow up there.
 const CurrentUserContext = createContext<CurrentUserContextValue>({
   user: null,

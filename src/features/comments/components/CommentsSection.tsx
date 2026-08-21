@@ -4,7 +4,10 @@ import { useEffect, useId, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MessageCircle, Trash2 } from "lucide-react";
 
-import { Link } from "@/i18n/routing";
+// next/link, not the localized one from @/i18n/routing: the only link this
+// component renders points into the admin panel, which lives outside the
+// [locale] segment and takes no locale prefix.
+import Link from "next/link";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
 import {
@@ -210,7 +213,7 @@ export function CommentsSection({
                           admin-identified responses, never publicly. */}
                       {isAdminViewer ? (
                         <Link
-                          href={`/dashboard/users/${comment.author.id}`}
+                          href={`/admin/dashboard/users/${comment.author.id}`}
                           className="text-sm font-medium text-slate-100 underline-offset-4 hover:text-emerald-400 hover:underline"
                         >
                           {authorName ?? t("anonymousUser")}

@@ -4,7 +4,9 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, LogOut } from "lucide-react";
 
-import { Link, useRouter } from "@/i18n/routing";
+import NextLink from "next/link";
+
+import { useRouter } from "@/i18n/routing";
 import { logoutAction } from "@/features/auth/actions/auth-actions";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
@@ -65,7 +67,7 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
       await logoutAction(redirectTo);
       // On the public pages auth lives in client state, so clearing the
       // cookie is not enough to put the header back to logged-out. In the
-      // (blog-admin) tree there is no provider and this is a no-op — that
+      // admin tree there is no provider and this is a no-op — that
       // side still resolves the profile server-side, and router.refresh()
       // covers it.
       refreshCurrentUser();
@@ -124,14 +126,16 @@ export function AdminHeaderActions({ redirectTo, profile }: AdminHeaderActionsPr
           aria-label={displayName}
           className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl"
         >
-          <Link
-            href="/profile"
+          {/* NextLink, not the localized one: the admin panel lives outside
+              the [locale] segment, so this path takes no locale prefix. */}
+          <NextLink
+            href="/admin/profile"
             role="menuitem"
             onClick={() => setIsMenuOpen(false)}
             className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
           >
             {t("profile")}
-          </Link>
+          </NextLink>
           <button
             type="button"
             role="menuitem"
