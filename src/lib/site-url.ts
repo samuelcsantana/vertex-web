@@ -23,11 +23,17 @@
 // what lets these pages be prerendered.
 //
 // Preview deployments therefore report the production origin instead of
-// their own *.vercel.app host. That is deliberate: a preview that
-// self-references invites search engines to index it as a second copy of
-// the site, while one pointing at production consolidates back to the real
-// page. The cost is that a preview's canonical describes a page other than
-// the one on screen — so verifying a preview means asking "is this the right
+// their own *.vercel.app host, and that costs nothing: Vercel puts previews
+// behind SSO and serves them with X-Robots-Tag: noindex, so no crawler ever
+// reads a preview's canonical either way. (Worth stating, because "previews
+// would leak into the index" is the plausible-sounding argument for
+// per-environment origins, and it was checked against a real preview and
+// does not hold.) What it does buy is one value with one definition — the
+// alternative needs a correct variable in every environment, and the
+// environment that lacks one fails silently.
+//
+// The cost is that a preview's canonical describes a page other than the
+// one on screen, so verifying a preview means asking "is this the right
 // origin?", never "does it match the host I'm on?".
 const CANONICAL_ORIGIN = "https://www.samuelsantana.dev";
 
