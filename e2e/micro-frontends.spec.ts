@@ -13,6 +13,19 @@ import { expect, test } from "@playwright/test";
  * origin cannot be mistaken for a regression in this one.
  */
 test.describe("Module Federation host", { tag: "@external" }, () => {
+  // Playwright's default budget is 30s per test, and it caps every assertion inside one — so an
+  // expect that asks for 30s of its own can still be cut short by the test running out first.
+  //
+  // These tests wait on somebody else's cold start. The remote fetches the Cygnus API, which runs
+  // on a free tier that sleeps when idle, and waking it can take most of a minute. A run where
+  // that happens is the API being slow, not the API being broken, and the two used to be
+  // indistinguishable here: the widget's title would appear, its rows would not, and the job went
+  // red for a deploy that was fine. Observed on PR #86, which changed nothing on this page.
+  //
+  // The job still fails when the other origin is genuinely down. It just takes longer to say so,
+  // which is the right trade for a signal that is only useful when it is trustworthy.
+  test.describe.configure({ timeout: 90_000 });
+
   test("keeps the remote out of the server render", async ({ request }) => {
     // The whole claim is runtime resolution. If the widget's markup were in the HTML, the remote
     // would have been resolved at build time and this would be a bundling demo.
@@ -28,8 +41,10 @@ test.describe("Module Federation host", { tag: "@external" }, () => {
     await page.goto("/micro-frontends");
 
     await expect(page.getByText("Calendário vacinal")).toBeVisible({ timeout: 30_000 });
-    // Rows come from the remote's own fetch to the Cygnus API, made from this origin.
-    await expect(page.locator(".cygnus-mf-row")).toHaveCount(6);
+    // Rows come from the remote's own fetch to the Cygnus API, made from this origin — the one
+    // assertion in this file that waits on that API rather than on the container. It was also the
+    // only one left on the 5s default, which made the slowest path carry the tightest deadline.
+    await expect(page.locator(".cygnus-mf-row")).toHaveCount(6, { timeout: 60_000 });
   });
 
   test("resolves React to a single shared instance", async ({ page }) => {
@@ -44,8 +59,9 @@ test.describe("Module Federation host", { tag: "@external" }, () => {
   test("passes props in and callbacks back out", async ({ page }) => {
     await page.goto("/micro-frontends");
 
+    // Same dependency as the row count above: no button exists until the API answers.
     const firstVaccine = page.locator(".cygnus-mf-name-button").first();
-    await expect(firstVaccine).toBeVisible({ timeout: 30_000 });
+    await expect(firstVaccine).toBeVisible({ timeout: 60_000 });
     const name = (await firstVaccine.textContent())?.trim();
 
     await firstVaccine.click();
