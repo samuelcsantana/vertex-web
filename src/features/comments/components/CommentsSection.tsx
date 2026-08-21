@@ -13,30 +13,31 @@ import {
   getCommentsAction,
 } from "@/features/comments/actions/comment-actions";
 import type { Comment } from "@/features/comments/types";
-import type { UserRole } from "@/features/auth/api/profile-service";
-
-interface CommentsSectionCurrentUser {
-  id: string;
-  name: string | null;
-  displayName: string | null;
-  avatarUrl: string | null;
-  role: UserRole;
-}
+import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 interface CommentsSectionProps {
   postId: string;
   allowComments: boolean;
-  // access_token is HttpOnly, so a client component can't read it itself —
-  // the reading page (a server component) already resolves the session via
-  // cookies() + getProfile(), so it passes the result down instead.
-  currentUser: CommentsSectionCurrentUser | null;
 }
 
 export function CommentsSection({
   postId,
   allowComments,
-  currentUser,
 }: CommentsSectionProps) {
+  // access_token is HttpOnly, so this component cannot read the session
+  // itself. It used to receive the resolved profile as a prop, which meant
+  // the post page had to call cookies() during its server render — and that
+  // one call is what kept every post out of the prerender. The provider
+  // resolves the same thing after hydration through /api/me, the path the
+  // rest of the app already uses.
+  //
+  // isAuthenticated is not `user !== null`: it is the cookie's answer,
+  // optimistically pre-filled from a local hint at hydration, while `user`
+  // only arrives with the profile. Gating the composer on it (and rendering
+  // neither branch until isResolved) is what keeps a signed-in visitor from
+  // seeing the sign-in card flash before /api/me lands — the same bug this
+  // provider was built to fix in the header.
+  const { user, isAuthenticated, isResolved } = useCurrentUser();
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState("");
@@ -80,7 +81,7 @@ export function CommentsSection({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!content.trim() || !currentUser) {
+    if (!content.trim()) {
       return;
     }
 
@@ -96,28 +97,40 @@ export function CommentsSection({
       return;
     }
 
-    // The create endpoint returns the raw row with no author join; the
-    // logged-in user's own name/avatar (already known client-side) stand
-    // in for it so the comment appears instantly, without a refetch.
-    // Prepended, not appended: the list is newest-first (matching
-    // CommentsService.findAllForPost's orderBy on the API side).
+    setContent("");
+
+    // The create endpoint returns the raw row with no author join, so the
+    // signed-in visitor's own name/avatar stand in for it and the comment
+    // appears instantly. Prepended, not appended: the list is newest-first
+    // (matching CommentsService.findAllForPost's orderBy on the API side).
+    //
+    // `user` can be null here even though the write succeeded — the cookie
+    // authenticates the Server Action, while the profile behind /api/me is a
+    // separate call that can still be in flight or have failed. Without an
+    // author to render, refetching is the only way to show the comment that
+    // was just written; dropping it silently would look like the submit
+    // failed.
+    if (!user) {
+      setComments(await getCommentsAction(postId));
+      return;
+    }
+
     setComments((previous) => [
       {
         id: result.comment!.id,
         postId,
-        authorId: currentUser.id,
+        authorId: user.id,
         content: result.comment!.content,
         createdAt: result.comment!.createdAt,
         author: {
-          id: currentUser.id,
-          name: currentUser.name,
-          displayName: currentUser.displayName,
-          avatarUrl: currentUser.avatarUrl,
+          id: user.id,
+          name: user.name,
+          displayName: user.displayName,
+          avatarUrl: user.avatarUrl,
         },
       },
       ...previous,
     ]);
-    setContent("");
   }
 
   async function handleDelete(commentId: string) {
@@ -153,7 +166,7 @@ export function CommentsSection({
           // Logged out with no comments renders only the sign-in card
           // below — an empty-state card stacked on top of it would just
           // be two near-identical panels saying the same thing.
-          currentUser && (
+          isAuthenticated && (
             <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-center">
               <p className="text-sm text-slate-400">{t("beFirstToComment")}</p>
             </div>
@@ -163,10 +176,13 @@ export function CommentsSection({
             const authorName =
               comment.author.displayName ?? comment.author.name;
             const initial = (authorName?.trim()?.[0] ?? "?").toUpperCase();
-            const isAdminViewer = currentUser?.role === "admin";
+            // Both read `user`, not `isAuthenticated`: these are controls
+            // only some visitors get, so appearing a beat late once the
+            // profile lands is right, while guessing and rendering a delete
+            // button the API would reject is not.
+            const isAdminViewer = user?.role === "admin";
             const canDelete =
-              !!currentUser &&
-              (currentUser.id === comment.authorId || isAdminViewer);
+              !!user && (user.id === comment.authorId || isAdminViewer);
 
             return (
               <div
@@ -251,7 +267,10 @@ export function CommentsSection({
       )}
 
       <div className="mt-6">
-        {currentUser ? (
+        {/* Nothing until hydration decides: this markup is prerendered and
+            shipped to every visitor alike, so committing to either branch
+            server-side would show one of them the wrong one. */}
+        {!isResolved ? null : isAuthenticated ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <label htmlFor={commentFieldId} className="sr-only">
               {t("commentPlaceholder")}
