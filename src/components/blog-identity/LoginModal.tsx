@@ -251,7 +251,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -260,25 +260,25 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(event) => event.stopPropagation()}
-        className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl"
+        className="relative w-full max-w-md rounded-3xl border border-border bg-popover p-8 shadow-xl"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label={tCommon("close")}
-          className="absolute top-6 right-6 text-slate-400 transition-colors hover:text-slate-200"
+          className="absolute top-6 right-6 text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="size-5" />
         </button>
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+          <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Code2 className="size-6" />
           </div>
-          <h2 id={titleId} className="text-xl font-bold text-white">
+          <h2 id={titleId} className="text-xl font-bold text-foreground">
             {t("loginTitle")}
           </h2>
-          <p className="text-sm text-slate-400">{t("loginSubtitle")}</p>
+          <p className="text-sm text-muted-foreground">{t("loginSubtitle")}</p>
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
@@ -286,7 +286,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isConnectingGoogle}
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl border border-input bg-secondary py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input disabled:opacity-50"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -315,7 +315,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             type="button"
             onClick={handleGithubLogin}
             disabled={isConnectingGithub}
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl border border-input bg-secondary py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input disabled:opacity-50"
           >
             <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -328,9 +328,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         </div>
 
         <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-slate-800" />
-          <span className="text-xs text-slate-400">{t("orWithEmail")}</span>
-          <div className="h-px flex-1 bg-slate-800" />
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">{t("orWithEmail")}</span>
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         {view === "otp-email" && (
@@ -350,11 +350,11 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               defaultValue={otpEmail}
               placeholder={t("emailPlaceholder")}
               aria-describedby={error ? errorId : undefined}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/70 focus:outline-none"
             />
 
             {error && (
-              <p id={errorId} role="alert" className="text-sm text-red-400">
+              <p id={errorId} role="alert" className="text-sm text-destructive">
                 {error}
               </p>
             )}
@@ -362,7 +362,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+              className="mt-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {isSubmitting ? t("sendingCode") : t("sendCode")}
             </button>
@@ -370,7 +370,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             <button
               type="button"
               onClick={() => switchView("password")}
-              className="mx-auto mt-1 text-xs text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+              className="mx-auto mt-1 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               {t("usePassword")}
             </button>
@@ -383,7 +383,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             className="flex flex-col gap-3"
             noValidate
           >
-            <p className="text-center text-sm text-slate-400">
+            <p className="text-center text-sm text-muted-foreground">
               {t("codeSentTo", { email: otpEmail })}
             </p>
             <label htmlFor={codeId} className="sr-only">
@@ -400,11 +400,11 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               maxLength={6}
               placeholder={t("codePlaceholder")}
               aria-describedby={error ? errorId : undefined}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-center text-lg tracking-[0.5em] text-slate-100 placeholder:text-sm placeholder:tracking-normal placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-center text-lg tracking-[0.5em] text-foreground placeholder:text-sm placeholder:tracking-normal placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/70 focus:outline-none"
             />
 
             {error && (
-              <p id={errorId} role="alert" className="text-sm text-red-400">
+              <p id={errorId} role="alert" className="text-sm text-destructive">
                 {error}
               </p>
             )}
@@ -412,7 +412,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+              className="mt-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {isSubmitting ? t("verifyingCode") : t("verifyCode")}
             </button>
@@ -422,7 +422,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
                 type="button"
                 disabled={isSubmitting || resendCooldown > 0}
                 onClick={() => requestCode(otpEmail)}
-                className="text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline disabled:no-underline disabled:opacity-50"
+                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline disabled:no-underline disabled:opacity-50"
               >
                 {resendCooldown > 0
                   ? t("resendCodeIn", { seconds: resendCooldown })
@@ -431,7 +431,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               <button
                 type="button"
                 onClick={() => switchView("otp-email")}
-                className="text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 {t("changeEmail")}
               </button>
@@ -455,7 +455,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               required
               placeholder={t("emailPlaceholder")}
               aria-describedby={error ? errorId : undefined}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/70 focus:outline-none"
             />
             <label htmlFor={passwordId} className="sr-only">
               {t("passwordPlaceholder")}
@@ -467,11 +467,11 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               required
               placeholder={t("passwordPlaceholder")}
               aria-describedby={error ? errorId : undefined}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/70 focus:outline-none"
             />
 
             {error && (
-              <p id={errorId} role="alert" className="text-sm text-red-400">
+              <p id={errorId} role="alert" className="text-sm text-destructive">
                 {error}
               </p>
             )}
@@ -479,7 +479,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+              className="mt-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {isSubmitting ? t("signingIn") : t("signIn")}
             </button>
@@ -487,7 +487,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
             <button
               type="button"
               onClick={() => switchView("otp-email")}
-              className="mx-auto mt-1 text-xs text-slate-400 underline-offset-4 transition-colors hover:text-slate-200 hover:underline"
+              className="mx-auto mt-1 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               {t("useEmailCode")}
             </button>
