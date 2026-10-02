@@ -7,11 +7,11 @@
 
 The Next.js frontend for **[samuelsantana.dev](https://samuelsantana.dev)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
 
-Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the NestJS backend, over a REST API. The two are deployed on separate domains (Vercel and Render), which shapes a few of the decisions below.
+Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the NestJS backend, over a REST API. The two are deployed on separate domains (Vercel and AWS Lambda), which shapes a few of the decisions below.
 
 ## Highlights
 
-- **Server-first App Router.** Data fetching and auth checks happen in Server Components and Server Actions by default; `"use client"` is scoped to the smallest leaf that actually needs interactivity (a form, a dropdown, a polling listener).
+- **Server-first App Router, prerendered public site.** Data fetching happens in Server Components and mutations in Server Actions; every public route is prerendered, so the signed-in user is resolved on the client (see *Architecture notes*) rather than by reading cookies in a public render. `"use client"` is scoped to the smallest leaf that actually needs interactivity (a form, a dropdown, a polling listener).
 - **Sub-path i18n that crawlers can actually index.** `next-intl` serves pt (default, unprefixed), `/en`, and `/es` as genuinely distinct URLs via a `proxy.ts` routing middleware — not a cookie that only a browser ever sends. `sitemap.ts` emits entries with real `hreflang` alternates — for posts, only for locales the post is genuinely translated into. Content itself is per-locale too: posts *and* the About page store optional en/es variants next to the required pt text, falling back to pt with a visible notice when a translation is missing.
 - **Cross-domain OAuth via the Token Callback Pattern.** Google/GitHub login can't rely on vertex-api setting a cookie directly — it's on a different domain, so the cookie would be scoped to a domain this app's own `cookies()` calls could never see. Instead, the backend redirects the popup to `/auth/callback` with a short-lived, single-use exchange code (never the real token) in the URL; this app trades it for the real session token server-to-server and sets its own cookie. See `src/app/[locale]/auth/callback/` and `exchangeOAuthCodeAction`.
 - **Technical SEO.** Dynamic `sitemap.xml`/`robots.txt`, `BlogPosting` JSON-LD on post pages, locale-aware canonical URLs, and Open Graph metadata generated per post.
@@ -24,7 +24,7 @@ Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the Nes
 - Tailwind CSS v4
 - [next-intl](https://next-intl.dev) for routing-based i18n
 - react-hook-form + zod
-- react-markdown (+ remark-gfm, rehype-highlight/rehype-pretty-code) for post content — Markdown stored in the database, not MDX files
+- react-markdown (+ remark-gfm, rehype-highlight) for post content — Markdown stored in the database, not MDX files
 - `@next/third-parties` for Google Analytics
 
 ## Getting started
@@ -52,7 +52,7 @@ npm run lint            # eslint
 npm test                 # unit/component tests (vitest)
 npm run test:watch       # vitest in watch mode
 npm run test:coverage    # vitest with a coverage report
-npm run test:e2e         # playwright — needs a running dev server *and* vertex-api
+npm run test:e2e         # playwright — starts the dev server itself; vertex-api is not needed
 ```
 
 ## Docker
@@ -70,7 +70,7 @@ There's no `api` service in this compose file — vertex-api is a separate repo/
 Two layers, deliberately not one:
 
 - **Unit/component (Vitest + React Testing Library)** — pure logic (`src/features/*/utils`, `src/features/*/schemas`) and small components with real branching behavior worth locking in (e.g. `TopicPills`'s guard against a missing `topics` array). Fully self-contained, no backend needed, wired into CI (`tests.yml`). As of this writing this covers a handful of well-chosen files completely rather than the whole codebase shallowly — most of `src/features/**/actions` and `**/api` are Server Actions that just forward to vertex-api, and most components are thin composition over those; the better ROI for that code is the E2E layer below, not mocking every `fetch` call.
-- **E2E (Playwright)** — `e2e/`, covering locale routing, the language switcher, dashboard gating, and mobile layout, run against a **real** vertex-api instance (no mocking, matching how this app was actually verified throughout development). **Not wired into CI**: that would mean standing up Postgres + a seeded vertex-api as CI services, which is real, separate infrastructure work, not a config tweak. Run it locally with both `vertex-web`'s dev server and `vertex-api` up.
+- **E2E (Playwright)** — `e2e/`, covering locale routing, the language switcher, admin gating, the home page and the Module Federation demo. The suite does **not** need vertex-api: it runs in CI against a production build (`tests.yml`), with nothing listening on the API port. That also bounds what it covers — nothing here would notice vertex-api returning bad data. Specs tagged `@external` load the remote from `cygnus.samuelsantana.dev` and run as their own CI job, so "the remote was down" and "this change broke the site" are never the same failure.
 
 ## Environment variables
 
@@ -78,16 +78,16 @@ See [`.env.example`](./.env.example) for the full, documented list. In short:
 
 | Variable | Used by | Notes |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | root layout (`metadataBase`), fallback in `src/lib/site-url.ts` | Canonical/OG/sitemap/robots URLs are derived from the request's Host header at runtime (`src/lib/site-url.ts`), so they always match the domain that actually served the request. This var only feeds the root layout's static `metadataBase` and the no-request fallback — still set it to the real production URL in deployment. |
+| `NEXT_PUBLIC_SITE_URL` | `src/lib/site-url.ts` | Local-development override only. The canonical origin used for canonical/OG/sitemap/robots URLs is a constant in `src/lib/site-url.ts`, and that constant wins in production builds; setting this locally just points generated URLs at the dev server. Do not set it in deployment. |
 | `VERTEX_API_URL` | Server Actions/Components | Server-only; never sent to the browser. |
 | `NEXT_PUBLIC_VERTEX_API_URL` | `LoginModal`, `LinkGithubButton` | Browser-readable — these open the OAuth popup directly against vertex-api. |
 | `NEXT_PUBLIC_GA_ID` | root layout | Optional; Analytics is skipped entirely if unset. |
 
 ## Architecture notes
 
-- **Route groups, not folders-as-decoration.** `(blog)` and `(blog-admin)` share the samuelsantana.dev visual identity but differ in what chrome they render (public login trigger vs. an authenticated "Sair" menu); `blog/[slug]` is a plain segment (not a group) because it needs the literal `/blog` URL prefix. All three live under `src/app/[locale]/`.
-- **`proxy.ts`, not `middleware.ts`.** Next.js 16 deprecated the latter and hard-errors if both exist. This one file does double duty: next-intl's locale routing, and gating `/dashboard/**` and `/profile` behind a session cookie check — with the locale prefix stripped first, since `/dashboard` (pt) and `/en/dashboard` need the same gate.
-- **Auth state is resolved server-side and threaded down as props**, never read from `localStorage` or an unauthenticated client guess — the access token is `HttpOnly` and simply isn't visible to client code.
+- **Public site under the locale, admin outside it.** `src/app/[locale]/(blog)/` holds the home, post and About pages, each prerendered per locale; `blog/[slug]` is a plain segment inside the group because it needs the literal `/blog` URL prefix. The admin panel lives in `src/app/admin/`, outside the locale segment, with its own root layout: it is rendered per request and takes its language from the `NEXT_LOCALE` cookie instead of the URL.
+- **`proxy.ts`, not `middleware.ts`.** Next.js 16 deprecated the latter and hard-errors if both exist. This one file does double duty: gating `/admin/**` behind a session cookie check, and next-intl's locale routing for everything else — admin requests are matched so the gate sees them, but never reach next-intl.
+- **Auth never enters a public render.** The access token is an `HttpOnly` cookie, invisible to client code. Public pages learn who is signed in from `GET /api/me`, fetched once by `CurrentUserProvider`; components read `useCurrentUser()`, which distinguishes "not answered yet" from "signed out", so the owner never sees a logged-out flash. Reading `cookies()` in a public page would un-prerender it.
 
 ## Related repository
 
