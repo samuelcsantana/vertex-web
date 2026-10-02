@@ -99,7 +99,7 @@ export function OAuthCallbackClient() {
   const failed = (!code && !oauthError) || actionFailed;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-center text-sm text-slate-400">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 text-center text-sm text-muted-foreground">
       {oauthErrorText ?? (failed ? t("loginFailed") : t("completingLogin"))}
     </div>
   );

@@ -76,38 +76,37 @@ export function AboutProfileHeader() {
   const t = useTranslations("About");
 
   return (
-    <div className="group relative rounded-3xl border border-white/10 bg-slate-900/40 p-6 shadow-[0_8px_30px_rgb(16,185,129,0.03)] backdrop-blur-xl transition-all duration-500 hover:border-white/15 hover:shadow-[0_8px_40px_rgb(16,185,129,0.06)] md:p-8">
+    <div className="group relative rounded-3xl border border-border bg-card/40 p-6 backdrop-blur-xl transition-all duration-500 hover:border-foreground/15 md:p-8">
       <div className="relative mb-6 size-24">
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-400 opacity-30 blur-md transition-opacity duration-500 group-hover:opacity-60" />
-        <div className="relative size-full rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-400 p-[2px]">
+        <div className="relative size-full rounded-2xl bg-primary p-[2px]">
           <Image
             src="/samuel-santana.jpg"
             alt={t("avatarAlt")}
             width={96}
             height={96}
             priority
-            className="size-full rounded-[14px] bg-slate-950 object-cover"
+            className="size-full rounded-[14px] bg-background object-cover"
           />
         </div>
       </div>
 
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 font-mono text-xs font-semibold text-emerald-400">
-          <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 font-mono text-xs font-semibold text-primary">
+          <span className="size-1.5 animate-pulse rounded-full bg-primary" />
           {"<"}
           {t("roleTagline")}
           {" />"}
         </div>
 
-        <p className="bg-gradient-to-r from-white to-slate-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
+        <p className="text-3xl font-bold tracking-tight text-foreground">
           Samuel Santana
         </p>
       </div>
 
-      <hr className="my-6 border-white/5" />
+      <hr className="my-6 border-border/50" />
 
       <div className="space-y-3 font-mono text-sm">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-slate-500 uppercase">
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           {"// "}
           {t("connect")}
         </span>
@@ -117,13 +116,13 @@ export function AboutProfileHeader() {
             key={label}
             href={href}
             {...(external ? { target: "_blank", rel: "me noopener noreferrer" } : {})}
-            className="group/link flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-slate-300 transition-all duration-300 hover:border-white/15 hover:bg-white/[0.05] hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:bg-emerald-950/30 focus-visible:outline-none"
+            className="group/link flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-foreground/[0.02] p-3 text-foreground transition-all duration-300 hover:border-foreground/15 hover:bg-foreground/[0.05] focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:bg-primary/10 focus-visible:outline-none"
           >
             <span className="flex shrink-0 items-center gap-2">
-              <Icon className="size-4 text-slate-400 transition-colors group-hover/link:text-emerald-400" />
+              <Icon className="size-4 text-muted-foreground transition-colors group-hover/link:text-primary" />
               {label}
             </span>
-            <span className="flex min-w-0 items-center gap-1 text-xs text-slate-500 transition-colors group-hover/link:text-cyan-400">
+            <span className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground transition-colors group-hover/link:text-primary">
               <span className="truncate">{handle}</span>
               <ArrowUpRight className="size-3 shrink-0 -translate-x-2 opacity-0 transition-all group-hover/link:translate-x-0 group-hover/link:opacity-100" />
             </span>

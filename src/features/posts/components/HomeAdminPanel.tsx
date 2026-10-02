@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 const secondaryLinkClasses =
-  "inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700";
+  "inline-flex items-center gap-1.5 rounded-full border border-input bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground transition-colors hover:bg-input";
 
 // The admin shortcut bar on the public home page. Client-resolved for the
 // same reason as PostAdminActions: the page is prerendered, so this markup
@@ -24,17 +24,17 @@ export function HomeAdminPanel() {
   }
 
   return (
-    <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 p-4 shadow-lg backdrop-blur-xl">
+    <div className="relative z-10 mt-10 -mb-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-border/60 bg-card/70 p-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center gap-2">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Settings className="size-4" />
         </div>
-        <p className="text-sm font-medium text-white">{t("adminPanelActive")}</p>
+        <p className="text-sm font-medium text-foreground">{t("adminPanelActive")}</p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Link
           href="/admin/dashboard/posts/new"
-          className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-slate-200"
+          className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1.5 text-xs font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           <Plus className="size-3.5" />
           {t("newArticle")}

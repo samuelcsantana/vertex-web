@@ -6,8 +6,8 @@ export function BlogFooter() {
   const t = useTranslations("Footer");
 
   return (
-    <footer className="border-t border-white/10">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-8 text-center text-sm text-slate-400 sm:px-6">
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-8 text-center text-sm text-muted-foreground sm:px-6">
         {/* rel="me" is what lets GitHub verify this site as this account's
             own website (Settings > Public profile > Social accounts),
             showing a checkmark next to the link there — the reciprocal,
@@ -20,7 +20,7 @@ export function BlogFooter() {
             href={SOCIAL_PROFILES.github}
             rel="me noopener noreferrer"
             target="_blank"
-            className="transition-colors hover:text-white"
+            className="transition-colors hover:text-foreground"
           >
             GitHub
           </a>
@@ -28,7 +28,7 @@ export function BlogFooter() {
             href={SOCIAL_PROFILES.linkedin}
             rel="me noopener noreferrer"
             target="_blank"
-            className="transition-colors hover:text-white"
+            className="transition-colors hover:text-foreground"
           >
             LinkedIn
           </a>

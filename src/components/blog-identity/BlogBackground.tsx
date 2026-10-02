@@ -1,8 +1,10 @@
+// A flat page colour plus a faint grain. The coloured glows that used to sit
+// here are gone on purpose: the palette spends its one accent on what is
+// interactive or active, and a tinted backdrop competes with that and with
+// the post covers.
 export function BlogBackground() {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#161c2a]">
-      <div className="absolute -top-40 -left-40 size-[560px] rounded-full bg-emerald-900/25 blur-[120px]" />
-      <div className="absolute top-1/3 right-0 size-[560px] rounded-full bg-cyan-900/15 blur-[120px]" />
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background">
       <div
         className="absolute inset-0 opacity-[0.05] mix-blend-overlay"
         style={{

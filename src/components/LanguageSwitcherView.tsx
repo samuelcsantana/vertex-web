@@ -74,7 +74,7 @@ export function LanguageSwitcherView({
 
   return (
     <>
-      <div className="hidden shrink-0 items-center gap-1 rounded-full border border-slate-700 bg-slate-800/60 p-1 md:flex">
+      <div className="hidden shrink-0 items-center gap-1 rounded-full border border-input bg-secondary/60 p-1 md:flex">
         {LOCALE_OPTIONS.map((item) => (
           <button
             key={item.code}
@@ -85,7 +85,7 @@ export function LanguageSwitcherView({
             aria-pressed={locale === item.code}
             className={`flex size-7 shrink-0 items-center justify-center rounded-full text-sm transition-colors ${
               locale === item.code
-                ? "bg-emerald-500/20 ring-1 ring-emerald-500/40"
+                ? "bg-primary/20 ring-1 ring-primary/40"
                 : "opacity-50 hover:opacity-100"
             }`}
           >
@@ -102,7 +102,7 @@ export function LanguageSwitcherView({
           title={t("changeLanguage")}
           aria-haspopup="menu"
           aria-expanded={isMenuOpen}
-          className="flex size-8 items-center justify-center rounded-full border border-slate-700 bg-slate-800/60 text-sm transition-colors hover:bg-slate-700"
+          className="flex size-8 items-center justify-center rounded-full border border-input bg-secondary/60 text-sm transition-colors hover:bg-input"
         >
           {current.flag}
         </button>
@@ -112,7 +112,7 @@ export function LanguageSwitcherView({
             ref={menuRef}
             role="menu"
             aria-label={t("changeLanguage")}
-            className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl"
+            className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-border bg-popover p-1 shadow-xl"
           >
             {LOCALE_OPTIONS.map((item) => (
               <button
@@ -121,8 +121,8 @@ export function LanguageSwitcherView({
                 role="menuitemradio"
                 aria-checked={locale === item.code}
                 onClick={() => handleSelect(item.code)}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-slate-800 ${
-                  locale === item.code ? "text-emerald-400" : "text-slate-200"
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
+                  locale === item.code ? "text-primary" : "text-foreground"
                 }`}
               >
                 <span aria-hidden="true">{item.flag}</span>

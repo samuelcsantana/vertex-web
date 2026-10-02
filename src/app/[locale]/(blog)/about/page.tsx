@@ -96,6 +96,8 @@ export default async function AboutPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
         <div className="order-last lg:order-none lg:col-span-8">
+          {/* Amber, not a theme token: the palette has no warning colour,
+              and a translation fallback has to read as a caution. */}
           {!isTranslated && (
             <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
               <Info className="mt-0.5 size-4 shrink-0" />
@@ -103,7 +105,7 @@ export default async function AboutPage() {
             </div>
           )}
 
-          <div className="prose prose-invert lg:prose-lg mb-10 max-w-none">
+          <div className="prose lg:prose-lg mb-10 max-w-none">
             {!startsWithHeading && <h1 className="sr-only">{t("about")}</h1>}
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
           </div>
@@ -113,17 +115,17 @@ export default async function AboutPage() {
               <section
                 key={section.id}
                 id={section.id}
-                className="group scroll-mt-24 rounded-3xl border border-white/10 bg-slate-900/30 p-8 shadow-[0_8px_30px_rgb(16,185,129,0.02)] backdrop-blur-lg transition-all duration-500 target:ring-2 target:ring-emerald-400/60 hover:border-white/20 hover:bg-slate-900/50 hover:shadow-[0_8px_30px_rgb(16,185,129,0.05)] md:p-10"
+                className="group scroll-mt-24 rounded-3xl border border-border bg-card/30 p-8 backdrop-blur-lg transition-all duration-500 target:ring-2 target:ring-primary/60 hover:border-foreground/20 hover:bg-card/50 md:p-10"
               >
-                <div className="mb-6 flex items-center gap-4 border-b border-white/5 pb-4">
-                  <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text font-mono text-sm font-semibold text-transparent">
+                <div className="mb-6 flex items-center gap-4 border-b border-border/50 pb-4">
+                  <span className="font-mono text-sm font-semibold text-primary">
                     0{index + 1}.
                   </span>
-                  <h2 className="text-2xl font-bold tracking-tight text-slate-100 transition-colors group-hover:text-white">
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground transition-colors">
                     {section.heading}
                   </h2>
                 </div>
-                <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
+                <div className="prose prose-sm sm:prose-base max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {section.body}
                   </ReactMarkdown>

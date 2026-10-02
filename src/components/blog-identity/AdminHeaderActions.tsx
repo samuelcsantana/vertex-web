@@ -79,7 +79,7 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
         onClick={handleLogout}
         disabled={isPending}
         aria-label={t("signOut")}
-        className="flex shrink-0 items-center gap-2 rounded-full bg-slate-800 px-2.5 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 disabled:opacity-50 sm:px-4"
+        className="flex shrink-0 items-center gap-2 rounded-full bg-secondary px-2.5 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input disabled:opacity-50 sm:px-4"
       >
         <LogOut className="size-4 shrink-0" />
         <span className="hidden sm:inline">{t("signOut")}</span>
@@ -98,7 +98,7 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
         aria-label={displayName}
         aria-haspopup="menu"
         aria-expanded={isMenuOpen}
-        className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800 py-1 pr-0.5 pl-0.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 sm:py-1.5 sm:pr-3 sm:pl-1.5"
+        className="flex items-center gap-2 rounded-full border border-input bg-secondary py-1 pr-0.5 pl-0.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input sm:py-1.5 sm:pr-3 sm:pl-1.5"
       >
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
@@ -109,19 +109,19 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
             className="size-7 shrink-0 rounded-full object-cover"
           />
         ) : (
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
             {initial}
           </span>
         )}
         <span className="hidden max-w-[10rem] truncate sm:inline">{displayName}</span>
-        <ChevronDown className="hidden size-3.5 shrink-0 text-slate-400 sm:block" />
+        <ChevronDown className="hidden size-3.5 shrink-0 text-muted-foreground sm:block" />
       </button>
 
       {isMenuOpen && (
         <div
           role="menu"
           aria-label={displayName}
-          className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl"
+          className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-border bg-popover p-1 shadow-xl"
         >
           {/* NextLink, not the localized one: the admin panel lives outside
               the [locale] segment, so this path takes no locale prefix. */}
@@ -129,7 +129,7 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
             href="/admin/profile"
             role="menuitem"
             onClick={() => setIsMenuOpen(false)}
-            className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+            className="block rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent"
           >
             {t("profile")}
           </NextLink>
@@ -138,7 +138,7 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
             role="menuitem"
             onClick={handleLogout}
             disabled={isPending}
-            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
           >
             {t("signOut")}
           </button>

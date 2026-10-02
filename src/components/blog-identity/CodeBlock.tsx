@@ -36,10 +36,10 @@ export const CodeBlock: Components["pre"] = (props) => {
         type="button"
         onClick={handleCopy}
         aria-label={copied ? t("codeCopied") : t("copyCode")}
-        className="absolute top-2 right-2 inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-800/80 p-1.5 text-slate-300 backdrop-blur-sm transition-colors hover:border-emerald-500/30 hover:text-emerald-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+        className="absolute top-2 right-2 inline-flex items-center justify-center rounded-lg border border-input bg-secondary/80 p-1.5 text-foreground backdrop-blur-sm transition-colors hover:border-primary/30 hover:text-primary focus:ring-2 focus:ring-ring/70 focus:outline-none"
       >
         {copied ? (
-          <Check className="size-3.5 text-emerald-400" />
+          <Check className="size-3.5 text-primary" />
         ) : (
           <Copy className="size-3.5" />
         )}
