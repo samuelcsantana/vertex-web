@@ -86,14 +86,12 @@ export default async function BlogPage({ params }: BlogPageProps) {
               );
 
               return (
-                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 sm:grid-cols-2">
+                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 lg:grid-cols-2">
                   <div className="relative flex flex-col justify-center gap-4 p-8">
                     {/* Absolutely positioned so it never adds height to this
                         column — it used to sit in normal flex flow, which
-                        reserved space even at opacity-0 and made the image
-                        column (sm:h-full, matched to this column's height
-                        via grid stretch) crop taller/differently for admins
-                        than for anonymous visitors. */}
+                        reserved space even at opacity-0 and made the card
+                        taller for admins than for anonymous visitors. */}
                     <PostAdminActions
                       postId={featuredPost.id}
                       className="absolute right-8 top-8 z-10"
@@ -144,14 +142,20 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     </div>
                   </div>
 
+                  {/* The cover keeps its own 1200×630 shape at every width. It
+                      used to stretch to the text column's height from 640px
+                      up, and object-cover then cut its sides: only 65% of the
+                      width showed at 768px and 88% at 1024px. Side by side
+                      only from lg, where the two columns are close in height,
+                      centred if the text runs taller; stacked below that. */}
                   {displayCoverUrl && (
-                    <div className="relative overflow-hidden sm:h-full">
+                    <div className="relative aspect-[1200/630] overflow-hidden lg:self-center">
                       <CoverImage
                         src={displayCoverUrl}
                         alt={displayCoverAlt ?? ""}
-                        sizes="(min-width: 640px) 50vw, 100vw"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         priority
-                        className="pointer-events-none aspect-[1200/630] size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 sm:aspect-auto"
+                        className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
                     </div>
