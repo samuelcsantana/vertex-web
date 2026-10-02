@@ -204,16 +204,18 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    <div className="pointer-events-none mb-2 flex items-center gap-2.5 font-mono text-xs text-slate-400">
+                    {/* Short date and nowrap items: at four columns this row is 202px wide,
+                        and the long date pushed both items onto two lines each. */}
+                    <div className="pointer-events-none mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-slate-400">
                       <time
                         dateTime={post.publishedAt ?? post.createdAt}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 whitespace-nowrap"
                       >
                         <Calendar className="size-3.5" />
-                        {formatPostDate(post.publishedAt ?? post.createdAt, locale)}
+                        {formatPostDate(post.publishedAt ?? post.createdAt, locale, "short")}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 whitespace-nowrap">
                         <Clock className="size-3.5" />
                         {readingMinutes} min
                       </span>

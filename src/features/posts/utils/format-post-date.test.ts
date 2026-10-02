@@ -21,4 +21,18 @@ describe("formatPostDate", () => {
   it("falls back to Portuguese, the default locale, for an unknown locale", () => {
     expect(formatPostDate(OCTOBER_2, "fr")).toBe("02 de outubro de 2026");
   });
+
+  describe("short, for the home cards", () => {
+    it("abbreviates the month in each language", () => {
+      expect(formatPostDate(OCTOBER_2, "pt", "short")).toBe("02 out 2026");
+      expect(formatPostDate(OCTOBER_2, "en", "short")).toBe("Oct 02, 2026");
+      expect(formatPostDate(OCTOBER_2, "es", "short")).toBe("02 oct 2026");
+    });
+
+    it("stays shorter than the long form, so the card's reading time keeps its line", () => {
+      for (const locale of ["pt", "en", "es"]) {
+        expect(formatPostDate(OCTOBER_2, locale, "short").length).toBeLessThanOrEqual(12);
+      }
+    });
+  });
 });
