@@ -243,6 +243,7 @@
     "GITHUB_ALREADY_LINKED": "Este perfil do GitHub já está vinculado a outra conta.",
     "GITHUB_EMAIL_CONFLICT": "Este e-mail já está associado a uma conta Google. Faça login com o Google e conecte o GitHub nas configurações do seu perfil.",
     "GOOGLE_ALREADY_LINKED": "Esta conta do Google já está vinculada a outra conta.",
+    "OAUTH_STATE_MISMATCH": "O login expirou ou foi iniciado em outra aba. Tente entrar de novo.",
     "OTP_INVALID": "Código inválido. Confira e tente novamente.",
     "OTP_EXPIRED": "O código expirou. Solicite um novo.",
     "OTP_TOO_MANY_ATTEMPTS": "Muitas tentativas. Solicite um novo código.",
