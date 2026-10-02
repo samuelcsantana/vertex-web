@@ -50,7 +50,11 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* "Ink & Cobalt": near-neutral ink with one restrained cobalt accent.
+/* "Navy & Emerald": the site's original identity, tuned. The page keeps the
+   navy it has always had (#161c2a) and emerald stays the brand colour, but as
+   one slightly calmer accent (#3fd59b) instead of the old emerald-to-cyan
+   gradient. Cards sit one step lighter than the page, the way elevation reads
+   in a dark UI, and text is a soft blue-white rather than pure white.
    Shared by every root layout that imports this file — the public site, the
    admin panel and /micro-frontends — so there is one source of truth for
    colour.
@@ -62,79 +66,79 @@
 
    Every text pair was measured at WCAG AA or better on the surfaces text
    actually sits on (background, card and muted, not just the page): in the dark
-   set, body text is 14.6:1 on a card, secondary text 7.0:1 on a card and 6.3:1
-   on muted, the accent 7.7:1 on a card, and the ring 7.7:1 against a card.
+   set, body text is 13.2:1 on a card, secondary text 6.6:1 on a card and 5.9:1
+   on muted, the accent 8.4:1 on a card, and the ring 8.4:1 against a card.
 
    Only the dark set ships today: the root layouts force the dark theme. The
    light set is defined, and measured the same way, for a future toggle. */
 
 :root {
-  --background: oklch(0.988 0.005 250); /* #f9fbfe */
-  --foreground: oklch(0.22 0.003 250); /* #1a1b1c */
+  --background: oklch(0.985 0.006 255); /* #f7fafe */
+  --foreground: oklch(0.22 0.005 255); /* #191b1d */
   --card: oklch(1 0 0); /* #ffffff */
-  --card-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
+  --card-foreground: oklch(0.22 0.005 255); /* #191b1d */
   --popover: oklch(1 0 0); /* #ffffff */
-  --popover-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
-  --primary: oklch(0.5 0.17 262); /* #285cc2 */
+  --popover-foreground: oklch(0.22 0.005 255); /* #191b1d */
+  --primary: oklch(0.5 0.105 165); /* #007654 */
   --primary-foreground: oklch(0.99 0 0); /* #fcfcfc */
-  --secondary: oklch(0.958 0.006 250); /* #eef1f5 */
-  --secondary-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
-  --muted: oklch(0.958 0.006 250); /* #eef1f5 */
-  --muted-foreground: oklch(0.5 0.03 250); /* #576574 */
-  --accent: oklch(0.948 0.006 250); /* #ebeef2 */
-  --accent-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
+  --secondary: oklch(0.955 0.01 255); /* #ecf1f7 */
+  --secondary-foreground: oklch(0.22 0.005 255); /* #191b1d */
+  --muted: oklch(0.955 0.01 255); /* #ecf1f7 */
+  --muted-foreground: oklch(0.5 0.04 255); /* #54657a */
+  --accent: oklch(0.945 0.01 255); /* #e8edf4 */
+  --accent-foreground: oklch(0.22 0.005 255); /* #191b1d */
   --destructive: oklch(0.577 0.235 27.3); /* #e30117 */
-  --border: oklch(0.905 0.006 250); /* #dde0e3 */
-  --input: oklch(0.86 0.006 250); /* #ced1d5 */
-  --ring: oklch(0.5 0.17 262); /* #285cc2 */
-  --chart-1: oklch(0.45 0.145 262); /* #2550a4 */
-  --chart-2: oklch(0.55 0.145 262); /* #406ec5 */
-  --chart-3: oklch(0.65 0.145 262); /* #5d8de7 */
-  --chart-4: oklch(0.75 0.127 262); /* #81adfe */
-  --chart-5: oklch(0.85 0.072 262); /* #b4cffe */
+  --border: oklch(0.9 0.01 255); /* #dadee5 */
+  --input: oklch(0.86 0.01 255); /* #cdd1d8 */
+  --ring: oklch(0.5 0.105 165); /* #007654 */
+  --chart-1: oklch(0.45 0.094 165); /* #026548 */
+  --chart-2: oklch(0.55 0.098 165); /* #2b8363 */
+  --chart-3: oklch(0.65 0.098 165); /* #4da280 */
+  --chart-4: oklch(0.75 0.098 165); /* #6dc29e */
+  --chart-5: oklch(0.85 0.098 165); /* #8ee2be */
   --radius: 0.625rem;
-  --sidebar: oklch(0.978 0.005 250); /* #f5f8fb */
-  --sidebar-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
-  --sidebar-primary: oklch(0.5 0.17 262); /* #285cc2 */
+  --sidebar: oklch(0.975 0.008 255); /* #f3f7fc */
+  --sidebar-foreground: oklch(0.22 0.005 255); /* #191b1d */
+  --sidebar-primary: oklch(0.5 0.105 165); /* #007654 */
   --sidebar-primary-foreground: oklch(0.99 0 0); /* #fcfcfc */
-  --sidebar-accent: oklch(0.948 0.006 250); /* #ebeef2 */
-  --sidebar-accent-foreground: oklch(0.22 0.003 250); /* #1a1b1c */
-  --sidebar-border: oklch(0.905 0.006 250); /* #dde0e3 */
-  --sidebar-ring: oklch(0.5 0.17 262); /* #285cc2 */
+  --sidebar-accent: oklch(0.945 0.01 255); /* #e8edf4 */
+  --sidebar-accent-foreground: oklch(0.22 0.005 255); /* #191b1d */
+  --sidebar-border: oklch(0.9 0.01 255); /* #dadee5 */
+  --sidebar-ring: oklch(0.5 0.105 165); /* #007654 */
 }
 
 .dark {
-  --background: oklch(0.185 0.018 255); /* #0d131b */
-  --foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --card: oklch(0.22 0.02 255); /* #141b24 */
-  --card-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --popover: oklch(0.235 0.02 255); /* #181f28 */
-  --popover-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --primary: oklch(0.75 0.12 258); /* #7daff9 */
-  --primary-foreground: oklch(0.18 0.018 255); /* #0c1219 */
-  --secondary: oklch(0.26 0.022 255); /* #1d252f */
-  --secondary-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --muted: oklch(0.26 0.022 255); /* #1d252f */
-  --muted-foreground: oklch(0.72 0.025 255); /* #9aa6b4 */
-  --accent: oklch(0.27 0.022 255); /* #1f2731 */
-  --accent-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
+  --background: oklch(0.227 0.029 266); /* #161c2a */
+  --foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --card: oklch(0.257 0.032 266); /* #1c2333 */
+  --card-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --popover: oklch(0.267 0.032 266); /* #1e2536 */
+  --popover-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --primary: oklch(0.78 0.15 163); /* #3fd59b */
+  --primary-foreground: oklch(0.18 0.029 266); /* #0b111e */
+  --secondary: oklch(0.29 0.035 266); /* #232b3d */
+  --secondary-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --muted: oklch(0.29 0.035 266); /* #232b3d */
+  --muted-foreground: oklch(0.73 0.035 266); /* #9da8be */
+  --accent: oklch(0.3 0.035 266); /* #252d40 */
+  --accent-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
   --destructive: oklch(0.704 0.187 22.2); /* #ff6668 */
-  --border: oklch(0.3 0.022 255); /* #262e39 */
-  --input: oklch(0.3 0.022 255); /* #262e39 */
-  --ring: oklch(0.75 0.12 258); /* #7daff9 */
-  --chart-1: oklch(0.82 0.09 258); /* #a0c6ff */
-  --chart-2: oklch(0.72 0.102 258); /* #7ca6e4 */
-  --chart-3: oklch(0.62 0.102 258); /* #5f87c3 */
-  --chart-4: oklch(0.52 0.102 258); /* #4269a3 */
-  --chart-5: oklch(0.42 0.102 258); /* #274c84 */
-  --sidebar: oklch(0.22 0.02 255); /* #141b24 */
-  --sidebar-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --sidebar-primary: oklch(0.75 0.12 258); /* #7daff9 */
-  --sidebar-primary-foreground: oklch(0.18 0.018 255); /* #0c1219 */
-  --sidebar-accent: oklch(0.27 0.022 255); /* #1f2731 */
-  --sidebar-accent-foreground: oklch(0.94 0.011 255); /* #e6ecf3 */
-  --sidebar-border: oklch(0.3 0.022 255); /* #262e39 */
-  --sidebar-ring: oklch(0.75 0.12 258); /* #7daff9 */
+  --border: oklch(0.335 0.035 266); /* #2e3649 */
+  --input: oklch(0.335 0.035 266); /* #2e3649 */
+  --ring: oklch(0.78 0.15 163); /* #3fd59b */
+  --chart-1: oklch(0.82 0.128 163); /* #6bdeac */
+  --chart-2: oklch(0.72 0.128 163); /* #47bd8d */
+  --chart-3: oklch(0.62 0.128 163); /* #1a9e70 */
+  --chart-4: oklch(0.52 0.111 163); /* #057c56 */
+  --chart-5: oklch(0.42 0.089 163); /* #055c3f */
+  --sidebar: oklch(0.257 0.032 266); /* #1c2333 */
+  --sidebar-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --sidebar-primary: oklch(0.78 0.15 163); /* #3fd59b */
+  --sidebar-primary-foreground: oklch(0.18 0.029 266); /* #0b111e */
+  --sidebar-accent: oklch(0.3 0.035 266); /* #252d40 */
+  --sidebar-accent-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
+  --sidebar-border: oklch(0.335 0.035 266); /* #2e3649 */
+  --sidebar-ring: oklch(0.78 0.15 163); /* #3fd59b */
 }
 
 /* Native UI (scrollbars, form controls, the overscroll area) follows the theme
@@ -168,27 +172,34 @@
   --tw-prose-kbd-shadows: color-mix(in oklab, var(--foreground) 10%, transparent);
   --tw-prose-code: var(--foreground);
   --tw-prose-pre-code: var(--foreground);
-  --tw-prose-pre-bg: var(--card);
+  --tw-prose-pre-bg: #0d1117; /* the syntax theme's surface, not a token: see below */
   --tw-prose-th-borders: var(--border);
   --tw-prose-td-borders: var(--border);
 }
 
-/* The code block's surface is the container's, not the syntax theme's. The
-   highlight.js theme (github-dark) paints its own #0d1117 behind the code,
-   which against this palette's page background measures 1.02:1: the block
-   would vanish into the page, and the token-coloured padding around it would
-   read as a frame. Clearing it lets the card surface show through; the token
-   colours of the theme are untouched, and its comment colour still measures
-   5.6:1 on the card (6.2:1 on its own background). */
+/* Code blocks sit on the syntax theme's own surface. The highlight.js theme
+   imported with the article (github-dark) is drawn for #0d1117, and on the
+   navy page that reads as a recessed well, which is how the site has always
+   shown code. A card-coloured block was tried with this palette: it is
+   1.08:1 from the page against 1.11:1 for #0d1117, and in screenshots it all
+   but disappeared, while the theme's comment colour drops from 6.2:1 on its
+   own background to 5.1:1 on a card.
+
+   The <pre> carries the colour and the <code> inside is cleared, so the
+   padding and rounded corners are one surface, not a frame of another colour
+   around the theme's box. That hex belongs to the highlight.js stylesheet,
+   not to the palette: change the two together. */
 .prose pre code.hljs {
   background: transparent;
 }
 
 @layer base {
   * {
-    /* The full ring, not shadcn's default ring/50: at 50% the cobalt ring
-       measures 2.9:1 against the background and a card, under the 3:1 that
-       WCAG asks of a focus indicator. At full strength it is 7.7:1 or more. */
+    /* The full ring, not shadcn's default ring/50. At 50% the emerald ring
+       measures 3.1:1 against a card and 3.3:1 against the background — just
+       over the 3:1 that WCAG asks of a focus indicator, with no margin for a
+       translucent surface underneath. At full strength it is 8.2:1 or more
+       on the page, a card and a popover. */
     @apply border-border outline-ring;
   }
   body {
