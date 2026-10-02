@@ -36,14 +36,16 @@ type LoginView = "otp-email" | "otp-code" | "password";
 
 const OTP_RESEND_COOLDOWN_SECONDS = 60;
 
-// Best-effort only: Google/GitHub's own OAuth pages send a strict
-// Cross-Origin-Opener-Policy header that permanently severs our reference
-// to the popup, so popup.closed can misreport `true` immediately even
-// though it's genuinely still open (verified with Playwright). This is
-// fine here — it only resets the button back to clickable if the visitor
-// abandons the popup, it's not what detects a successful login (the
-// BroadcastChannel listener below is), so an early false positive is
-// harmless.
+// Best-effort only: the popup's first response, vertex-api's /auth/*
+// redirect, carries the API's own Cross-Origin-Opener-Policy
+// (same-origin-allow-popups, set by Helmet), which permanently severs our
+// reference to the popup before Google or GitHub are even reached — see
+// OAUTH_BROADCAST_CHANNEL_NAME in features/auth/constants. So popup.closed
+// can misreport `true` immediately even though it's genuinely still open
+// (verified with Playwright). This is fine here — it only resets the button
+// back to clickable if the visitor abandons the popup, it's not what detects
+// a successful login (the BroadcastChannel listener below is), so an early
+// false positive is harmless.
 function watchForAbandonedPopup(
   popup: Window,
   setConnecting: (value: boolean) => void
@@ -93,10 +95,13 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   }, [resendCooldown]);
 
   // The /auth/callback page — loaded inside the popup once vertex-api
-  // redirects it there with the token after Google/GitHub OAuth — sets the
-  // session cookie itself and broadcasts this. Kept mount-scoped (not tied
-  // to `open`) so a popup that finishes after the visitor has closed the
-  // modal is still picked up.
+  // redirects it there after Google/GitHub OAuth, carrying a short-lived,
+  // single-use exchange code rather than the token — hands the code to
+  // exchangeOAuthCodeAction, a Server Action that trades it for the token
+  // server-to-server and sets the session cookie on this site's own domain,
+  // and then broadcasts this. Kept mount-scoped (not tied to `open`) so a
+  // popup that finishes after the visitor has closed the modal is still
+  // picked up.
   useEffect(() => {
     const channel = new BroadcastChannel(OAUTH_BROADCAST_CHANNEL_NAME);
 
