@@ -22,10 +22,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       aria-label={t("tableOfContents")}
       className="hidden lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"
     >
-      <p className="mb-3 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+      <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         {t("tableOfContents")}
       </p>
-      <ul className="space-y-2 border-l border-slate-800 text-sm">
+      <ul className="space-y-2 border-l border-border text-sm">
         {headings.map((heading) => {
           const isActive = heading.id === activeId;
           return (
@@ -35,8 +35,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 aria-current={isActive ? "location" : undefined}
                 className={`-ml-px block border-l-2 py-0.5 pl-3 transition-colors ${
                   isActive
-                    ? "border-emerald-400 text-emerald-400"
-                    : "border-transparent text-slate-400 hover:text-slate-200"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {heading.text}

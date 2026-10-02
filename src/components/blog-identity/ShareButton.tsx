@@ -38,11 +38,11 @@ export function ShareButton({ title, url }: ShareButtonProps) {
     <button
       type="button"
       onClick={handleShare}
-      className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-xs font-medium text-slate-300 backdrop-blur-sm transition-colors hover:border-emerald-500/30 hover:bg-slate-700/60 hover:text-emerald-400"
+      className="inline-flex items-center gap-1.5 rounded-full border border-input bg-secondary/60 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm transition-colors hover:border-primary/30 hover:bg-input/60 hover:text-primary"
     >
       {copied ? (
         <>
-          <Check className="size-3.5 text-emerald-400" />
+          <Check className="size-3.5 text-primary" />
           {t("linkCopied")}
         </>
       ) : (

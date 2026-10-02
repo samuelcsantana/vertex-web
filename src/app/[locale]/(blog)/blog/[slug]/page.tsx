@@ -272,7 +272,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               for no reason. */}
           <Link
             href="/"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             {/* -ml-[3px] compensates for ArrowLeft's own glyph not
                 touching the left edge of its viewBox — without it, the
@@ -293,10 +293,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             />
           )}
 
-          <h1 className="text-4xl font-bold text-white">{displayTitle}</h1>
+          <h1 className="text-4xl font-bold text-foreground">{displayTitle}</h1>
 
           {isCrossLanguage ? (
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-300">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
               <Languages className="mt-0.5 size-4 shrink-0" />
               <p>
                 {t("crossLanguageNotice", { language: contentLocale })}
@@ -305,7 +305,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     {" "}
                     <Link
                       href={`/blog/${getLocalizedSlug(post, locale)}`}
-                      className="font-medium underline underline-offset-2 transition-colors hover:text-white"
+                      className="font-medium underline underline-offset-2 transition-colors hover:text-foreground"
                     >
                       {t("crossLanguageLink")}
                     </Link>
@@ -314,6 +314,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </p>
             </div>
           ) : (
+            // Amber, not a theme token: the palette has no warning colour, and
+            // this notice has to read as a caution, apart from the primary
+            // tint of the informational notice above.
             !isTranslated && (
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
                 <Info className="mt-0.5 size-4 shrink-0" />
@@ -322,7 +325,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )
           )}
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-400 md:gap-4">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground md:gap-4">
             {post.author && (
               <div className="flex items-center gap-2">
                 {post.author.avatarUrl ? (
@@ -334,14 +337,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     className="size-7 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-semibold text-emerald-400">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
                     {(
                       (post.author.displayName ?? post.author.name)?.trim()?.[0] ??
                       "?"
                     ).toUpperCase()}
                   </span>
                 )}
-                <span className="font-medium text-slate-300">
+                <span className="font-medium text-foreground">
                   {post.author.displayName ?? post.author.name}
                 </span>
               </div>
@@ -362,7 +365,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <ShareButton title={displayTitle} />
           </div>
 
-          <div className="prose prose-invert prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
+          <div className="prose prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}

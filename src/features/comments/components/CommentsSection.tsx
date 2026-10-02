@@ -73,9 +73,9 @@ export function CommentsSection({
 
   if (!allowComments) {
     return (
-      <div className="mt-12 border-t border-slate-800 pt-10">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-center">
-          <p className="text-sm text-slate-400">{t("commentsDisabled")}</p>
+      <div className="mt-12 border-t border-border pt-10">
+        <div className="rounded-2xl border border-border bg-card/30 p-6 text-center">
+          <p className="text-sm text-muted-foreground">{t("commentsDisabled")}</p>
         </div>
       </div>
     );
@@ -152,11 +152,11 @@ export function CommentsSection({
   }
 
   return (
-    <div className="mt-12 border-t border-slate-800 pt-10">
-      <h2 className="text-lg font-bold text-white">
+    <div className="mt-12 border-t border-border pt-10">
+      <h2 className="text-lg font-bold text-foreground">
         {t("comments")}
         {!isLoading && comments.length > 0 && (
-          <span className="ml-2 text-sm font-normal text-slate-400">
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
             ({comments.length})
           </span>
         )}
@@ -164,14 +164,14 @@ export function CommentsSection({
 
       <div className="mt-4 flex flex-col gap-4">
         {isLoading ? (
-          <p className="text-sm text-slate-400">{t("loadingComments")}</p>
+          <p className="text-sm text-muted-foreground">{t("loadingComments")}</p>
         ) : comments.length === 0 ? (
           // Logged out with no comments renders only the sign-in card
           // below — an empty-state card stacked on top of it would just
           // be two near-identical panels saying the same thing.
           isAuthenticated && (
-            <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-center">
-              <p className="text-sm text-slate-400">{t("beFirstToComment")}</p>
+            <div className="rounded-2xl border border-dashed border-input p-6 text-center">
+              <p className="text-sm text-muted-foreground">{t("beFirstToComment")}</p>
             </div>
           )
         ) : (
@@ -190,7 +190,7 @@ export function CommentsSection({
             return (
               <div
                 key={comment.id}
-                className="flex gap-3 rounded-2xl border border-slate-800 bg-slate-900/30 p-4"
+                className="flex gap-3 rounded-2xl border border-border bg-card/30 p-4"
               >
                 {comment.author.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
@@ -201,7 +201,7 @@ export function CommentsSection({
                     className="size-9 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm font-semibold text-emerald-400">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-semibold text-primary">
                     {initial}
                   </span>
                 )}
@@ -214,23 +214,23 @@ export function CommentsSection({
                       {isAdminViewer ? (
                         <Link
                           href={`/admin/dashboard/users/${comment.author.id}`}
-                          className="text-sm font-medium text-slate-100 underline-offset-4 hover:text-emerald-400 hover:underline"
+                          className="text-sm font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
                         >
                           {authorName ?? t("anonymousUser")}
                         </Link>
                       ) : (
-                        <span className="text-sm font-medium text-slate-100">
+                        <span className="text-sm font-medium text-foreground">
                           {authorName ?? t("anonymousUser")}
                         </span>
                       )}
-                      <span className="ml-2 text-xs text-slate-400">
+                      <span className="ml-2 text-xs text-muted-foreground">
                         {format.dateTime(new Date(comment.createdAt), {
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}
                       </span>
                       {isAdminViewer && comment.author.email && (
-                        <span className="ml-2 text-xs text-slate-400">
+                        <span className="ml-2 text-xs text-muted-foreground">
                           · {comment.author.email}
                         </span>
                       )}
@@ -245,7 +245,7 @@ export function CommentsSection({
                           <button
                             type="button"
                             aria-label={t("deleteComment")}
-                            className="inline-flex shrink-0 items-center rounded-lg p-1 text-slate-400 transition-colors hover:text-red-400"
+                            className="inline-flex shrink-0 items-center rounded-lg p-1 text-muted-foreground transition-colors hover:text-destructive"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -253,7 +253,7 @@ export function CommentsSection({
                       />
                     )}
                   </div>
-                  <p className="mt-1 text-sm break-words whitespace-pre-wrap text-slate-300">
+                  <p className="mt-1 text-sm break-words whitespace-pre-wrap text-foreground">
                     {comment.content}
                   </p>
                 </div>
@@ -264,7 +264,7 @@ export function CommentsSection({
       </div>
 
       {deleteError && (
-        <p role="alert" className="mt-2 text-sm text-red-400">
+        <p role="alert" className="mt-2 text-sm text-destructive">
           {deleteError}
         </p>
       )}
@@ -284,37 +284,37 @@ export function CommentsSection({
               onChange={(event) => setContent(event.target.value)}
               rows={3}
               placeholder={t("commentPlaceholder")}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/70 focus:outline-none"
+              className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/70 focus:outline-none"
             />
             {error && (
-              <p role="alert" className="text-sm text-red-400">
+              <p role="alert" className="text-sm text-destructive">
                 {error}
               </p>
             )}
             <button
               type="submit"
               disabled={isSubmitting || !content.trim()}
-              className="w-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-transform hover:scale-[1.03] disabled:opacity-50 sm:w-fit"
+              className="w-full rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.03] disabled:opacity-50 sm:w-fit"
             >
               {isSubmitting ? t("sending") : t("sendComment")}
             </button>
           </form>
         ) : (
           <>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/30 px-6 py-8 text-center">
-              <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-emerald-500/10">
-                <MessageCircle aria-hidden className="size-5 text-emerald-400" />
+            <div className="rounded-2xl border border-border bg-card/30 px-6 py-8 text-center">
+              <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <MessageCircle aria-hidden className="size-5 text-primary" />
               </span>
-              <p className="mt-3 text-sm font-semibold text-slate-100">
+              <p className="mt-3 text-sm font-semibold text-foreground">
                 {t("joinConversationTitle")}
               </p>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {t("joinConversationDescription")}
               </p>
               <button
                 type="button"
                 onClick={() => setIsLoginOpen(true)}
-                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_20px_-2px_rgba(16,185,129,0.7)] transition-transform hover:scale-[1.03]"
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.03]"
               >
                 {t("loginToComment")}
               </button>
