@@ -40,7 +40,7 @@ export function PostAdminActions({ postId, className }: PostAdminActionsProps) {
         <Link
           href={`/admin/dashboard/posts/${postId}/edit`}
           aria-label={t("editArticle")}
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-emerald-400"
+          className="inline-flex items-center gap-1 rounded-lg border border-input bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground transition-colors hover:text-primary"
         >
           <Pencil className="size-3.5" />
           {t("editArticle")}
@@ -54,7 +54,7 @@ export function PostAdminActions({ postId, className }: PostAdminActionsProps) {
             <button
               type="button"
               aria-label={t("deleteArticle")}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:text-red-400"
+              className="inline-flex items-center gap-1 rounded-lg border border-input bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground transition-colors hover:text-destructive"
             >
               <Trash2 className="size-3.5" />
               {t("deleteArticle")}

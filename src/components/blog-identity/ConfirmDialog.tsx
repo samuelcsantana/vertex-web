@@ -39,7 +39,7 @@ export function ConfirmDialog({
       {open &&
         createPortal(
           <div
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           >
             <div
@@ -48,18 +48,18 @@ export function ConfirmDialog({
               aria-modal="true"
               aria-labelledby={titleId}
               onClick={(event) => event.stopPropagation()}
-              className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
+              className="w-full max-w-sm rounded-2xl border border-border bg-popover p-6 shadow-xl"
             >
-              <h2 id={titleId} className="text-base font-semibold text-white">
+              <h2 id={titleId} className="text-base font-semibold text-foreground">
                 {title}
               </h2>
-              <p className="mt-2 text-sm text-slate-400">{description}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{description}</p>
 
               <div className="mt-6 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-full border border-slate-700 bg-slate-800 px-4 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
+                  className="rounded-full border border-input bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input"
                 >
                   {t("cancel")}
                 </button>
@@ -69,7 +69,7 @@ export function ConfirmDialog({
                     await action();
                     setOpen(false);
                   }}
-                  className="rounded-full bg-red-500 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-red-400"
+                  className="rounded-full bg-destructive px-4 py-1.5 text-sm font-semibold text-background transition-colors hover:bg-destructive/90"
                 >
                   {confirmLabel}
                 </button>
