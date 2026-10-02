@@ -59,20 +59,20 @@ export default async function BlogPage({ params }: BlogPageProps) {
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <section className="flex flex-col items-start gap-4">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-7xl">
+        <h1 className="text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
           {t("heroTitleLine1")}
           <br />
-          <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-500 bg-clip-text text-transparent">
+          <span className="text-primary">
             {t("heroTitleLine2")}
           </span>
         </h1>
-        <p className="max-w-2xl text-lg text-slate-400">{t("heroDescription")}</p>
+        <p className="max-w-2xl text-lg text-muted-foreground">{t("heroDescription")}</p>
       </section>
 
       <HomeAdminPanel />
 
       {posts.length === 0 ? (
-        <p className="mt-16 text-slate-400">{t("noPostsYet")}</p>
+        <p className="mt-16 text-muted-foreground">{t("noPostsYet")}</p>
       ) : (
         <>
           {featuredPost &&
@@ -86,7 +86,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               );
 
               return (
-                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 lg:grid-cols-2">
+                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-accent/80 hover:shadow-lg lg:grid-cols-2">
                   <div className="relative flex flex-col justify-center gap-4 p-8">
                     {/* Absolutely positioned so it never adds height to this
                         column — it used to sit in normal flex flow, which
@@ -115,15 +115,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    <h2 className="pointer-events-none line-clamp-2 text-2xl font-bold text-slate-100 transition-colors group-hover:text-emerald-400 sm:text-3xl">
+                    <h2 className="pointer-events-none line-clamp-2 text-2xl font-bold text-foreground transition-colors group-hover:text-primary sm:text-3xl">
                       {displayTitle}
                     </h2>
 
-                    <p className="pointer-events-none line-clamp-3 text-sm text-slate-400">
+                    <p className="pointer-events-none line-clamp-3 text-sm text-muted-foreground">
                       {excerpt}
                     </p>
 
-                    <div className="pointer-events-none flex items-center gap-3 font-mono text-xs text-slate-400">
+                    <div className="pointer-events-none flex items-center gap-3 font-mono text-xs text-muted-foreground">
                       <time
                         dateTime={featuredPost.publishedAt ?? featuredPost.createdAt}
                         className="flex items-center gap-1.5"
@@ -134,7 +134,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                           locale
                         )}
                       </time>
-                      <span className="size-1 rounded-full bg-slate-700" />
+                      <span className="size-1 rounded-full bg-muted-foreground/40" />
                       <span className="flex items-center gap-1.5">
                         <Clock className="size-3.5" />
                         {readingMinutes} min
@@ -157,7 +157,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         priority
                         className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
-                      <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-background/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
                     </div>
                   )}
                 </div>
@@ -177,7 +177,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
               return (
                 <div
                   key={post.id}
-                  className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5"
+                  className="group relative overflow-hidden rounded-3xl border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-accent/80 hover:shadow-lg"
                 >
                   {displayCoverUrl && (
                     <div className="relative aspect-[1200/630] overflow-hidden">
@@ -189,7 +189,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         sizes="(min-width: 1280px) 252px, (min-width: 1024px) 346px, (min-width: 640px) 50vw, 100vw"
                         className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
-                      <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-background/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
                     </div>
                   )}
 
@@ -210,7 +210,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     {/* Short date and nowrap items: at four columns this row is 202px wide,
                         and the long date pushed both items onto two lines each. */}
-                    <div className="pointer-events-none mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-slate-400">
+                    <div className="pointer-events-none mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted-foreground">
                       <time
                         dateTime={post.publishedAt ?? post.createdAt}
                         className="flex items-center gap-1 whitespace-nowrap"
@@ -218,18 +218,18 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         <Calendar className="size-3.5" />
                         {formatPostDate(post.publishedAt ?? post.createdAt, locale, "short")}
                       </time>
-                      <span className="size-1 rounded-full bg-slate-700" />
+                      <span className="size-1 rounded-full bg-muted-foreground/40" />
                       <span className="flex items-center gap-1 whitespace-nowrap">
                         <Clock className="size-3.5" />
                         {readingMinutes} min
                       </span>
                     </div>
 
-                    <h2 className="pointer-events-none line-clamp-2 text-lg font-bold text-slate-100 transition-colors group-hover:text-emerald-400">
+                    <h2 className="pointer-events-none line-clamp-2 text-lg font-bold text-foreground transition-colors group-hover:text-primary">
                       {displayTitle}
                     </h2>
 
-                    <p className="pointer-events-none mt-2 line-clamp-3 text-sm text-slate-400">
+                    <p className="pointer-events-none mt-2 line-clamp-3 text-sm text-muted-foreground">
                       {excerpt}
                     </p>
 
