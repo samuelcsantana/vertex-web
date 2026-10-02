@@ -21,7 +21,7 @@ export function OAuthCallbackClient() {
   const oauthError = searchParams.get("oauth_error");
   const [actionFailed, setActionFailed] = useState(false);
 
-  // vertex-api's GithubPopupExceptionFilter lands here with a
+  // vertex-api's OAuthPopupExceptionFilter lands here with a
   // machine-readable ?oauth_error=<code> when the OAuth flow fails in a
   // way the visitor needs to hear about (GitHub profile already linked,
   // email owned by a Google account). Relay the code to the opener over
@@ -68,10 +68,13 @@ export function OAuthCallbackClient() {
           OAUTH_SUCCESS_MESSAGE
         );
 
-        // Best-effort: window.opener is normally already null by this point
-        // (Google/GitHub's own pages send a strict Cross-Origin-Opener-Policy
-        // header that permanently severs it before this popup ever gets
-        // here), but this costs nothing to attempt in case it did survive.
+        // Best-effort: window.opener is already null by this point. The
+        // popup's first response was vertex-api's /auth/* redirect, whose
+        // own Cross-Origin-Opener-Policy (same-origin-allow-popups, set by
+        // Helmet) severed it for good before Google or GitHub were reached —
+        // see OAUTH_BROADCAST_CHANNEL_NAME. The broadcast above is what
+        // actually tells the opener; this stays only because it costs
+        // nothing to attempt.
         try {
           window.opener?.location.reload();
         } catch {
