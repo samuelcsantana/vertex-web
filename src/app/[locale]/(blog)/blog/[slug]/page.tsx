@@ -21,6 +21,7 @@ import { CodeBlock } from "@/components/blog-identity/CodeBlock";
 import { TableOfContents } from "@/components/blog-identity/TableOfContents";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { extractHeadings } from "@/features/posts/utils/extract-headings";
+import { formatPostDate } from "@/features/posts/utils/format-post-date";
 import {
   getLocalizedContent,
   getLocalizedCoverAlt,
@@ -66,13 +67,6 @@ export async function generateStaticParams({
     slug: getLocalizedSlug(post, params.locale),
   }));
 }
-
-const formatDate = (dateString: string, locale: string) =>
-  new Intl.DateTimeFormat(locale === "en" ? "en-US" : "pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(dateString));
 
 export async function generateMetadata({
   params,
@@ -355,11 +349,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
             <span>
               {t("publishedOn", {
-                date: formatDate(post.publishedAt ?? post.createdAt, locale),
+                date: formatPostDate(post.publishedAt ?? post.createdAt, locale),
               })}
             </span>
             {wasEdited && (
-              <span>{t("editedOn", { date: formatDate(post.updatedAt, locale) })}</span>
+              <span>{t("editedOn", { date: formatPostDate(post.updatedAt, locale) })}</span>
             )}
           </div>
 

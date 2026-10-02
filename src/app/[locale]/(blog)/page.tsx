@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { format, parseISO } from "date-fns";
-import { enUS, ptBR } from "date-fns/locale";
 import { Calendar, Clock } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
@@ -20,6 +18,7 @@ import {
 } from "@/features/posts/utils/localized-content";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
+import { formatPostDate } from "@/features/posts/utils/format-post-date";
 
 // Bounded to a sane line-clamp length for the visible teaser text.
 const EXCERPT_LENGTH = 180;
@@ -52,7 +51,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
   setRequestLocale(locale);
 
   const posts = await getPosts();
-  const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
   const tPost = await getTranslations("Post");
 
@@ -88,14 +86,12 @@ export default async function BlogPage({ params }: BlogPageProps) {
               );
 
               return (
-                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 sm:grid-cols-2">
+                <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-emerald-500/5 lg:grid-cols-2">
                   <div className="relative flex flex-col justify-center gap-4 p-8">
                     {/* Absolutely positioned so it never adds height to this
                         column — it used to sit in normal flex flow, which
-                        reserved space even at opacity-0 and made the image
-                        column (sm:h-full, matched to this column's height
-                        via grid stretch) crop taller/differently for admins
-                        than for anonymous visitors. */}
+                        reserved space even at opacity-0 and made the card
+                        taller for admins than for anonymous visitors. */}
                     <PostAdminActions
                       postId={featuredPost.id}
                       className="absolute right-8 top-8 z-10"
@@ -133,10 +129,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         className="flex items-center gap-1.5"
                       >
                         <Calendar className="size-3.5" />
-                        {format(
-                          parseISO(featuredPost.publishedAt ?? featuredPost.createdAt),
-                          "MMMM d, yyyy",
-                          { locale: dateLocale }
+                        {formatPostDate(
+                          featuredPost.publishedAt ?? featuredPost.createdAt,
+                          locale
                         )}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
@@ -147,14 +142,20 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     </div>
                   </div>
 
+                  {/* The cover keeps its own 1200×630 shape at every width. It
+                      used to stretch to the text column's height from 640px
+                      up, and object-cover then cut its sides: only 65% of the
+                      width showed at 768px and 88% at 1024px. Side by side
+                      only from lg, where the two columns are close in height,
+                      centred if the text runs taller; stacked below that. */}
                   {displayCoverUrl && (
-                    <div className="relative overflow-hidden sm:h-full">
+                    <div className="relative aspect-[1200/630] overflow-hidden lg:self-center">
                       <CoverImage
                         src={displayCoverUrl}
                         alt={displayCoverAlt ?? ""}
-                        sizes="(min-width: 640px) 50vw, 100vw"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         priority
-                        className="pointer-events-none aspect-[1200/630] size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 sm:aspect-auto"
+                        className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-slate-950/20 mix-blend-overlay transition-colors duration-500 group-hover:bg-transparent" />
                     </div>
@@ -207,20 +208,18 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    <div className="pointer-events-none mb-2 flex items-center gap-2.5 font-mono text-xs text-slate-400">
+                    {/* Short date and nowrap items: at four columns this row is 202px wide,
+                        and the long date pushed both items onto two lines each. */}
+                    <div className="pointer-events-none mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-slate-400">
                       <time
                         dateTime={post.publishedAt ?? post.createdAt}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 whitespace-nowrap"
                       >
                         <Calendar className="size-3.5" />
-                        {format(
-                          parseISO(post.publishedAt ?? post.createdAt),
-                          "MMMM d, yyyy",
-                          { locale: dateLocale }
-                        )}
+                        {formatPostDate(post.publishedAt ?? post.createdAt, locale, "short")}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 whitespace-nowrap">
                         <Clock className="size-3.5" />
                         {readingMinutes} min
                       </span>

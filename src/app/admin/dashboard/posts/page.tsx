@@ -1,8 +1,6 @@
 import { cookies } from "next/headers";
 import NextLink from "next/link";
 import { getTranslations } from "next-intl/server";
-import { format, parseISO } from "date-fns";
-import { enUS, ptBR } from "date-fns/locale";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { redirect } from "@/i18n/routing";
@@ -10,6 +8,7 @@ import { applyAdminLocale } from "@/i18n/admin-locale";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
 import { getDashboardPosts } from "@/features/posts/api/post-service";
+import { formatPostDate } from "@/features/posts/utils/format-post-date";
 import { TopicPills } from "@/features/posts/components/TopicPills";
 import { getTranslatedLocales } from "@/features/posts/utils/localized-content";
 
@@ -29,7 +28,6 @@ export default async function DashboardPostsPage() {
   }
 
   const posts = await getDashboardPosts(accessToken);
-  const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Dashboard");
   const tHome = await getTranslations("Home");
 
@@ -151,9 +149,7 @@ export default async function DashboardPostsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-400">
-                      {format(parseISO(post.createdAt), "d MMM yyyy", {
-                        locale: dateLocale,
-                      })}
+                      {formatPostDate(post.createdAt, locale, "short")}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
