@@ -27,7 +27,7 @@ export default async function BlogHomeLayout({
     // touches the request any more, which is what makes the pages below
     // prerenderable.
     <CurrentUserProvider>
-      <div className="relative flex min-h-screen flex-col text-slate-300">
+      <div className="relative flex min-h-screen flex-col text-foreground">
         <BlogBackground />
         <BlogHeader />
         <main id="main-content" className="flex-1">{children}</main>
