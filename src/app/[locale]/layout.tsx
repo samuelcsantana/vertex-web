@@ -93,10 +93,16 @@ export default async function RootLayout({
 
   const messages = await getMessages();
 
+  // The site is dark-only until a light theme is designed and a toggle ships.
+  // The light token set in globals.css is defined but has never been reviewed
+  // as a whole page, and anything coloured by the tokens would follow a light
+  // OS theme into it. forcedTheme pins dark at runtime; the static `dark`
+  // class makes the prerendered HTML dark before next-themes' script runs, and
+  // without JavaScript. A toggle has to remove both.
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth`}
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-background font-sans antialiased">
@@ -109,6 +115,7 @@ export default async function RootLayout({
             attribute="class"
             defaultTheme="system"
             enableSystem
+            forcedTheme="dark"
             disableTransitionOnChange
           >
             {children}

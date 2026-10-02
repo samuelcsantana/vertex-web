@@ -74,10 +74,14 @@ export default async function AdminLayout({
   const locale = await applyAdminLocale();
   const messages = await getMessages();
 
+  // Forced dark, like the public root layout (see the reasoning there). This
+  // panel also renders the public site's header, background and footer around
+  // pages written with fixed light-on-dark colours, so it has to stay on the
+  // same theme those shared components are drawn in.
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth`}
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-background font-sans antialiased">
@@ -90,6 +94,7 @@ export default async function AdminLayout({
             attribute="class"
             defaultTheme="system"
             enableSystem
+            forcedTheme="dark"
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col text-slate-300">
