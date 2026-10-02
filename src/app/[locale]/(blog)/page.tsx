@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { format, parseISO } from "date-fns";
-import { enUS, ptBR } from "date-fns/locale";
 import { Calendar, Clock } from "lucide-react";
 
 import { Link, routing } from "@/i18n/routing";
@@ -20,6 +18,7 @@ import {
 } from "@/features/posts/utils/localized-content";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
+import { formatPostDate } from "@/features/posts/utils/format-post-date";
 
 // Bounded to a sane line-clamp length for the visible teaser text.
 const EXCERPT_LENGTH = 180;
@@ -52,7 +51,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
   setRequestLocale(locale);
 
   const posts = await getPosts();
-  const dateLocale = locale === "en" ? enUS : ptBR;
   const t = await getTranslations("Home");
   const tPost = await getTranslations("Post");
 
@@ -133,10 +131,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         className="flex items-center gap-1.5"
                       >
                         <Calendar className="size-3.5" />
-                        {format(
-                          parseISO(featuredPost.publishedAt ?? featuredPost.createdAt),
-                          "MMMM d, yyyy",
-                          { locale: dateLocale }
+                        {formatPostDate(
+                          featuredPost.publishedAt ?? featuredPost.createdAt,
+                          locale
                         )}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
@@ -213,11 +210,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
                         className="flex items-center gap-1"
                       >
                         <Calendar className="size-3.5" />
-                        {format(
-                          parseISO(post.publishedAt ?? post.createdAt),
-                          "MMMM d, yyyy",
-                          { locale: dateLocale }
-                        )}
+                        {formatPostDate(post.publishedAt ?? post.createdAt, locale)}
                       </time>
                       <span className="size-1 rounded-full bg-slate-700" />
                       <span className="flex items-center gap-1">
