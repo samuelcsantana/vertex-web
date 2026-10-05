@@ -32,8 +32,16 @@ jobs:
       # build tooling (postcss nested inside next itself) with no
       # non-breaking upgrade path — high/critical is the threshold that's
       # both meaningful and actionable.
-      - name: Audit dependencies
-        run: npm audit --audit-level=high
+      #
+      # What ships is gated with no exceptions.
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      # The full tree is gated too, minus advisories allowlisted in the
+      # script with a written reason — for dev tooling that has no patched
+      # release yet (braces, CVE-2026-93687, since 2026-10-05).
+      - name: Audit all dependencies
+        run: node scripts/audit.mjs
 
   secrets:
     runs-on: ubuntu-latest
