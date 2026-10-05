@@ -9,6 +9,21 @@ import {
 import { getPathname, routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/site-url";
 
+// Rendered per request, on purpose. getPosts() fetches with `revalidate: 60`,
+// and locally that works: `next build` lists /sitemap.xml as ISR with a 1m
+// revalidate, and `next start` serves it STALE and regenerates it after 60 s.
+// On Vercel it never regenerated. On 2026-10-05 the live sitemap still
+// carried the deploy's build time (2026-10-02T21:09:47Z) as the home entry's
+// lastmod — that entry is stamped with `now` below, so it records when the
+// file was generated — was served as X-Vercel-Cache: HIT with an Age over
+// nine hours, and listed none of the four posts published since. The cause
+// on Vercel was not found. Rendering on demand stops depending on it. The
+// cost is one function run per crawler fetch plus the two vertex-api calls
+// below (`force-dynamic` also makes every fetch here `no-store`, so the
+// `revalidate: 60` stops applying). Only crawlers request this route —
+// robots.txt points them here and no page links to it.
+export const dynamic = "force-dynamic";
+
 type Locale = (typeof routing.locales)[number];
 
 function absoluteUrl(href: string, locale: Locale) {
