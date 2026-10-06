@@ -18,8 +18,6 @@
 
 This is the frontend of [samuelsantana.dev](https://www.samuelsantana.dev), my engineering blog: long-form posts in Portuguese, English and Spanish, comments with Google, GitHub or email-code sign-in, an admin panel, and two live demos of cross-origin frontend integration. It is the production app behind the site, built and maintained by me, **Samuel Santana**, a Senior Software Engineer in Salvador, Brazil.
 
-> **I'm open to new opportunities** as a Senior Software Engineer, frontend or full stack. [LinkedIn](https://www.linkedin.com/in/samuelcsantana) is the fastest way to reach me.
-
 ## What to look at
 
 | Area | What it does | Where |
