@@ -179,14 +179,6 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
           <label htmlFor={titleField} className="text-sm font-medium text-slate-300">
             {TITLE_LABELS[activeLanguage]}
           </label>
-          {/* One persistent <input> per language rather than reusing a
-              single element and swapping which field register() binds it
-              to — react-hook-form doesn't resync an uncontrolled input's
-              DOM value when the field name behind it changes, so swapping
-              silently carried over (or wiped) whatever the input last
-              displayed. Each field now keeps its own element, own
-              registration, and its value never depends on which tab was
-              open last; visibility is the only thing that toggles. */}
           {LANGUAGES.map((language) => {
             const field = getPostLanguageFields(language).titleField;
             return (
@@ -387,9 +379,6 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
               />
             );
           })}
-          {/* pt's cover is the fallback for en/es (see
-              getLocalizedCoverUrl) — only mention that on the tabs where
-              leaving the field blank actually triggers it. */}
           {activeLanguage !== "pt" && (
             <p className="text-xs text-slate-400">{t("coverFallbackHint")}</p>
           )}
@@ -439,14 +428,6 @@ export function EditPostForm({ initialData, availableTopics }: EditPostFormProps
 
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
-        {/* Two mutually-exclusive buttons rather than a single checkbox —
-            this choice now has a real consequence beyond visibility: a
-            draft's publishedAt is left unset on the backend until this is
-            switched to "publish now", so the public site never shows the
-            day the draft was started as its publish date. Once a post has
-            genuinely gone live, publishedAt is already locked in — flipping
-            this back and forth afterwards only unpublishes/republishes it,
-            it won't reset that original date (see PostsService.update). */}
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-slate-300">
             {t("publishStatusLabel")}

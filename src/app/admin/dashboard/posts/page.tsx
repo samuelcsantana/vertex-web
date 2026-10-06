@@ -32,10 +32,6 @@ export default async function DashboardPostsPage() {
   const tHome = await getTranslations("Home");
 
   return (
-    // Outer box matches the header's own effective width (see
-    // BlogHeaderShell.tsx) so this page's content shares its left edge
-    // with the header logo above it, same pattern as blog/[slug]/page.tsx
-    // and (blog)/about/page.tsx.
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
       <div className="mx-auto max-w-3xl lg:mx-0">
         <div className="flex items-center justify-between gap-4">

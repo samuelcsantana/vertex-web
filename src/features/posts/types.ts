@@ -12,9 +12,6 @@ export interface Post {
   title: string;
   titleEn: string | null;
   titleEs: string | null;
-  // slug is the pt (default-locale) slug; slugEn/slugEs are optional
-  // per-locale overrides — a post without one is served under this
-  // default slug for that locale too (see getPostBySlug/findPublishedBySlug).
   slug: string;
   slugEn: string | null;
   slugEs: string | null;
@@ -23,21 +20,12 @@ export interface Post {
   contentEs: string | null;
   isPublished: boolean;
   allowComments: boolean;
-  // Cover image + alt are per locale (covers can carry embedded text,
-  // e.g. the article title in the art) — same optional-with-pt-fallback
-  // pattern as title/content; see localized-content.ts's
-  // getLocalizedCoverUrl/getLocalizedCoverAlt.
   coverUrl: string | null;
   coverUrlEn: string | null;
   coverUrlEs: string | null;
   coverAlt: string | null;
   coverAltEn: string | null;
   coverAltEs: string | null;
-  // Manually-written search-result snippet, per locale — a locale
-  // without its own falls back to an auto-generated excerpt of that
-  // locale's own content, not another locale's text (see
-  // localized-content.ts's getLocalizedMetaDescription and
-  // blog/[slug]/page.tsx's generateMetadata).
   metaDescription: string | null;
   metaDescriptionEn: string | null;
   metaDescriptionEs: string | null;
@@ -45,9 +33,6 @@ export interface Post {
   author: PostAuthor;
   createdAt: string;
   updatedAt: string;
-  // null for drafts; server-stamped once, the first time isPublished flips
-  // to true (see vertex-api's PostsService) — this is the date the public
-  // site actually shows as "published on", never the draft's createdAt.
   publishedAt: string | null;
   topics: Topic[];
 }

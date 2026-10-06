@@ -28,8 +28,6 @@ describe("CodeBlock", () => {
     Object.assign(navigator, { clipboard: { writeText } });
 
     renderCodeBlock();
-    // Confirms rehype-highlight actually tokenized the block into spans —
-    // otherwise this test wouldn't be exercising the thing it claims to.
     expect(document.querySelector("code .hljs-keyword")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Copy code" }));

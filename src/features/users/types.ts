@@ -13,8 +13,6 @@ export interface ManagedUser {
   createdAt: string;
 }
 
-// A user's comment as seen on the admin moderation page — carries the
-// post it belongs to for linking, no author join (the page IS the author).
 export interface ModeratedComment {
   id: string;
   postId: string;

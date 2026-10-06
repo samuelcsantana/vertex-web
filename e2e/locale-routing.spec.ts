@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-// Sub-path i18n via next-intl: pt is the default locale and stays
-// unprefixed at the root; en/es get a real /en, /es prefix.
 test.describe("locale routing", () => {
   test("pt serves at the root with html lang=pt", async ({ page }) => {
     await page.goto("/");

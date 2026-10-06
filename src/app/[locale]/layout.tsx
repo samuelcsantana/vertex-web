@@ -31,14 +31,6 @@ interface LocaleParams {
 export async function generateMetadata({
   params,
 }: LocaleParams): Promise<Metadata> {
-  // params.locale, NOT getLocale(): getLocale() resolves the locale from the
-  // request headers, which is a dynamic API. Because this is the root layout,
-  // that single call opted *every* route in the app into per-request
-  // rendering — including the ones that have no per-request data at all, so
-  // generateStaticParams below prerendered nothing. The original reason for
-  // getLocale() was to still resolve a usable locale while the layout body is
-  // about to notFound() a garbage [locale] segment; the hasLocale() fallback
-  // here preserves exactly that without reading the request.
   const { locale: requestedLocale } = await params;
   const locale = hasLocale(routing.locales, requestedLocale)
     ? requestedLocale
@@ -56,10 +48,6 @@ export async function generateMetadata({
       siteName: "Samuel Santana",
       type: "website",
       url: SITE_URL,
-      // Site-wide default so any page without a more specific openGraph.images
-      // (set individually where it matters, e.g. a post's own cover image)
-      // still shares a real image instead of a blank card — metadataBase
-      // above resolves this relative path to an absolute URL automatically.
       images: ["/og-fallback.png"],
     },
   };
@@ -83,22 +71,10 @@ export default async function RootLayout({
     notFound();
   }
 
-  // Opts this subtree back into static rendering. Every next-intl server API
-  // (getMessages, getTranslations) otherwise resolves the locale from the
-  // request headers and forces per-request rendering, which is why nothing
-  // under [locale] was prerendered before. Routes that still need per-request
-  // data — auth cookies, host-derived canonical URLs — opt out individually with
-  // `export const dynamic = "force-dynamic"`.
   setRequestLocale(locale);
 
   const messages = await getMessages();
 
-  // The site is dark-only until a light theme is designed and a toggle ships.
-  // The light token set in globals.css is defined but has never been reviewed
-  // as a whole page, and anything coloured by the tokens would follow a light
-  // OS theme into it. forcedTheme pins dark at runtime; the static `dark`
-  // class makes the prerendered HTML dark before next-themes' script runs, and
-  // without JavaScript. A toggle has to remove both.
   return (
     <html
       lang={locale}

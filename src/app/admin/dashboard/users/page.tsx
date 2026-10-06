@@ -10,10 +10,6 @@ import { getProfile } from "@/features/auth/api/profile-service";
 export default async function DashboardUsersPage() {
   await applyAdminLocale();
 
-  // dashboard/layout.tsx already guarantees an admin session got this far,
-  // so the token is present — it's only re-read here to fetch the list and
-  // to know the current admin's own id (to hide self-ban/self-delete
-  // controls, matching what the backend already refuses).
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")!.value;
   const [users, profile] = await Promise.all([

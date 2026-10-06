@@ -21,8 +21,6 @@ export async function getUsers(accessToken: string): Promise<ManagedUser[]> {
   return response.json();
 }
 
-// null covers both "no such user" (404 → the page calls notFound()) and
-// transient failures — either way there's nothing to render.
 export async function getUser(
   id: string,
   accessToken: string

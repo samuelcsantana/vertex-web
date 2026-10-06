@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { formatPostDate } from "./format-post-date";
 
-// Mid-day UTC, the way posts are stamped, so the calendar day is the same in any test timezone.
 const OCTOBER_2 = "2026-10-02T15:00:00.000Z";
 
 describe("formatPostDate", () => {

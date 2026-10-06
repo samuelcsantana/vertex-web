@@ -47,7 +47,6 @@ export function ProfileForm({
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    // Reset so selecting the same file again still fires onChange.
     event.target.value = "";
 
     if (!file) {
@@ -90,7 +89,7 @@ export function ProfileForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
       <div className="flex items-center gap-4">
         {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- bucket/OAuth-provider avatar URL, not a next/image remote-pattern candidate
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
             alt={t("avatarAlt")}

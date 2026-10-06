@@ -8,9 +8,6 @@ const slugSchema = z
     "Use lowercase letters, numbers, and hyphens only"
   );
 
-// A locale-specific slug the author left blank submits as "" (react-hook-form
-// always sends a defined string, never omits the field) — treat that the
-// same as "no override" rather than failing the format regex.
 const optionalSlugSchema = z
   .union([slugSchema, z.literal("")])
   .transform((value) => (value === "" ? undefined : value))
@@ -34,10 +31,6 @@ export const createPostFormSchema = z.object({
   coverAlt: z.string().optional(),
   coverAltEn: z.string().optional(),
   coverAltEs: z.string().optional(),
-  // 160 chars matches Google's typical meta description truncation point.
-  // Per locale, same as title/content — a locale without its own falls
-  // back to an auto-generated excerpt of that locale's own content, not
-  // another locale's hand-written text.
   metaDescription: z
     .string()
     .max(160, "Máximo de 160 caracteres")

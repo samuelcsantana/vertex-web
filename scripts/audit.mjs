@@ -1,16 +1,5 @@
-// Fails on any high or critical advisory in the full dependency tree, except
-// the advisories allowlisted below.
-//
-// The allowlist cannot hide anything that ships: security.yml audits the
-// production tree first, with `npm audit --omit=dev --audit-level=high` and no
-// exceptions, so an entry here only ever excuses an advisory that lives in
-// dev tooling. `npm audit` itself has no way to ignore one advisory, which is
-// why this script exists instead of a flag.
 import { spawnSync } from "node:child_process";
 
-// Each entry says why the advisory cannot be fixed yet and why it does not
-// matter here. Remove it once a patched release exists; the script prints a
-// notice when an entry stops matching anything.
 const ALLOWLIST = new Map([
   [
     "GHSA-vfj7-8cjw-p6xm",
@@ -24,9 +13,6 @@ const ALLOWLIST = new Map([
 
 const BLOCKING_SEVERITIES = new Set(["high", "critical"]);
 
-// One fixed command string through a shell: npm is npm.cmd on Windows, which
-// spawn only finds through a shell, and passing an args array alongside
-// `shell: true` is deprecated (DEP0190) because the args are not escaped.
 const result = spawnSync("npm audit --json", { encoding: "utf8", shell: true });
 
 let report;
@@ -42,8 +28,6 @@ if (report.error) {
   process.exit(1);
 }
 
-// Advisories sit in `via` as objects on the package they affect directly;
-// packages affected only through a dependency list plain package names there.
 const advisories = new Map();
 for (const [name, vulnerability] of Object.entries(report.vulnerabilities ?? {})) {
   for (const via of vulnerability.via) {

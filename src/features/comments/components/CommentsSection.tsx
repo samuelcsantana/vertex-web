@@ -4,9 +4,6 @@ import { useEffect, useId, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MessageCircle, Trash2 } from "lucide-react";
 
-// next/link, not the localized one from @/i18n/routing: the only link this
-// component renders points into the admin panel, which lives outside the
-// [locale] segment and takes no locale prefix.
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { LoginModal } from "@/components/blog-identity/LoginModal";
@@ -27,19 +24,6 @@ export function CommentsSection({
   postId,
   allowComments,
 }: CommentsSectionProps) {
-  // access_token is HttpOnly, so this component cannot read the session
-  // itself. It used to receive the resolved profile as a prop, which meant
-  // the post page had to call cookies() during its server render — and that
-  // one call is what kept every post out of the prerender. The provider
-  // resolves the same thing after hydration through /api/me, the path the
-  // rest of the app already uses.
-  //
-  // isAuthenticated is not `user !== null`: it is the cookie's answer,
-  // optimistically pre-filled from a local hint at hydration, while `user`
-  // only arrives with the profile. Gating the composer on it (and rendering
-  // neither branch until isResolved) is what keeps a signed-in visitor from
-  // seeing the sign-in card flash before /api/me lands — the same bug this
-  // provider was built to fix in the header.
   const { user, isAuthenticated, isResolved } = useCurrentUser();
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -102,17 +86,6 @@ export function CommentsSection({
 
     setContent("");
 
-    // The create endpoint returns the raw row with no author join, so the
-    // signed-in visitor's own name/avatar stand in for it and the comment
-    // appears instantly. Prepended, not appended: the list is newest-first
-    // (matching CommentsService.findAllForPost's orderBy on the API side).
-    //
-    // `user` can be null here even though the write succeeded — the cookie
-    // authenticates the Server Action, while the profile behind /api/me is a
-    // separate call that can still be in flight or have failed. Without an
-    // author to render, refetching is the only way to show the comment that
-    // was just written; dropping it silently would look like the submit
-    // failed.
     if (!user) {
       setComments(await getCommentsAction(postId));
       return;
@@ -166,9 +139,6 @@ export function CommentsSection({
         {isLoading ? (
           <p className="text-sm text-muted-foreground">{t("loadingComments")}</p>
         ) : comments.length === 0 ? (
-          // Logged out with no comments renders only the sign-in card
-          // below — an empty-state card stacked on top of it would just
-          // be two near-identical panels saying the same thing.
           isAuthenticated && (
             <div className="rounded-2xl border border-dashed border-input p-6 text-center">
               <p className="text-sm text-muted-foreground">{t("beFirstToComment")}</p>
@@ -179,10 +149,6 @@ export function CommentsSection({
             const authorName =
               comment.author.displayName ?? comment.author.name;
             const initial = (authorName?.trim()?.[0] ?? "?").toUpperCase();
-            // Both read `user`, not `isAuthenticated`: these are controls
-            // only some visitors get, so appearing a beat late once the
-            // profile lands is right, while guessing and rendering a delete
-            // button the API would reject is not.
             const isAdminViewer = user?.role === "admin";
             const canDelete =
               !!user && (user.id === comment.authorId || isAdminViewer);
@@ -193,7 +159,7 @@ export function CommentsSection({
                 className="flex gap-3 rounded-2xl border border-border bg-card/30 p-4"
               >
                 {comment.author.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={comment.author.avatarUrl}
                     alt=""
@@ -208,9 +174,6 @@ export function CommentsSection({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      {/* Admins get a link into the moderation page and the
-                          author's email; the API only includes email in
-                          admin-identified responses, never publicly. */}
                       {isAdminViewer ? (
                         <Link
                           href={`/admin/dashboard/users/${comment.author.id}`}
@@ -270,9 +233,6 @@ export function CommentsSection({
       )}
 
       <div className="mt-6">
-        {/* Nothing until hydration decides: this markup is prerendered and
-            shipped to every visitor alike, so committing to either branch
-            server-side would show one of them the wrong one. */}
         {!isResolved ? null : isAuthenticated ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <label htmlFor={commentFieldId} className="sr-only">

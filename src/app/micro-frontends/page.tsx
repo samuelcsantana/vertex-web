@@ -1,16 +1,6 @@
 import FederationDemo from "./FederationDemo";
 import { REMOTE_ENTRY } from "./federation";
 
-/**
- * A host page for a Module Federation remote published by another repository, on another origin.
- *
- * The page itself is static — everything federated happens in the browser, which is the point. The
- * server render contains no trace of the remote, and the component only exists after a container at
- * `REMOTE_ENTRY` answers.
- *
- * Sibling demo: /embed-demo serves the same data through the script-tag and iframe embeds. Reading
- * the two together is the argument — same data, opposite integration contracts.
- */
 export const dynamic = "force-static";
 
 export default function MicroFrontendsPage() {
@@ -39,13 +29,7 @@ export default function MicroFrontendsPage() {
         </h2>
         <p>
           O{" "}
-          {/*
-            eslint-disable-next-line @next/next/no-html-link-for-pages --
-            /embed-demo is a Route Handler that returns a standalone HTML document, not a page in
-            the app tree. next/link would prefetch an RSC payload that does not exist and then
-            navigate into a document this router does not own; a full page load is the correct
-            transition here, not a worse one.
-          */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a className="underline" href="/embed-demo">
             embed
           </a>{" "}

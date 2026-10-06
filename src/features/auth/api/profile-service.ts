@@ -7,8 +7,6 @@ export interface UserProfile {
   email: string;
   role: UserRole;
   name: string | null;
-  // How the user wants to be shown publicly — wins over name everywhere a
-  // visitor-facing surface renders an identity (displayName ?? name).
   displayName: string | null;
   avatarUrl: string | null;
   githubId: string | null;

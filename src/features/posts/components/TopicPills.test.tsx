@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -40,12 +41,9 @@ describe("TopicPills", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  // Regression test: TopicPills used to crash when topics was missing
-  // entirely rather than an empty array (fixed in 172bbdb).
   it("renders nothing when topics is undefined", () => {
-    // @ts-expect-error deliberately omitting a required prop to cover the
-    // real-world case (a stale API response) the guard clause protects against
-    const { container } = render(<TopicPills topics={undefined} />);
+    const missingTopics = undefined as unknown as ComponentProps<typeof TopicPills>["topics"];
+    const { container } = render(<TopicPills topics={missingTopics} />);
     expect(container).toBeEmptyDOMElement();
   });
 

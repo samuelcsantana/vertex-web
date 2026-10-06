@@ -5,10 +5,6 @@ import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 
-// The app's other root layout lives under [locale]; this segment sits outside
-// that tree and so has none to inherit, and supplies <html> and <body> itself.
-// Next supports exactly this — several root layouts, as long as one applies per
-// route. /micro-frontends does the same.
 import "../[locale]/globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -26,32 +22,16 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "Painel — samuelsantana.dev",
-  // A gated panel has no business in search results, and unlike the public
-  // pages there is no canonical or hreflang story to get right here: these
-  // URLs have no locale variants to point at each other.
   robots: { index: false, follow: false },
 };
 
-// Declared, not inherited. Everything under here renders per request today
-// because the locale comes from a cookie and dashboard/layout.tsx reads the
-// auth cookie — but that is a property of the current implementation, and a
-// refactor moving either read elsewhere would silently make these routes
-// cacheable. These pages show one user their own private data, so SSR is a
-// requirement here, not an optimisation: ISR or SSG would mean serving one
-// admin's dashboard to whoever asks next.
 export const dynamic = "force-dynamic";
 
 async function AdminHeader() {
-  // These routes are already gated by proxy.ts, so the cookie is guaranteed
-  // present here; the profile fetch is only for the avatar/name display and
-  // is allowed to come back empty without blocking access to the page.
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
   const profile = accessToken ? await getProfile(accessToken) : null;
 
-  // Resolved server-side here, unlike the public header: this tree has no
-  // CurrentUserProvider and no hint to fall back on, and it is per-request
-  // anyway, so there is nothing to gain by deferring it to the client.
   const identity = profile
     ? { displayName: resolveDisplayName(profile), avatarUrl: profile.avatarUrl }
     : undefined;
@@ -74,10 +54,6 @@ export default async function AdminLayout({
   const locale = await applyAdminLocale();
   const messages = await getMessages();
 
-  // Forced dark, like the public root layout (see the reasoning there). This
-  // panel also renders the public site's header, background and footer around
-  // pages written with fixed light-on-dark colours, so it has to stay on the
-  // same theme those shared components are drawn in.
   return (
     <html
       lang={locale}
@@ -99,11 +75,6 @@ export default async function AdminLayout({
           >
             <div className="relative flex min-h-screen flex-col text-slate-300">
               <BlogBackground />
-              {/* Only the avatar/name needs the profile round trip. Keeping it
-                  in its own Suspense boundary means the chrome around it —
-                  background, header frame, footer — flushes without waiting on
-                  vertex-api. The gated content itself is held back by
-                  dashboard/layout.tsx, which is a separate boundary. */}
               <Suspense
                 fallback={
                   <BlogHeaderShell

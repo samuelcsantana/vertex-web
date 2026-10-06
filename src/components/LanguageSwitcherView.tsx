@@ -5,12 +5,6 @@ import { useTranslations } from "next-intl";
 
 import { useDialogBehavior } from "@/hooks/useDialogBehavior";
 
-// Endonyms (each language's own name for itself) — shown as the accessible
-// name regardless of the current UI language, since that's the convention
-// users expect from a language picker (recognizable even if you can't read
-// the currently active language). The Locale message namespace still gets
-// used below for the tooltip, translated into whatever the current UI
-// language is.
 export const LOCALE_OPTIONS = [
   { code: "pt", flag: "🇧🇷", label: "Português" },
   { code: "en", flag: "🇺🇸", label: "English" },
@@ -19,22 +13,6 @@ export const LOCALE_OPTIONS = [
 
 export type LocaleCode = (typeof LOCALE_OPTIONS)[number]["code"];
 
-/**
- * The picker's markup and open/close behaviour, with no opinion on what
- * switching a language does.
- *
- * That question has two answers in this app and they are not variations of one
- * another: on the public site a language is a different URL, so switching is a
- * navigation; in the admin panel the URLs carry no locale at all, so switching
- * is a stored preference. Keeping the shared half here means the two callers
- * differ only where they genuinely differ, instead of one of them growing a
- * mode flag through code that has nothing to do with routing.
- *
- * Renders both header variants itself rather than letting the header pick:
- * md+ shows all three locales side by side, <md shows only the current locale's
- * flag with the options in a dropdown (the bar can't fit three flags next to
- * the logo on phone widths).
- */
 export function LanguageSwitcherView({
   locale,
   onSelect,

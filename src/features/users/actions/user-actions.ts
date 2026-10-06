@@ -95,12 +95,9 @@ export async function deleteUserAction(id: string): Promise<UserActionResult> {
 export interface UpdateProfileInput {
   name: string;
   displayName: string;
-  // "" clears the avatar (the API treats empty string as "remove").
   avatarUrl: string;
 }
 
-// Self-service profile edit — PATCH /users/me resolves identity from the
-// session token, so no id ever travels from the client.
 export async function updateProfileAction(
   data: UpdateProfileInput
 ): Promise<UserActionResult> {
@@ -136,7 +133,6 @@ export async function updateProfileAction(
     };
   }
 
-  // The header chip renders the profile on every page — bust everything.
   revalidatePath("/", "layout");
 
   return { success: true };
@@ -189,13 +185,6 @@ export async function requestAvatarUploadUrlAction(
   return { success: true, presignedUrl: data.presignedUrl };
 }
 
-// Self-service account deletion (LGPD, Art. 18 — the right to request
-// deletion of personal data processed under consent). Unlike
-// deleteUserAction above, this never fails on "you can't delete your own
-// account" — deleting your own account is the entire point. It still
-// clears the session cookie and leaves the site afterwards, since
-// continuing to browse as a user whose account no longer exists doesn't
-// make sense.
 export async function deleteOwnAccountAction(): Promise<UserActionResult> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;

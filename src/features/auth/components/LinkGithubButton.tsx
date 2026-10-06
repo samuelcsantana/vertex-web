@@ -32,12 +32,6 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
     }
   }
 
-  // A failed link flow ends with the popup broadcasting a machine-readable
-  // error code (relayed from vertex-api's OAuthPopupExceptionFilter via
-  // /auth/callback?oauth_error=...) — the popup itself can't translate it,
-  // this component can. Mount-scoped like LoginModal's listener, and also
-  // what stops the success-polling below early instead of letting it run
-  // out its 15-minute backstop against a popup that already failed.
   useEffect(() => {
     const channel = new BroadcastChannel(OAUTH_BROADCAST_CHANNEL_NAME);
 
@@ -78,15 +72,7 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
     setError(null);
 
     let attempts = 0;
-    // Same rationale as LoginModal's OAuth polling: the popup's first
-    // response, vertex-api's /auth/github/link redirect, carries the API's
-    // own Cross-Origin-Opener-Policy (same-origin-allow-popups, set by
-    // Helmet), which severs it from us before GitHub is even reached (see
-    // OAUTH_BROADCAST_CHANNEL_NAME) and makes popup.closed misreport `true`
-    // immediately even though it's genuinely still open (verified with
-    // Playwright). So popup.closed is never used as a give-up signal — only
-    // the elapsed-time backstop below can trigger it.
-    const maxAttempts = 900; // give up after ~15 minutes of polling
+    const maxAttempts = 900;
     let checking = false;
 
     pollTimerRef.current = window.setInterval(async () => {
@@ -102,11 +88,8 @@ export function LinkGithubButton({ githubLinked }: LinkGithubButtonProps) {
       if (linked) {
         stopPolling();
         try {
-          // Best-effort: this reliably no-ops once COOP has severed the
-          // popup, so it can't be relied on to ever actually close it.
           popup.close();
         } catch {
-          // Ignored: same COOP severance as above.
         }
         setIsConnecting(false);
         window.location.reload();

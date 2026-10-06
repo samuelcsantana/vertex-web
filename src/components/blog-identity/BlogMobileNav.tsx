@@ -11,12 +11,7 @@ import { LoginModal } from "./LoginModal";
 
 interface BlogMobileNavProps {
   navLinks: { href: string; label: string }[];
-  // Below md the header hides its rightSlot (login trigger / account
-  // actions), so this menu is where those actions live on phones.
   isAuthenticated: boolean;
-  // Same contract as AdminHeaderActions/logoutAction: omitted on public
-  // pages so the visitor stays put after signing out, set on admin pages
-  // that can't be rendered once signed out.
   logoutRedirectTo?: string;
 }
 
@@ -68,9 +63,6 @@ export function BlogMobileNav({
           <div className="mt-1 flex flex-col gap-1 border-t border-border pt-1">
             {isAuthenticated ? (
               <>
-                {/* NextLink, not the localized one: the admin panel lives
-                    outside the [locale] segment, so this path takes no locale
-                    prefix and the localized Link would invent one. */}
                 <NextLink
                   href="/admin/profile"
                   onClick={() => setIsOpen(false)}

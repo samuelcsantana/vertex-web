@@ -50,112 +50,79 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* "Navy & Emerald": the site's original identity, tuned. The page keeps the
-   navy it has always had (#161c2a) and emerald stays the brand colour, but as
-   one slightly calmer accent (#3fd59b) instead of the old emerald-to-cyan
-   gradient. Cards sit one step lighter than the page, the way elevation reads
-   in a dark UI, and text is a soft blue-white rather than pure white.
-   Shared by every root layout that imports this file — the public site, the
-   admin panel and /micro-frontends — so there is one source of truth for
-   colour.
-
-   shadcn semantics are kept on purpose: --primary is the brand accent (links,
-   the active TOC entry, the focus ring, the main button) and --accent is only
-   the subtle hover surface, as in shadcn. Putting the brand colour in --accent
-   would tint every menu hover.
-
-   Every text pair was measured at WCAG AA or better on the surfaces text
-   actually sits on (background, card and muted, not just the page): in the dark
-   set, body text is 13.2:1 on a card, secondary text 6.6:1 on a card and 5.9:1
-   on muted, the accent 8.4:1 on a card, and the ring 8.4:1 against a card.
-
-   Only the dark set ships today: the root layouts force the dark theme. The
-   light set is defined, and measured the same way, for a future toggle. */
-
 :root {
-  --background: oklch(0.985 0.006 255); /* #f7fafe */
-  --foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --card: oklch(1 0 0); /* #ffffff */
-  --card-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --popover: oklch(1 0 0); /* #ffffff */
-  --popover-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --primary: oklch(0.5 0.105 165); /* #007654 */
-  --primary-foreground: oklch(0.99 0 0); /* #fcfcfc */
-  --secondary: oklch(0.955 0.01 255); /* #ecf1f7 */
-  --secondary-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --muted: oklch(0.955 0.01 255); /* #ecf1f7 */
-  --muted-foreground: oklch(0.5 0.04 255); /* #54657a */
-  --accent: oklch(0.945 0.01 255); /* #e8edf4 */
-  --accent-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --destructive: oklch(0.577 0.235 27.3); /* #e30117 */
-  --border: oklch(0.9 0.01 255); /* #dadee5 */
-  --input: oklch(0.86 0.01 255); /* #cdd1d8 */
-  --ring: oklch(0.5 0.105 165); /* #007654 */
-  --chart-1: oklch(0.45 0.094 165); /* #026548 */
-  --chart-2: oklch(0.55 0.098 165); /* #2b8363 */
-  --chart-3: oklch(0.65 0.098 165); /* #4da280 */
-  --chart-4: oklch(0.75 0.098 165); /* #6dc29e */
-  --chart-5: oklch(0.85 0.098 165); /* #8ee2be */
+  --background: oklch(0.985 0.006 255);
+  --foreground: oklch(0.22 0.005 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.005 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.005 255);
+  --primary: oklch(0.5 0.105 165);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.01 255);
+  --secondary-foreground: oklch(0.22 0.005 255);
+  --muted: oklch(0.955 0.01 255);
+  --muted-foreground: oklch(0.5 0.04 255);
+  --accent: oklch(0.945 0.01 255);
+  --accent-foreground: oklch(0.22 0.005 255);
+  --destructive: oklch(0.577 0.235 27.3);
+  --border: oklch(0.9 0.01 255);
+  --input: oklch(0.86 0.01 255);
+  --ring: oklch(0.5 0.105 165);
+  --chart-1: oklch(0.45 0.094 165);
+  --chart-2: oklch(0.55 0.098 165);
+  --chart-3: oklch(0.65 0.098 165);
+  --chart-4: oklch(0.75 0.098 165);
+  --chart-5: oklch(0.85 0.098 165);
   --radius: 0.625rem;
-  --sidebar: oklch(0.975 0.008 255); /* #f3f7fc */
-  --sidebar-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --sidebar-primary: oklch(0.5 0.105 165); /* #007654 */
-  --sidebar-primary-foreground: oklch(0.99 0 0); /* #fcfcfc */
-  --sidebar-accent: oklch(0.945 0.01 255); /* #e8edf4 */
-  --sidebar-accent-foreground: oklch(0.22 0.005 255); /* #191b1d */
-  --sidebar-border: oklch(0.9 0.01 255); /* #dadee5 */
-  --sidebar-ring: oklch(0.5 0.105 165); /* #007654 */
+  --sidebar: oklch(0.975 0.008 255);
+  --sidebar-foreground: oklch(0.22 0.005 255);
+  --sidebar-primary: oklch(0.5 0.105 165);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.945 0.01 255);
+  --sidebar-accent-foreground: oklch(0.22 0.005 255);
+  --sidebar-border: oklch(0.9 0.01 255);
+  --sidebar-ring: oklch(0.5 0.105 165);
 }
 
 .dark {
-  --background: oklch(0.227 0.029 266); /* #161c2a */
-  --foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --card: oklch(0.257 0.032 266); /* #1c2333 */
-  --card-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --popover: oklch(0.267 0.032 266); /* #1e2536 */
-  --popover-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --primary: oklch(0.78 0.15 163); /* #3fd59b */
-  --primary-foreground: oklch(0.18 0.029 266); /* #0b111e */
-  --secondary: oklch(0.29 0.035 266); /* #232b3d */
-  --secondary-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --muted: oklch(0.29 0.035 266); /* #232b3d */
-  --muted-foreground: oklch(0.73 0.035 266); /* #9da8be */
-  --accent: oklch(0.3 0.035 266); /* #252d40 */
-  --accent-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --destructive: oklch(0.704 0.187 22.2); /* #ff6668 */
-  --border: oklch(0.335 0.035 266); /* #2e3649 */
-  --input: oklch(0.335 0.035 266); /* #2e3649 */
-  --ring: oklch(0.78 0.15 163); /* #3fd59b */
-  --chart-1: oklch(0.82 0.128 163); /* #6bdeac */
-  --chart-2: oklch(0.72 0.128 163); /* #47bd8d */
-  --chart-3: oklch(0.62 0.128 163); /* #1a9e70 */
-  --chart-4: oklch(0.52 0.111 163); /* #057c56 */
-  --chart-5: oklch(0.42 0.089 163); /* #055c3f */
-  --sidebar: oklch(0.257 0.032 266); /* #1c2333 */
-  --sidebar-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --sidebar-primary: oklch(0.78 0.15 163); /* #3fd59b */
-  --sidebar-primary-foreground: oklch(0.18 0.029 266); /* #0b111e */
-  --sidebar-accent: oklch(0.3 0.035 266); /* #252d40 */
-  --sidebar-accent-foreground: oklch(0.94 0.017 266); /* #e6ebf7 */
-  --sidebar-border: oklch(0.335 0.035 266); /* #2e3649 */
-  --sidebar-ring: oklch(0.78 0.15 163); /* #3fd59b */
+  --background: oklch(0.227 0.029 266);
+  --foreground: oklch(0.94 0.017 266);
+  --card: oklch(0.257 0.032 266);
+  --card-foreground: oklch(0.94 0.017 266);
+  --popover: oklch(0.267 0.032 266);
+  --popover-foreground: oklch(0.94 0.017 266);
+  --primary: oklch(0.78 0.15 163);
+  --primary-foreground: oklch(0.18 0.029 266);
+  --secondary: oklch(0.29 0.035 266);
+  --secondary-foreground: oklch(0.94 0.017 266);
+  --muted: oklch(0.29 0.035 266);
+  --muted-foreground: oklch(0.73 0.035 266);
+  --accent: oklch(0.3 0.035 266);
+  --accent-foreground: oklch(0.94 0.017 266);
+  --destructive: oklch(0.704 0.187 22.2);
+  --border: oklch(0.335 0.035 266);
+  --input: oklch(0.335 0.035 266);
+  --ring: oklch(0.78 0.15 163);
+  --chart-1: oklch(0.82 0.128 163);
+  --chart-2: oklch(0.72 0.128 163);
+  --chart-3: oklch(0.62 0.128 163);
+  --chart-4: oklch(0.52 0.111 163);
+  --chart-5: oklch(0.42 0.089 163);
+  --sidebar: oklch(0.257 0.032 266);
+  --sidebar-foreground: oklch(0.94 0.017 266);
+  --sidebar-primary: oklch(0.78 0.15 163);
+  --sidebar-primary-foreground: oklch(0.18 0.029 266);
+  --sidebar-accent: oklch(0.3 0.035 266);
+  --sidebar-accent-foreground: oklch(0.94 0.017 266);
+  --sidebar-border: oklch(0.335 0.035 266);
+  --sidebar-ring: oklch(0.78 0.15 163);
 }
 
-/* Native UI (scrollbars, form controls, the overscroll area) follows the theme
-   class rather than the OS. next-themes writes the same value as an inline
-   style, but only once its script has run; this also covers the prerendered
-   HTML before that, and visitors without JavaScript. */
 .dark {
   color-scheme: dark;
 }
 
-/* Article prose follows the tokens. The typography plugin colours `.prose`
-   with its own gray scale and `.prose-invert` with an inverted one, and both
-   land in the utilities layer. This rule is deliberately unlayered: an
-   unlayered declaration beats every layered one regardless of order or
-   specificity, so the outcome does not depend on where the plugin's CSS ends
-   up in the bundle, and an element carrying either class reads the same
-   tokens in either theme. */
 .prose {
   --tw-prose-body: var(--foreground);
   --tw-prose-headings: var(--foreground);
@@ -172,34 +139,17 @@
   --tw-prose-kbd-shadows: color-mix(in oklab, var(--foreground) 10%, transparent);
   --tw-prose-code: var(--foreground);
   --tw-prose-pre-code: var(--foreground);
-  --tw-prose-pre-bg: #0d1117; /* the syntax theme's surface, not a token: see below */
+  --tw-prose-pre-bg: #0d1117;
   --tw-prose-th-borders: var(--border);
   --tw-prose-td-borders: var(--border);
 }
 
-/* Code blocks sit on the syntax theme's own surface. The highlight.js theme
-   imported with the article (github-dark) is drawn for #0d1117, and on the
-   navy page that reads as a recessed well, which is how the site has always
-   shown code. A card-coloured block was tried with this palette: it is
-   1.08:1 from the page against 1.11:1 for #0d1117, and in screenshots it all
-   but disappeared, while the theme's comment colour drops from 6.2:1 on its
-   own background to 5.1:1 on a card.
-
-   The <pre> carries the colour and the <code> inside is cleared, so the
-   padding and rounded corners are one surface, not a frame of another colour
-   around the theme's box. That hex belongs to the highlight.js stylesheet,
-   not to the palette: change the two together. */
 .prose pre code.hljs {
   background: transparent;
 }
 
 @layer base {
   * {
-    /* The full ring, not shadcn's default ring/50. At 50% the emerald ring
-       measures 3.1:1 against a card and 3.3:1 against the background — just
-       over the 3:1 that WCAG asks of a focus indicator, with no margin for a
-       translucent surface underneath. At full strength it is 8.2:1 or more
-       on the page, a card and a popover. */
     @apply border-border outline-ring;
   }
   body {
@@ -207,13 +157,6 @@
   }
   html {
     @apply font-sans;
-    /* Reserves the vertical scrollbar's space unconditionally, instead
-       of only once a page's content is tall enough to need it. Without
-       this, every mx-auto-centered element (the sticky header above
-       all) visibly shifts by the scrollbar's width the moment a page
-       goes from "fits in the viewport" to "needs to scroll" — e.g. the
-       home page's header nudging over once enough posts have loaded in
-       to push it past one screenful. */
     scrollbar-gutter: stable;
   }
   button:not(:disabled),

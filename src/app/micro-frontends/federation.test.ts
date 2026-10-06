@@ -8,15 +8,6 @@ vi.mock("@module-federation/runtime", () => ({
   loadRemote: (...args: unknown[]) => loadRemote(...args),
 }));
 
-/**
- * The module keeps `initialised` at module scope, so each test needs a fresh copy.
- *
- * React is imported here rather than at the top of the file, and that is not tidiness: after
- * `resetModules` a top-level import would be a *different namespace object* wrapping the same
- * module, so identity assertions against it fail while the underlying instance is shared. It is the
- * same reason the probe compares exported functions instead of namespaces — the failure showed up
- * here first, in a test, which is the cheap place for it to show up.
- */
 async function freshModule() {
   vi.resetModules();
   init.mockClear();
@@ -45,11 +36,6 @@ beforeEach(() => {
 
 describe("initFederation", () => {
   it("registers every remote as an ES module container", async () => {
-    // The regression this guards is expensive to diagnose and cheap to reintroduce: the Vite plugin
-    // emits an ESM container, and without `type: "module"` the runtime injects it through a plain
-    // <script>. The browser rejects it with "Cannot use import statement outside a module" and what
-    // surfaces is RUNTIME-001, "failed to get remoteEntry exports" — an error about exports, raised
-    // for a file that was fetched with a 200 and never evaluated.
     const { initFederation } = await freshModule();
 
     initFederation();
@@ -68,14 +54,10 @@ describe("initFederation", () => {
     const shared = initArgs().shared;
     expect(shared.react?.shareConfig.singleton).toBe(true);
     expect(shared["react-dom"]?.shareConfig.singleton).toBe(true);
-    // `lib` hands over the instance already rendering this page. Without it the remote resolves to
-    // the copy it carries — which renders, and fails only once it touches host-owned state.
     expect(shared.react?.lib()).toBe(React);
   });
 
   it("runs once, however many times it is called", async () => {
-    // React 19 Strict Mode mounts effects twice in development, and `init` is not something to run
-    // twice against the same share scope.
     const { initFederation } = await freshModule();
 
     initFederation();
@@ -86,9 +68,6 @@ describe("initFederation", () => {
   });
 
   it("points the offline container at a name that cannot resolve", async () => {
-    // A missing path on the real origin answers 200 with the SPA shell, because *.samuelsantana.dev
-    // is a wildcard and Cygnus rewrites unmatched paths. That fails too, but it demonstrates
-    // content-type filtering rather than an unreachable remote.
     const { OFFLINE_REMOTE_ENTRY } = await freshModule();
 
     expect(new URL(OFFLINE_REMOTE_ENTRY).hostname).toMatch(/\.invalid$/);
@@ -118,8 +97,6 @@ describe("probeSharing", () => {
 
     loadRemote.mockResolvedValueOnce({
       runtimeProbe: () => ({
-        // Same version string, different functions — exactly what a second copy looks like, and
-        // exactly why the version is not the assertion.
         reactVersion: React.version,
         useState: ((): unknown => undefined) as typeof React.useState,
         createElement: ((): unknown => undefined) as typeof React.createElement,

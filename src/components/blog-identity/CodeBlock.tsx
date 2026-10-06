@@ -5,20 +5,12 @@ import { useTranslations } from "next-intl";
 import { Check, Copy } from "lucide-react";
 import type { Components } from "react-markdown";
 
-// react-markdown only wraps fenced code blocks in <pre><code>; inline code
-// (`foo`) renders as a bare <code> with no <pre>, so mapping "pre" (not
-// "code") keeps the copy button off single-word inline snippets. Reading
-// textContent off the rendered <pre> — rather than walking the "children"
-// prop — sidesteps rehype-highlight's <span> wrapping around every token.
 export const CodeBlock: Components["pre"] = (props) => {
   const preRef = useRef<HTMLPreElement>(null);
   const [copied, setCopied] = useState(false);
   const t = useTranslations("Common");
 
   async function handleCopy() {
-    // highlight.js/rehype-highlight always leave a trailing newline before
-    // </code> (from the fenced block's closing ``` line) — trim it so a
-    // paste doesn't end in a stray blank line.
     const code = (preRef.current?.textContent ?? "").trimEnd();
     try {
       await navigator.clipboard.writeText(code);

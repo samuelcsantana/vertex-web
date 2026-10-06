@@ -10,9 +10,6 @@ describe("resolveSiteUrl", () => {
   });
 
   it("ignores the override in a production build", () => {
-    // The whole point of the constant: a deployment variable pointing at
-    // the apex, at a preview host or at nothing at all cannot change what
-    // the published site calls itself.
     expect(resolveSiteUrl("production", "https://samuelsantana.dev")).toBe(
       CANONICAL
     );

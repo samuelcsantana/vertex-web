@@ -3,10 +3,6 @@ import type { Topic } from "@/features/topics/types";
 interface TopicPillsProps {
   topics: Topic[];
   className?: string;
-  // Caps how many pills render before collapsing the rest into a "+N" pill —
-  // used on the home page's post grid, where cards need to stay a
-  // predictable height. Omit it (as the post reading page and dashboard
-  // table do) to show every topic.
   limit?: number;
 }
 

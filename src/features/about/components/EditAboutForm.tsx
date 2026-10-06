@@ -14,8 +14,6 @@ interface EditAboutFormProps {
   initialContentEs: string;
 }
 
-// Same tab set/labels as CreatePostForm/EditPostForm — each label is
-// written in its own language on purpose, so it never needs translating.
 const LANGUAGES: PostLanguage[] = ["pt", "en", "es"];
 
 const LANGUAGE_TAB_LABELS: Record<PostLanguage, string> = {
@@ -120,11 +118,6 @@ export function EditAboutForm({
       </div>
 
       {viewMode === "write" ? (
-        // A single controlled textarea whose value swaps with the active
-        // tab (unlike EditPostForm's one-element-per-language workaround,
-        // which exists because react-hook-form's register() leaves the
-        // element uncontrolled — plain controlled state has no such
-        // resync problem).
         <textarea
           id={contentId}
           value={contents[activeLanguage]}

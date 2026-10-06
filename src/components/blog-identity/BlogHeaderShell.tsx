@@ -12,13 +12,7 @@ export function BlogHeaderShell({
   logoutRedirectTo,
 }: {
   rightSlot: ReactNode;
-  // The public site's picker navigates to a locale-prefixed URL. The admin
-  // panel has no such URLs, so it passes its own cookie-based picker rather
-  // than this header growing a flag for a difference that belongs to routing.
   localeSwitcher?: ReactNode;
-  // Below md the rightSlot (login trigger / account actions) is hidden and
-  // BlogMobileNav renders the equivalent entries inside its dropdown, so
-  // it needs to know which set to show and where logout should land.
   isAuthenticated: boolean;
   logoutRedirectTo?: string;
 }) {
@@ -37,17 +31,7 @@ export function BlogHeaderShell({
       >
         {t("skipToContent")}
       </a>
-      {/* max-w-[calc(var(--container-6xl)+6rem)] instead of plain max-w-6xl:
-          this header nests two layers of "px-4 sm:px-6" padding (this
-          element's own, plus the rounded card's below) — 6rem cancels
-          that double 24px+24px inset at sm+ so the card's visible edges
-          land at the same x as a plain max-w-6xl content column. */}
       <header className="sticky top-4 z-50 mx-auto w-full max-w-[calc(var(--container-6xl)+6rem)] px-4 sm:px-6">
-        {/* transform-gpu forces this blurred layer onto its own GPU
-            compositing layer instead of being recomposited inline with the
-            page as it scrolls — some mobile browsers (older Samsung Internet
-            in particular) smear/haze backdrop-blur during scroll without
-            this hint. Unverified on the actual device that reported it. */}
         <div className="transform-gpu flex h-16 items-center justify-between gap-1 rounded-2xl border border-border bg-card/60 px-4 backdrop-blur-xl will-change-transform sm:gap-2 sm:px-6">
           <Link
             href="/"
@@ -72,10 +56,6 @@ export function BlogHeaderShell({
 
           <div className="flex items-center gap-1 sm:gap-3">
             {localeSwitcher}
-            {/* Below md the bar can't fit logo + switcher + account actions
-                + hamburger (everything in it is shrink-0 by design), so the
-                rightSlot's login/account entries move into BlogMobileNav's
-                dropdown and the switcher collapses to a single flag. */}
             <div className="hidden md:block">{rightSlot}</div>
             <BlogMobileNav
               navLinks={NAV_LINKS}
