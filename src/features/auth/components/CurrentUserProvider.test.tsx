@@ -33,7 +33,6 @@ const SIGNED_IN = {
   },
 };
 
-/** A fetch that stays pending, so assertions land in the window before /api/me answers. */
 function pendingFetch() {
   return vi.fn(() => new Promise(() => {}));
 }
@@ -60,13 +59,10 @@ describe("CurrentUserProvider", () => {
       </CurrentUserProvider>
     );
 
-    // Resolved without a response: the absence of a hint is itself an answer for this browser.
     await waitFor(() =>
       expect(screen.getByRole("status").textContent).toContain("resolved")
     );
     expect(screen.getByRole("status").textContent).toContain("anonymous");
-    // Still loading, because the authoritative answer has not arrived — the two are different
-    // questions, which is why the header reads isResolved and admin UI reads isLoading.
     expect(screen.getByRole("status").textContent).toContain("loading");
   });
 
@@ -80,7 +76,6 @@ describe("CurrentUserProvider", () => {
       </CurrentUserProvider>
     );
 
-    // This is the flicker fix: no round trip has completed and the header already knows.
     await waitFor(() =>
       expect(screen.getByRole("status").textContent).toContain("authenticated")
     );
@@ -117,8 +112,6 @@ describe("CurrentUserProvider", () => {
   });
 
   it("stores the boolean alone when the session has no resolved profile", async () => {
-    // Authenticated cookie, failed profile call. Writing an empty identity here
-    // would erase a good one from a previous load for no gain.
     vi.stubGlobal("fetch", jsonFetch({ user: null, isAuthenticated: true }));
 
     render(
@@ -131,9 +124,6 @@ describe("CurrentUserProvider", () => {
   });
 
   it("paints the stored identity before the network answers", async () => {
-    // The measured point of the whole change: on the live site a signed-in
-    // /api/me takes ~750-860ms, and the header used to show a nameless control
-    // for that whole window.
     window.localStorage.setItem(
       HINT_KEY,
       JSON.stringify({ displayName: "Ada L.", avatarUrl: "https://cdn.example/a.png" })
@@ -154,9 +144,6 @@ describe("CurrentUserProvider", () => {
   });
 
   it("still reads a hint written before it carried an identity", async () => {
-    // Every browser that visited before this field existed has "1" stored. It
-    // has to keep meaning "authenticated, identity unknown" rather than
-    // becoming unparseable and reading as signed out.
     window.localStorage.setItem(HINT_KEY, "1");
     vi.stubGlobal("fetch", pendingFetch());
 
@@ -219,8 +206,6 @@ describe("CurrentUserProvider", () => {
     await waitFor(() =>
       expect(screen.getByRole("status").textContent).toContain("done")
     );
-    // The session may be perfectly valid and the network merely down. Clearing here would let one
-    // dropped request reintroduce the signed-out flash on the next load.
     expect(window.localStorage.getItem(HINT_KEY)).toBe("1");
   });
 

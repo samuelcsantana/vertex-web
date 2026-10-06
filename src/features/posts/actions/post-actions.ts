@@ -16,9 +16,6 @@ interface PostActionResult {
   error?: string;
 }
 
-// The form fields default to "" (no cover set), but the backend's
-// cover URLs are z.string().url().optional() — an empty string would
-// fail that validation, so each needs to become "not sent" instead.
 function normalizeCoverUrl<
   T extends { coverUrl?: string; coverUrlEn?: string; coverUrlEs?: string },
 >(data: T) {
@@ -30,22 +27,6 @@ function normalizeCoverUrl<
   };
 }
 
-// The public listings live under the [locale] dynamic segment
-// (src/app/[locale]/(blog)/page.tsx) — a literal revalidatePath("/") only
-// busts the cache entry for the exact path it's given, which is just the
-// unprefixed pt route. /en and /es visitors kept seeing stale data until
-// getPosts()'s own 60s revalidate window passed on its own.
-//
-// The docs' officially recommended fix for a dynamic segment —
-// revalidatePath("/[locale]", "page") — was verified NOT to actually bust
-// the cache in this Next.js 16 + Turbopack dev setup (confirmed live: the
-// backend had already deleted the post, but a fresh, uncached browser
-// context still rendered it 5+ seconds later). revalidatePath("/", "layout")
-// — the docs' own "revalidate everything" option — was verified to work
-// reliably and near-instantly instead, so this uses that rather than the
-// theoretically-narrower pattern that didn't actually work here. The
-// broader invalidation (busting /about's cache too, etc.) is a non-issue
-// at this app's size.
 function revalidatePostListings() {
   revalidatePath("/", "layout");
 }
@@ -86,8 +67,6 @@ export async function createPostAction(
   }
 
   revalidatePostListings();
-  // A plain redirect, not the localized one: the admin panel sits outside
-  // the [locale] segment, so this path takes no locale prefix.
   throw redirect("/admin/dashboard/posts");
 }
 
@@ -128,8 +107,6 @@ export async function updatePostAction(
   }
 
   revalidatePostListings();
-  // A plain redirect, not the localized one: the admin panel sits outside
-  // the [locale] segment, so this path takes no locale prefix.
   throw redirect("/admin/dashboard/posts");
 }
 

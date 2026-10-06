@@ -20,12 +20,6 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Restores the Next.js build cache (.next/cache) across runs so
-      # unchanged pages/modules aren't recompiled from scratch every time.
-      # Keyed on the lockfile plus a hash of all source files, since that's
-      # what actually invalidates the cache's contents; falls back to the
-      # most recent cache for the same lockfile if no exact source match
-      # exists yet.
       - name: Cache Next.js build cache
         uses: actions/cache@v6
         with:

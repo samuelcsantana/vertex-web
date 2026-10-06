@@ -6,16 +6,6 @@ export interface MarkdownSection {
   body: string;
 }
 
-// Splits a markdown string on its top-level "##" headings so About can
-// render each as its own card instead of one continuous prose block.
-// Reuses extractHeadings for the id/text of each section instead of
-// re-slugifying here, so a section's card id stays in sync with however
-// extractHeadings would derive it elsewhere (e.g. a future TOC).
-//
-// Known gap (same trade-off extractHeadings itself documents): a "##"
-// inside a code fence would desync this split from extractHeadings' own
-// fence-stripped count. About content is admin-authored, not user input,
-// so this is accepted rather than worth a real markdown-AST parser.
 export function splitMarkdownSections(markdown: string): {
   intro: string;
   sections: MarkdownSection[];

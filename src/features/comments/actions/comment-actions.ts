@@ -22,9 +22,6 @@ interface DeleteCommentResult {
 }
 
 export async function getCommentsAction(postId: string): Promise<Comment[]> {
-  // The route is public, but forwarding the session (when there is one)
-  // lets the API enrich the payload for admins — each author's email for
-  // moderation. Anonymous behavior is unchanged.
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -89,10 +86,6 @@ export async function createCommentAction(
   return { success: true, comment };
 }
 
-// The comment list is fetched client-side into useState (see
-// CommentsSection), not server-rendered/cached, so there's no
-// revalidatePath to call here — the caller removes the row from local
-// state itself once this resolves successfully.
 export async function deleteCommentAction(
   commentId: string
 ): Promise<DeleteCommentResult> {

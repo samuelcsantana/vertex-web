@@ -17,7 +17,7 @@ export default defineConfig({
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "src/**/*.d.ts",
-        "src/app/**", // pages/layouts — exercised by the E2E suite, not unit tests
+        "src/app/**",
         "src/**/*.test.{ts,tsx}",
       ],
     },

@@ -1,20 +1,10 @@
-// Browser-only: shrinks an image before it ever leaves the visitor's machine,
-// so the bucket never stores a camera-original multi-megabyte file. Runs in
-// the upload handlers (upload-image.ts / upload-avatar.ts), never on the
-// server.
-
-// 2× the 1200px layout width covers retina displays; anything beyond that is
-// wasted bytes at every size this app ever renders a cover or inline image.
 const DEFAULT_MAX_DIMENSION = 2400;
 
-// Files already this small aren't worth a lossy re-encode round-trip even if
-// their pixel dimensions are within bounds.
 const SMALL_FILE_BYTES = 300 * 1024;
 
 const WEBP_QUALITY = 0.85;
 
 interface DownscaleImageOptions {
-  /** Cap for the longest side, in pixels. Aspect ratio is preserved. */
   maxDimension?: number;
 }
 
@@ -35,13 +25,6 @@ function renameForType(fileName: string, type: string): string {
   return `${baseName}.${extension}`;
 }
 
-/**
- * Downscales `file` so its longest side is at most `maxDimension` and
- * re-encodes it as WebP (falling back to the original format where the
- * browser can't encode WebP, e.g. older Safari). Never upscales. Returns the
- * original file untouched when it's already small enough, when decoding
- * fails, or when the re-encoded result somehow comes out larger.
- */
 export async function downscaleImage(
   file: File,
   { maxDimension = DEFAULT_MAX_DIMENSION }: DownscaleImageOptions = {}
@@ -49,11 +32,8 @@ export async function downscaleImage(
   let bitmap: ImageBitmap;
 
   try {
-    // createImageBitmap applies EXIF orientation, so the re-encoded copy is
-    // upright without any rotation handling of our own.
     bitmap = await createImageBitmap(file);
   } catch {
-    // Undecodable in this browser — upload the original rather than fail.
     return file;
   }
 
@@ -82,9 +62,6 @@ export async function downscaleImage(
 
     let blob = await canvasToBlob(canvas, "image/webp", WEBP_QUALITY);
 
-    // A browser without WebP encoding silently falls back to PNG in toBlob —
-    // detect that via blob.type and re-encode in the file's own format
-    // instead (JPEG stays lossy-small; PNG keeps transparency).
     if (!blob || blob.type !== "image/webp") {
       blob = await canvasToBlob(canvas, file.type, WEBP_QUALITY);
     }

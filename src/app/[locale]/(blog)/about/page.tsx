@@ -24,11 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const locale = await getLocale();
 
-  // Same duplicate-content reasoning as blog/[slug]/page.tsx's
-  // generateMetadata: a locale without its own translation serves the pt
-  // fallback under its own URL, so its canonical points back at the real
-  // pt page instead of self-referencing, and only genuinely translated
-  // locales are advertised as hreflang alternates.
   const translatedLocales = getTranslatedLocales(about);
   const isTranslated = (translatedLocales as string[]).includes(locale);
   const canonicalLocale = isTranslated ? locale : "pt";
@@ -52,33 +47,14 @@ export default async function AboutPage() {
   const t = await getTranslations("Navigation");
   const tAbout = await getTranslations("About");
 
-  // Same per-locale resolution posts use: en/es render their own
-  // translation when one exists and fall back to the required pt text
-  // otherwise — the helpers only need the content/contentEn/contentEs
-  // shape, which AboutContent shares with Post by design.
   const content = about ? getLocalizedContent(about, locale) : "";
   const isTranslated = about
     ? (getTranslatedLocales(about) as string[]).includes(locale)
     : true;
 
-  // The About content is expected to (optionally) open with its own real
-  // "# Heading" before any "##" section — in that case it already is the
-  // page's real h1 and a second one would just duplicate it in the
-  // heading outline. Only a single "#" counts: a "##" is a section
-  // heading (rendered as an h2 card title below, see splitMarkdownSections),
-  // not a page-level h1, so it must NOT suppress the sr-only fallback —
-  // content that starts straight in with "## Sobre mim" still needs that
-  // fallback to end up with exactly one h1, not zero.
   const startsWithHeading = /^#\s+/.test(content.trimStart());
-  // The intro (everything before the first "##") keeps its own opening
-  // "# heading" — that's what the startsWithHeading/h1 logic above is
-  // about — while the "##" sections become the numbered cards below.
   const { intro, sections } = splitMarkdownSections(content);
 
-  // This is the page Google's search results currently surface for
-  // "samuel santana dev" — carrying the Person schema (with sameAs) here,
-  // not just on post pages, gives the entity graph its clearest signal on
-  // the exact URL that's already ranking.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -96,8 +72,6 @@ export default async function AboutPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
         <div className="order-last lg:order-none lg:col-span-8">
-          {/* Amber, not a theme token: the palette has no warning colour,
-              and a translation fallback has to read as a caution. */}
           {!isTranslated && (
             <div className="mb-8 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
               <Info className="mt-0.5 size-4 shrink-0" />

@@ -19,11 +19,6 @@ export function getLocalizedContent(
   return post.content;
 }
 
-// The slug a post is reachable at for a given locale — mirrors
-// vertex-api's PostsService.findPublishedBySlug fallback: a post without
-// its own slugEn/slugEs is served under the default (pt) slug for that
-// locale too, so links/canonical URLs never point at a slug that doesn't
-// actually resolve.
 export function getLocalizedSlug(
   post: Pick<Post, "slug" | "slugEn" | "slugEs">,
   locale: string
@@ -33,12 +28,6 @@ export function getLocalizedSlug(
   return post.slug;
 }
 
-// The inverse of getLocalizedSlug: which locale a given slug belongs to,
-// or null if it isn't one of this post's slugs at all. pt wins ties (it's
-// the original, required version) — if an admin gave a translation the
-// same slug as the pt one, that slug never 404s under any locale anyway.
-// Used to recover from locale-detection redirects that re-prefix a shared
-// URL without translating its slug (see getPostBySlugCrossLocale).
 export function getSlugSourceLocale(
   post: Pick<Post, "slug" | "slugEn" | "slugEs">,
   slug: string
@@ -58,10 +47,6 @@ export function getLocalizedCoverUrl(
   return post.coverUrl;
 }
 
-// Resolved independently from the image on purpose: the common "one
-// image, translated alts" case needs an en/es alt to apply to the
-// pt-fallback image. The reverse mismatch (locale-specific image with a
-// pt-fallback alt) is on the author to fill in.
 export function getLocalizedCoverAlt(
   post: Pick<Post, "coverAlt" | "coverAltEn" | "coverAltEs">,
   locale: string
@@ -71,14 +56,6 @@ export function getLocalizedCoverAlt(
   return post.coverAlt;
 }
 
-// The manually-written meta description for a given locale, or null if
-// that locale has none of its own. Deliberately does NOT fall back to
-// another locale's text the way getLocalizedTitle/Content/Slug do — a
-// locale with no override should fall through to an auto-generated
-// excerpt of *that locale's own* (possibly itself pt-fallback) content
-// instead of silently reusing another language's hand-written SEO copy,
-// which could describe different text than what's actually on the page.
-// See blog/[slug]/page.tsx's generateMetadata for the auto-generate step.
 export function getLocalizedMetaDescription(
   post: Pick<Post, "metaDescription" | "metaDescriptionEn" | "metaDescriptionEs">,
   locale: string
@@ -88,16 +65,6 @@ export function getLocalizedMetaDescription(
   return post.metaDescription;
 }
 
-// Which locales this post genuinely has its own content in — pt is
-// always included (title/slug/content are required fields); en/es only
-// count once their own content is filled in. This is a different
-// question from "what URL does this locale resolve to" (getLocalizedSlug
-// above always resolves, via the pt fallback): it's used wherever a
-// locale needs to be presented as a real, distinct translation rather
-// than the pt-fallback content reachable under that locale's URL — see
-// sitemap.ts's hreflang alternates, blog/[slug]/page.tsx's canonical/
-// hreflang metadata, and the Manage Posts dashboard table's language
-// badges.
 export function getTranslatedLocales(
   post: Pick<Post, "contentEn" | "contentEs">
 ): Locale[] {

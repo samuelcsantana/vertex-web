@@ -17,9 +17,6 @@ interface LinkGoogleButtonProps {
   googleLinked: boolean;
 }
 
-// Mirror of LinkGithubButton — see that component for the COOP/polling
-// rationale comments; the mechanics are identical, only the provider
-// endpoints and linked-state check differ.
 export function LinkGoogleButton({ googleLinked }: LinkGoogleButtonProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +72,7 @@ export function LinkGoogleButton({ googleLinked }: LinkGoogleButtonProps) {
     setError(null);
 
     let attempts = 0;
-    const maxAttempts = 900; // give up after ~15 minutes of polling
+    const maxAttempts = 900;
     let checking = false;
 
     pollTimerRef.current = window.setInterval(async () => {
@@ -93,7 +90,6 @@ export function LinkGoogleButton({ googleLinked }: LinkGoogleButtonProps) {
         try {
           popup.close();
         } catch {
-          // Ignored: COOP severance (see LinkGithubButton).
         }
         setIsConnecting(false);
         window.location.reload();

@@ -1,26 +1,3 @@
-/**
- * The cross-origin host page for the Cygnus embed, served as a Route Handler rather than a page.
- *
- * It started as public/embed-demo.html and 404d in production, which is worth recording because
- * the failure looks like a deploy problem and is not: Next does not serve .html files out of
- * public/ — it reserves that extension for its own output — while every other file type there is
- * served normally. og-fallback.png sitting in the same directory returning 200 is what made the
- * cause visible.
- *
- * A Route Handler is the right shape anyway. It needs no root layout (there is none outside
- * [locale]) and no translations, and it keeps the demo what it has to be to prove anything: plain
- * HTML with no framework participating in the integration.
- *
- * proxy.ts excludes this path from locale routing, since a technical demo has no localized twin.
- *
- * String.raw, not a plain template literal, and that is load-bearing. A template literal processes
- * escape sequences, so the page script's `join("\n")` was emitted as a real newline inside a string
- * literal — a SyntaxError that killed every listener on this page while the embedded widgets kept
- * working perfectly. The symptom pointed at the widget; the cause was here, one layer up.
- *
- * With String.raw the HTML is emitted byte for byte. The only sequences that still need care are ` and
- * ${, which this document does not contain.
- */
 export const dynamic = "force-static";
 
 const PAGE = String.raw`
@@ -110,7 +87,6 @@ const PAGE = String.raw`
         log.textContent = lines.slice(0, 12).join('\n');
       }
 
-      // iframe: postMessage. The version check is the point of versioning it at all.
       window.addEventListener('message', function (event) {
         var data = event.data;
         if (!data || data.source !== 'cygnus-embed' || data.version !== 1) return;
@@ -122,14 +98,11 @@ const PAGE = String.raw`
         }
       });
 
-      // script tag: same contract, DOM events instead of postMessage — the idiom an in-page host
-      // already has handlers for.
       ['ready', 'resize', 'navigate', 'error'].forEach(function (type) {
         document.addEventListener('cygnus:' + type, function (event) {
           record('[script]', event.detail);
 
           if (type === 'navigate') {
-            // The embed asked; the host decides. It never navigates this page itself.
             window.open(event.detail.url, '_blank', 'noopener');
           }
         });

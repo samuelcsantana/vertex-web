@@ -13,15 +13,7 @@ import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 import type { HeaderIdentity } from "@/features/auth/components/CurrentUserProvider";
 
 interface AdminHeaderActionsProps {
-  // When omitted, logging out simply re-renders the current page instead
-  // of navigating away — used on public pages (home, post reading) where
-  // there's nothing forcing the visitor off the page once logged out.
   redirectTo?: string;
-  // Already resolved by the caller, from /api/me or from the local hint — this
-  // component does not care which, and must not, since one of the two is a
-  // guess. Optional because the profile fetch can come back empty (backend
-  // hiccup) on a browser with no hint either, and that degrades to a plain
-  // "Sair" button rather than blocking logout.
   identity?: HeaderIdentity;
 }
 
@@ -62,11 +54,6 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
     setIsMenuOpen(false);
     startTransition(async () => {
       await logoutAction(redirectTo);
-      // On the public pages auth lives in client state, so clearing the
-      // cookie is not enough to put the header back to logged-out. In the
-      // admin tree there is no provider and this is a no-op — that
-      // side still resolves the profile server-side, and router.refresh()
-      // covers it.
       refreshCurrentUser();
       router.refresh();
     });
@@ -101,7 +88,7 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
         className="flex items-center gap-2 rounded-full border border-input bg-secondary py-1 pr-0.5 pl-0.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-input sm:py-1.5 sm:pr-3 sm:pl-1.5"
       >
         {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- external OAuth provider avatar, not worth a next/image remote-pattern allowlist entry
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
             alt=""
@@ -123,8 +110,6 @@ export function AdminHeaderActions({ redirectTo, identity }: AdminHeaderActionsP
           aria-label={displayName}
           className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-border bg-popover p-1 shadow-xl"
         >
-          {/* NextLink, not the localized one: the admin panel lives outside
-              the [locale] segment, so this path takes no locale prefix. */}
           <NextLink
             href="/admin/profile"
             role="menuitem"

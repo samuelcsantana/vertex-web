@@ -16,9 +16,6 @@ export function CoverImagePreview({ url }: CoverImagePreviewProps) {
   }
 
   return (
-    // Admin-form preview of an arbitrary external URL — next/image would
-    // reject hosts outside the configured remotePatterns, so a plain img
-    // is the right tool here.
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={url}

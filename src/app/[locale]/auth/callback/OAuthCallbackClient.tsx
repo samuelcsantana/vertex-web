@@ -21,13 +21,6 @@ export function OAuthCallbackClient() {
   const oauthError = searchParams.get("oauth_error");
   const [actionFailed, setActionFailed] = useState(false);
 
-  // vertex-api's OAuthPopupExceptionFilter lands here with a
-  // machine-readable ?oauth_error=<code> when the OAuth flow fails in a
-  // way the visitor needs to hear about (GitHub profile already linked,
-  // email owned by a Google account). Relay the code to the opener over
-  // the BroadcastChannel — the opener renders it translated into its own
-  // locale, which this popup can't know (its URL has no locale prefix) —
-  // then close.
   useEffect(() => {
     if (!oauthError) {
       return;
@@ -40,9 +33,6 @@ export function OAuthCallbackClient() {
       code: oauthError,
     } satisfies OAuthErrorBroadcast);
 
-    // Allowed despite COOP severance: a script may close the window it is
-    // running in when that window was itself script-opened, which this
-    // popup always was.
     window.close();
   }, [oauthError]);
 
@@ -51,10 +41,6 @@ export function OAuthCallbackClient() {
       return;
     }
 
-    // Strip the code from the URL/history immediately, before the exchange
-    // request even goes out: it's single-use and expires within a minute,
-    // but there's no reason to leave it sitting in the address bar or a
-    // back-button history entry a moment longer than necessary.
     window.history.replaceState(null, "", window.location.pathname);
 
     exchangeOAuthCodeAction(code)
@@ -68,18 +54,9 @@ export function OAuthCallbackClient() {
           OAUTH_SUCCESS_MESSAGE
         );
 
-        // Best-effort: window.opener is already null by this point. The
-        // popup's first response was vertex-api's /auth/* redirect, whose
-        // own Cross-Origin-Opener-Policy (same-origin-allow-popups, set by
-        // Helmet) severed it for good before Google or GitHub were reached —
-        // see OAUTH_BROADCAST_CHANNEL_NAME. The broadcast above is what
-        // actually tells the opener; this stays only because it costs
-        // nothing to attempt.
         try {
           window.opener?.location.reload();
         } catch {
-          // Ignored: a severed/cross-origin opener throws on property access,
-          // it doesn't just return null.
         }
 
         window.close();
@@ -87,9 +64,6 @@ export function OAuthCallbackClient() {
       .catch(() => setActionFailed(true));
   }, [code]);
 
-  // Fallback text in case window.close() is blocked and the visitor
-  // actually reads the popup — the authoritative, locale-correct rendering
-  // of the error happens in the opener via the broadcast above.
   const oauthErrorText = oauthError
     ? isApiErrorCode(oauthError)
       ? tApiErrors(oauthError)

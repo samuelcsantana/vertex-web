@@ -32,11 +32,6 @@ describe("useDialogBehavior", () => {
     expect(screen.getByText("First")).toHaveFocus();
   });
 
-  // Real Tab-key focus traversal is native browser behavior that jsdom
-  // doesn't implement — a synthetic "Tab" keydown never moves focus on its
-  // own, which is exactly what makes fireEvent the right tool here: any
-  // focus change observed can only have come from the hook's own
-  // preventDefault()-and-refocus logic, not an emulated browser default.
   it("traps focus: Tab from the last element wraps to the first", async () => {
     render(<TestDialog />);
     await userEvent.setup().click(screen.getByText("Open dialog"));

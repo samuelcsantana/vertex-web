@@ -5,25 +5,11 @@ import { isBucketMediaUrl } from "@/lib/media-url";
 interface CoverImageProps {
   src: string;
   alt: string;
-  /**
-   * Rendered-width hints for next/image's srcset selection — pass the
-   * layout's real column widths so the optimizer serves the card-sized
-   * variant, not the original.
-   */
   sizes: string;
   className: string;
-  /** Set on the post page, where the cover is almost always the LCP element. */
   priority?: boolean;
 }
 
-/**
- * Post cover renderer. Covers from our own media bucket go through
- * next/image, which resizes on the fly and serves AVIF/WebP at the rendered
- * size — this is what keeps pre-existing full-resolution uploads cheap on the
- * listing without reprocessing anything in the bucket. Arbitrary pasted URLs
- * can't go through the optimizer (its remotePatterns allowlist is the bucket
- * host only), so they keep the plain <img> path.
- */
 export function CoverImage({
   src,
   alt,
@@ -33,9 +19,6 @@ export function CoverImage({
 }: CoverImageProps) {
   if (isBucketMediaUrl(src)) {
     return (
-      // width/height only declare the aspect ratio for layout and srcset
-      // generation; the visible geometry still comes from the caller's
-      // aspect-[1200/630] + object-cover classes, same as the <img> branch.
       <Image
         src={src}
         alt={alt}
@@ -43,9 +26,6 @@ export function CoverImage({
         height={630}
         sizes={sizes}
         priority={priority}
-        // Default quality (75) visibly bands smooth, dark-gradient cover
-        // designs; 90 keeps those clean while still resizing/re-encoding
-        // to AVIF/WebP at the rendered size like the rest of the site.
         quality={90}
         className={className}
       />
@@ -53,7 +33,7 @@ export function CoverImage({
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- arbitrary user-provided URL, outside the optimizer's remotePatterns allowlist
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}

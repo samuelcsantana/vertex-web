@@ -20,14 +20,6 @@ import {
   type SharingReport,
 } from "./federation";
 
-/**
- * Nothing federated exists during SSR: `loadRemote` reaches for the network and for `document`.
- *
- * `useSyncExternalStore` rather than the usual `useState` + `useEffect` mounted flag — that pattern
- * is a setState in an effect body, which cascades a render and which this project's lint rules
- * reject. A store that never changes gives the same answer without the extra pass: the server
- * snapshot is `false`, the client snapshot is `true`, and React swaps them during hydration.
- */
 const NEVER_CHANGES = () => () => {};
 function useIsClient(): boolean {
   return useSyncExternalStore(
@@ -43,27 +35,11 @@ type RemoteProps = {
   onSelect?: (item: { id: string; name: string }) => void;
 };
 
-/**
- * Carries the container it describes, so switching containers does not need a state reset.
- *
- * Resetting to `loading` at the top of the effect would be a synchronous setState in an effect body
- * — a cascading render, and one the lint rules reject. Tagging the result with its origin lets the
- * render derive the same thing for free: a result for a container nobody is asking about any more
- * is, by definition, still loading.
- */
 type RemoteState =
   | { name: null; status: "loading" }
   | { name: string; status: "ready"; Component: ComponentType<RemoteProps> }
   | { name: string; status: "failed"; reason: string };
 
-/**
- * A remote is third-party code running inside this tree, so a render error inside it would take
- * this page down with it. Suspense handles pending, not failed, and a class component is still the
- * only thing that catches a render error in React 19.
- *
- * Load failures are handled separately, as state — a container that never answered has nothing to
- * render, so there is no render to catch.
- */
 class RemoteBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
   { failed: boolean }
@@ -102,9 +78,6 @@ export default function FederationDemo() {
 
   const offline = remoteName === OFFLINE_REMOTE_NAME;
 
-  // The component is resolved in an effect and held in state rather than through `React.lazy`.
-  // `lazy` memoises its promise, so switching containers would keep showing whichever answered
-  // first, and building a fresh `lazy` per container means creating a component during render.
   useEffect(() => {
     if (!isClient) return;
 
@@ -154,7 +127,6 @@ export default function FederationDemo() {
     []
   );
 
-  // A result tagged with a container nobody is asking about any more is still loading.
   const remote: RemoteState = loaded.name === remoteName ? loaded : { name: null, status: "loading" };
   const RemoteComponent = remote.status === "ready" ? remote.Component : null;
 

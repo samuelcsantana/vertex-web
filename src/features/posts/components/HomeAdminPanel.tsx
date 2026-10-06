@@ -3,18 +3,12 @@
 import { useTranslations } from "next-intl";
 import { FileText, Hash, List, Plus, Settings, Users } from "lucide-react";
 
-// next/link, not the localized one from @/i18n/routing: every link below
-// points into the admin panel, which lives outside the [locale] segment and
-// takes no locale prefix.
 import Link from "next/link";
 import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 const secondaryLinkClasses =
   "inline-flex items-center gap-1.5 rounded-full border border-input bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground transition-colors hover:bg-input";
 
-// The admin shortcut bar on the public home page. Client-resolved for the
-// same reason as PostAdminActions: the page is prerendered, so this markup
-// must be absent from the HTML every visitor receives, not merely hidden.
 export function HomeAdminPanel() {
   const { user } = useCurrentUser();
   const t = useTranslations("Home");

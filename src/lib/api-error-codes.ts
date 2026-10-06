@@ -1,14 +1,3 @@
-// Machine-readable error codes vertex-api attaches to user-facing exception
-// bodies (see its src/common/constants/error-codes.ts — the two lists must
-// stay in sync). Each code has a matching key in the "ApiErrors" messages
-// namespace, which is what lets an API failure surface to the visitor in
-// their own locale instead of the API's English message.
-//
-// Deliberately dependency-free and isomorphic: server actions translate
-// codes via src/lib/api-error-message.ts, while client components (the
-// OAuth popup listeners in LoginModal/LinkGithubButton) translate them with
-// useTranslations("ApiErrors") after receiving a code over the
-// BroadcastChannel.
 export const API_ERROR_CODES = [
   "INVALID_CREDENTIALS",
   "EMAIL_IN_USE",

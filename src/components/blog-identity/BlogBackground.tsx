@@ -1,7 +1,3 @@
-// A flat page colour plus a faint grain. The coloured glows that used to sit
-// here are gone on purpose: the palette spends its one accent on what is
-// interactive or active, and a tinted backdrop competes with that and with
-// the post covers.
 export function BlogBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background">

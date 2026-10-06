@@ -5,21 +5,6 @@ import { AdminHeaderActions } from "./AdminHeaderActions";
 import { BlogHeaderShell } from "./BlogHeaderShell";
 import { BlogLoginTrigger } from "./BlogLoginTrigger";
 
-// Resolved on the client, not during the server render. This used to read the
-// auth cookie in a Server Component, and because it is rendered from
-// (blog)/layout.tsx that single read made every public page per-request —
-// including pages with no request-dependent content of their own. Moving it
-// here is what lets those pages be prerendered.
-//
-// The trade-off this created, and how it is paid: the prerendered HTML is identical for every
-// visitor, so it cannot know who is asking. The first version assumed "signed out" while waiting
-// for /api/me, which is right for everyone except the one person who is signed in — who saw the
-// logged-out header flip to the account menu on every single load.
-//
-// So the header no longer guesses. Until `isResolved`, it renders neither state: the slot holds
-// its space and asserts nothing. Resolution comes from a local hint applied in a layout effect,
-// before paint and before the network — so both answers arrive at hydration, and neither visitor
-// watches the header change its mind. /api/me still overrules it a moment later.
 export function BlogHeader() {
   const { identity, isAuthenticated, isResolved } = useCurrentUser();
 
@@ -27,9 +12,6 @@ export function BlogHeader() {
     return (
       <BlogHeaderShell
         rightSlot={
-          // Matches the login button's footprint so resolving it does not shift the header.
-          // aria-hidden because "we do not know yet" is not information a screen reader needs —
-          // the real control is announced when it appears, a few milliseconds later.
           <div aria-hidden className="h-9 w-9 shrink-0 sm:w-[6.5rem]" />
         }
         isAuthenticated={false}
@@ -43,15 +25,6 @@ export function BlogHeader() {
     );
   }
 
-  // Cookie presence alone is what gates the admin UI; the identity can be
-  // missing (backend hiccup, or a browser with no hint yet) without flipping
-  // the header back to logged-out — AdminHeaderActions degrades to a plain
-  // logout button.
-  //
-  // `identity` rather than `user`: on a returning visitor it is already
-  // populated from the local hint at hydration, so the name and avatar paint
-  // with the rest of the header instead of ~780ms later, when the signed-in
-  // /api/me round trip lands. Presentation only — nothing here decides access.
   return (
     <BlogHeaderShell
       rightSlot={<AdminHeaderActions identity={identity ?? undefined} />}

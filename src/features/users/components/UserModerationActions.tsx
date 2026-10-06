@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Ban, ShieldCheck, Trash2 } from "lucide-react";
 
-// next/navigation's router, not the localized one: the destination below is
-// in the admin panel, which lives outside the [locale] segment.
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import {
@@ -20,9 +18,6 @@ interface UserModerationActionsProps {
   userName: string;
 }
 
-// The user-detail page's version of UserRow's moderation controls — same
-// actions, but ban refreshes this page and a deleted account navigates
-// back to the listing (this page no longer exists afterwards).
 export function UserModerationActions({
   userId,
   isBanned,

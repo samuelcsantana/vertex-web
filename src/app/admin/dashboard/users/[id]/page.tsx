@@ -17,8 +17,6 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
   await applyAdminLocale();
 
   const { id } = await params;
-  // dashboard/layout.tsx already guarantees an admin session got this far
-  // (same note as the users listing).
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")!.value;
 
@@ -52,7 +50,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
 
         <div className="flex flex-wrap items-center gap-4">
           {user.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- bucket/OAuth-provider avatar URL, not a next/image remote-pattern candidate
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.avatarUrl}
               alt=""

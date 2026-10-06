@@ -9,19 +9,6 @@ import {
 import { getPathname, routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/site-url";
 
-// Rendered per request, on purpose. getPosts() fetches with `revalidate: 60`,
-// and locally that works: `next build` lists /sitemap.xml as ISR with a 1m
-// revalidate, and `next start` serves it STALE and regenerates it after 60 s.
-// On Vercel it never regenerated. On 2026-10-05 the live sitemap still
-// carried the deploy's build time (2026-10-02T21:09:47Z) as the home entry's
-// lastmod — that entry is stamped with `now` below, so it records when the
-// file was generated — was served as X-Vercel-Cache: HIT with an Age over
-// nine hours, and listed none of the four posts published since. The cause
-// on Vercel was not found. Rendering on demand stops depending on it. The
-// cost is one function run per crawler fetch plus the two vertex-api calls
-// below (`force-dynamic` also makes every fetch here `no-store`, so the
-// `revalidate: 60` stops applying). Only crawlers request this route —
-// robots.txt points them here and no page links to it.
 export const dynamic = "force-dynamic";
 
 type Locale = (typeof routing.locales)[number];
@@ -48,21 +35,6 @@ interface RouteOptions {
   priority: number;
 }
 
-// Sub-path routing gives every locale its own real, crawlable URL (pt at
-// the root since "as-needed" hides its prefix, en/es under /en and /es),
-// so each route gets one sitemap entry per locale, with hreflang alternates
-// pointing at the other language versions of that same page. hrefForLocale
-// is a function (not a fixed string) because posts can have a different
-// slug per locale — static routes like "/" and "/about" just ignore the
-// locale argument and return the same path for all of them.
-//
-// `locales` defaults to every configured locale (right for "/", whose
-// content — the post listing chrome — is genuinely translated everywhere
-// via next-intl messages) but routes with per-locale DB content (posts,
-// /about) pass only the locales they actually have their own content in —
-// otherwise a pt-only page's /en/ and /es/ URLs (which just show the pt
-// fallback) would get listed as if they were real translations, hreflang-
-// pointing search engines at duplicate content under the wrong language.
 function buildEntriesForRoute(
   hrefForLocale: (locale: Locale) => string,
   { lastModified, changeFrequency, priority }: RouteOptions,
@@ -96,10 +68,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "monthly",
         priority: 0.5,
       },
-      // pt-only fallback when the API is unreachable — the pt page always
-      // exists, while advertising en/es without knowing they're real
-      // translations risks the exact duplicate-content listing this
-      // parameter exists to avoid.
       about ? getTranslatedLocales(about) : ["pt"]
     ),
   ];

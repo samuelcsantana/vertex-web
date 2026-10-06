@@ -3,9 +3,6 @@
 import { useTranslations } from "next-intl";
 import { Pencil, Trash2 } from "lucide-react";
 
-// next/link, not the localized one from @/i18n/routing: every link below
-// points into the admin panel, which lives outside the [locale] segment and
-// takes no locale prefix.
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/blog-identity/ConfirmDialog";
 import { deletePostAction } from "@/features/posts/actions/post-actions";
@@ -13,19 +10,9 @@ import { useCurrentUser } from "@/features/auth/components/CurrentUserProvider";
 
 interface PostAdminActionsProps {
   postId: string;
-  // Positioning is the caller's business — the featured card needs these
-  // absolutely positioned so they add no height, the grid cards don't.
   className?: string;
 }
 
-// Renders nothing at all for non-admins, rather than rendering hidden markup.
-// That matters now that the home page is prerendered: whatever this returns
-// ends up in HTML served to every visitor, so the edit/delete controls have
-// to be absent, not just invisible.
-//
-// This is presentation only. Authorisation still happens server-side —
-// deletePostAction re-reads the cookie and vertex-api enforces the role — so
-// resolving `isAdmin` on the client cannot grant anything.
 export function PostAdminActions({ postId, className }: PostAdminActionsProps) {
   const { user } = useCurrentUser();
   const t = useTranslations("Home");

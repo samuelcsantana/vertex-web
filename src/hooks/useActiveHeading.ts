@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
 
-// Tracks which heading is currently "active" for a scroll-linked sidebar
-// nav (<TableOfContents>). The sticky header is ~80px tall, so a heading
-// only counts as read once it clears that line; biasing the bottom edge
-// to -70% keeps just the top slice of the viewport in play — otherwise
-// every heading on a tall screen would register as "visible" at once.
-// The last known active id is kept when nothing currently intersects
-// (e.g. mid-scroll between two sections), so the highlight doesn't blink
-// off between headings.
 export function useActiveHeading(ids: string[]): string | null {
   const [activeId, setActiveId] = useState<string | null>(null);
   const idsKey = ids.join(",");
@@ -44,11 +36,6 @@ export function useActiveHeading(ids: string[]): string | null {
 
     for (const element of elements) observer.observe(element);
 
-    // The rootMargin bias above only activates a heading once it nears the
-    // top of the viewport — for a short final section, there may not be
-    // enough content below it to scroll that far, so it never crosses the
-    // line and the highlight gets stuck on an earlier heading. Force the
-    // last heading active once the page is scrolled to (or near) its end.
     function handleScrollToBottom() {
       const scrolledToBottom =
         window.scrollY + window.innerHeight >=

@@ -30,12 +30,6 @@ export function ConfirmDialog({
     <>
       <span onClick={() => setOpen(true)}>{trigger}</span>
 
-      {/* Portaled to document.body — a trigger nested inside an ancestor
-          with backdrop-filter/filter/transform (e.g. the home page's post
-          cards, which use backdrop-blur-sm) creates a new containing block
-          for position:fixed descendants, so this overlay would render sized
-          and clipped to that ancestor's box instead of the viewport.
-          LoginModal.tsx already does the same for the same reason. */}
       {open &&
         createPortal(
           <div

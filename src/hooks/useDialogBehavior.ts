@@ -3,13 +3,6 @@ import { useEffect, useRef } from "react";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-// Shared open/close behavior for anything acting as a modal dialog
-// (ConfirmDialog, LoginModal): moves focus inside on open, restores it to
-// whatever triggered the dialog on close, traps Tab/Shift+Tab within the
-// dialog while it's open, and closes on Escape. role="dialog" +
-// aria-modal="true" on the container (set by the caller) is what tells
-// screen readers to treat everything outside as inert — this hook handles
-// the keyboard-interaction half of that contract.
 export function useDialogBehavior(isOpen: boolean, onClose: () => void) {
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerElementRef = useRef<HTMLElement | null>(null);
@@ -36,8 +29,6 @@ export function useDialogBehavior(isOpen: boolean, onClose: () => void) {
           )
         : [];
 
-    // Move focus into the dialog as soon as it mounts, rather than leaving
-    // it on whatever was focused behind it.
     getFocusable()[0]?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {

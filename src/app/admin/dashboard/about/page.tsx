@@ -25,10 +25,6 @@ export default async function DashboardAboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:max-w-6xl xl:px-0">
       <div className="mx-auto max-w-3xl lg:mx-0">
-        {/* Was href="/" — every other dashboard sub-page's "back to panel"
-            link goes to /dashboard/posts (the hub); this one alone went
-            all the way to the public homepage instead, contradicting its
-            own "Voltar para o Painel" label. */}
         <NextLink
           href="/admin/dashboard/posts"
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"

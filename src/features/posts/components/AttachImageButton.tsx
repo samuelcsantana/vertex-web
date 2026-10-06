@@ -8,7 +8,6 @@ import { uploadImage } from "@/features/posts/api/upload-image";
 
 interface AttachImageButtonProps {
   onUploaded: (publicUrl: string) => void;
-  /** Overrides the default "attach image" label (e.g. for the cover-image use). */
   label?: string;
 }
 
@@ -20,7 +19,6 @@ export function AttachImageButton({ onUploaded, label }: AttachImageButtonProps)
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    // Reset the input so selecting the same file again still fires onChange.
     event.target.value = "";
 
     if (!file) {

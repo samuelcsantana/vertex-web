@@ -125,9 +125,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
   async function onSubmit(values: CreatePostFormValues) {
     setServerError(null);
 
-    // Redirects to /admin/dashboard/posts on success (see createPostAction)
-    // — this form lives on its own /admin/dashboard/posts/new page, so there's
-    // no listing on the same screen to reset back into.
     const result = await createPostAction(values);
 
     if (result && !result.success) {
@@ -168,14 +165,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
           <label htmlFor={titleField} className="text-sm font-medium text-slate-300">
             {TITLE_LABELS[activeLanguage]}
           </label>
-          {/* One persistent <input> per language rather than reusing a
-              single element and swapping which field register() binds it
-              to — react-hook-form doesn't resync an uncontrolled input's
-              DOM value when the field name behind it changes, so swapping
-              silently carried over (or wiped) whatever the input last
-              displayed. Each field now keeps its own element, own
-              registration, and its value never depends on which tab was
-              open last; visibility is the only thing that toggles. */}
           {LANGUAGES.map((language) => {
             const field = getPostLanguageFields(language).titleField;
             return (
@@ -216,9 +205,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
               />
             );
           })}
-          {/* pt's slug is required; en/es fall back to it when left blank
-              (see getLocalizedSlug/findPublishedBySlug) — only show that
-              hint on the tabs where it actually applies. */}
           {activeLanguage !== "pt" && (
             <p className="text-xs text-slate-400">{t("slugFallbackHint")}</p>
           )}
@@ -380,9 +366,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
               />
             );
           })}
-          {/* pt's cover is the fallback for en/es (see
-              getLocalizedCoverUrl) — only mention that on the tabs where
-              leaving the field blank actually triggers it. */}
           {activeLanguage !== "pt" && (
             <p className="text-xs text-slate-400">{t("coverFallbackHint")}</p>
           )}
@@ -432,12 +415,6 @@ export function CreatePostForm({ availableTopics }: CreatePostFormProps) {
 
         <TopicCheckboxGroup control={control} availableTopics={availableTopics} />
 
-        {/* Two mutually-exclusive buttons rather than a single checkbox —
-            this choice now has a real consequence beyond visibility: a
-            draft's publishedAt is left unset on the backend until this is
-            switched to "publish now" (here or later, editing the draft),
-            so the public site never shows the day the draft was started
-            as its publish date. */}
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-slate-300">
             {t("publishStatusLabel")}

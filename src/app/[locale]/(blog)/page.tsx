@@ -20,7 +20,6 @@ import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
 import { formatPostDate } from "@/features/posts/utils/format-post-date";
 
-// Bounded to a sane line-clamp length for the visible teaser text.
 const EXCERPT_LENGTH = 180;
 
 function getFullText(post: Post, locale: string): string {
@@ -45,9 +44,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
     notFound();
   }
 
-  // Required by next-intl for this page to be prerendered: without it every
-  // getTranslations call below resolves the locale from the request headers
-  // and the page falls back to per-request rendering.
   setRequestLocale(locale);
 
   const posts = await getPosts();
@@ -88,10 +84,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
               return (
                 <div className="group relative mt-16 grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-accent/80 hover:shadow-lg lg:grid-cols-2">
                   <div className="relative flex flex-col justify-center gap-4 p-8">
-                    {/* Absolutely positioned so it never adds height to this
-                        column — it used to sit in normal flex flow, which
-                        reserved space even at opacity-0 and made the card
-                        taller for admins than for anonymous visitors. */}
                     <PostAdminActions
                       postId={featuredPost.id}
                       className="absolute right-8 top-8 z-10"
@@ -99,12 +91,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
                     <TopicPills topics={featuredPost.topics} className="pointer-events-none" />
 
-                    {/* title lives here, not on the h2 below — that's
-                        pointer-events-none so clicks fall through to this
-                        full-card link, which means it's also invisible to
-                        the browser's native hover-tooltip engine. This Link
-                        is the one element that actually receives the
-                        hover, so it's the one that has to carry it. */}
                     <Link
                       href={`/blog/${featuredPost.slug}`}
                       title={displayTitle}
@@ -142,12 +128,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     </div>
                   </div>
 
-                  {/* The cover keeps its own 1200×630 shape at every width. It
-                      used to stretch to the text column's height from 640px
-                      up, and object-cover then cut its sides: only 65% of the
-                      width showed at 768px and 88% at 1024px. Side by side
-                      only from lg, where the two columns are close in height,
-                      centred if the text runs taller; stacked below that. */}
                   {displayCoverUrl && (
                     <div className="relative aspect-[1200/630] overflow-hidden lg:self-center">
                       <CoverImage
@@ -184,8 +164,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       <CoverImage
                         src={displayCoverUrl}
                         alt={displayCoverAlt ?? ""}
-                        // The grid's real column widths inside max-w-6xl: 4 cols
-                        // ≥xl, 3 ≥lg, 2 ≥sm, full width below.
                         sizes="(min-width: 1280px) 252px, (min-width: 1024px) 346px, (min-width: 640px) 50vw, 100vw"
                         className="pointer-events-none size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
@@ -196,8 +174,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
                   <div className="p-6">
                     <PostAdminActions postId={post.id} className="mb-4" />
 
-                    {/* title lives here, not on the h2/p below — see the
-                        same note on the featured card above. */}
                     <Link
                       href={`/blog/${post.slug}`}
                       title={displayTitle}
@@ -208,8 +184,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
                       </span>
                     </Link>
 
-                    {/* Short date and nowrap items: at four columns this row is 202px wide,
-                        and the long date pushed both items onto two lines each. */}
                     <div className="pointer-events-none mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted-foreground">
                       <time
                         dateTime={post.publishedAt ?? post.createdAt}

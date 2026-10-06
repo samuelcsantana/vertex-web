@@ -4,9 +4,6 @@ import { useTranslations } from "next-intl";
 
 import { CONTACT_EMAIL, SOCIAL_PROFILES } from "@/lib/social-profiles";
 
-// Lucide dropped brand marks a while back (trademark concerns), so GitHub/
-// LinkedIn are hand-drawn inline SVGs here rather than lucide-react imports
-// — same reasoning as the footer's plain-text links, just with glyphs.
 function GithubIcon(props: { className?: string }) {
   return (
     <svg
@@ -33,12 +30,6 @@ function LinkedinIcon(props: { className?: string }) {
   );
 }
 
-// Just the username — the last path segment — rather than the full
-// host+path: with the icon/label already naming the service, "GitHub
-// samuelcsantana" reads cleaner than repeating "github.com" too, and
-// stays short enough to never need truncation. Derived from
-// SOCIAL_PROFILES rather than hardcoded so it can't drift from the
-// actual href.
 function displayHandle(url: string): string {
   const trimmed = url.replace(/\/$/, "");
   return trimmed.slice(trimmed.lastIndexOf("/") + 1);
@@ -68,10 +59,6 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
-// Purely decorative chrome, not a heading — about/page.tsx's own Markdown
-// content still owns the page's single real h1 (see the startsWithHeading
-// handling there). Keeping the name here as a styled <p>, not an <h1>,
-// avoids a second, competing heading in the outline.
 export function AboutProfileHeader() {
   const t = useTranslations("About");
 

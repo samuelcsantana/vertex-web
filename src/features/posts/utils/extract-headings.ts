@@ -4,9 +4,6 @@ export interface Heading {
   level: 2 | 3;
 }
 
-// Same inline-syntax cleanup as stripMarkdown.ts, scoped to a single
-// heading line: a TOC entry should show plain text even if the source
-// heading is "## Using `useEffect` for **side effects**".
 function cleanInlineMarkdown(text: string): string {
   return text
     .replace(/`([^`]+)`/g, "$1")
@@ -18,9 +15,6 @@ function cleanInlineMarkdown(text: string): string {
     .trim();
 }
 
-// U+0300-U+036F, the "Combining Diacritical Marks" block — built from
-// char codes rather than a literal regex range so the accent marks
-// themselves never appear as raw bytes in this source file.
 const DIACRITIC_MARKS = new RegExp(
   `[${String.fromCharCode(0x0300)}-${String.fromCharCode(0x036f)}]`,
   "g"
@@ -30,15 +24,11 @@ function slugify(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(DIACRITIC_MARKS, "") // strip accents left behind by NFD decomposition
+    .replace(DIACRITIC_MARKS, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
-// Regex over the raw string, not a real markdown parser — deliberate,
-// same "dependency-free" trade-off as stripMarkdown.ts. Known gap: a
-// heading inside a blockquote ("> ## Foo") isn't recognized, since it
-// doesn't start the line with "#".
 export function extractHeadings(markdown: string): Heading[] {
   const withoutCodeFences = markdown.replace(/```[\s\S]*?```/g, "");
   const slugCounts = new Map<string, number>();

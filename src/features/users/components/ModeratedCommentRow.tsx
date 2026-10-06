@@ -30,7 +30,6 @@ export function ModeratedCommentRow({ comment }: ModeratedCommentRowProps) {
       return;
     }
 
-    // Server-rendered list (unlike the post page's client state) — refetch.
     router.refresh();
   }
 
