@@ -7,7 +7,7 @@ const ALLOWLIST = new Map([
       "brace patterns, no patched release as of 2026-10-05. Reached only " +
       "through dev tooling (the shadcn CLI and eslint-config-next, via " +
       "fast-glob and micromatch), which expands glob patterns written in this " +
-      "repo's own config and commands. `npm audit --omit=dev` reports 0.",
+      "repo's own config and commands. `npm audit --omit=dev` does not report it.",
   ],
 ]);
 
