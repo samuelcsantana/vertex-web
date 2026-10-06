@@ -1,94 +1,115 @@
-# vertex-web
+<p align="center">
+  <a href="https://www.samuelsantana.dev"><img src=".github/assets/banner.svg" alt="vertex-web: the Next.js 16 frontend of samuelsantana.dev, with an excerpt of its next build route table" width="100%"></a>
+</p>
 
-[![CI](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml)
-[![Tests](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml)
-[![Security](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml/badge.svg)](https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+<p align="center">
+  <a href="https://www.samuelsantana.dev"><strong>Live site</strong></a> ·
+  <a href="https://www.samuelsantana.dev/micro-frontends">Module Federation demo</a> ·
+  <a href="https://github.com/samuelcsantana/vertex-api">vertex-api (backend)</a> ·
+  <a href="https://www.linkedin.com/in/samuelcsantana">LinkedIn</a>
+</p>
 
-The Next.js frontend for **[samuelsantana.dev](https://samuelsantana.dev)** — a personal engineering blog and technical portfolio, built as a showcase of senior-level frontend architecture rather than a typical starter template.
+<p align="center">
+  <a href="https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml"><img src="https://github.com/samuelcsantana/vertex-web/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml"><img src="https://github.com/samuelcsantana/vertex-web/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml"><img src="https://github.com/samuelcsantana/vertex-web/actions/workflows/security.yml/badge.svg" alt="Security"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-3fd59b.svg" alt="License: MIT"></a>
+</p>
 
-Talks to **[vertex-api](https://github.com/samuelcsantana/vertex-api)**, the NestJS backend, over a REST API. The two are deployed on separate domains (Vercel and AWS Lambda), which shapes a few of the decisions below.
+This is the frontend of [samuelsantana.dev](https://www.samuelsantana.dev), my engineering blog: long-form posts in Portuguese, English and Spanish, comments with Google, GitHub or email-code sign-in, an admin panel, and two live demos of cross-origin frontend integration. It is the production app behind the site, built and maintained by me, **Samuel Santana**, a Senior Software Engineer in Salvador, Brazil.
 
-## Highlights
+> **I'm open to new opportunities** as a Senior Software Engineer, frontend or full stack. [LinkedIn](https://www.linkedin.com/in/samuelcsantana) is the fastest way to reach me.
 
-- **Server-first App Router, prerendered public site.** Data fetching happens in Server Components and mutations in Server Actions; every public route is prerendered, so the signed-in user is resolved on the client (see *Architecture notes*) rather than by reading cookies in a public render. `"use client"` is scoped to the smallest leaf that actually needs interactivity (a form, a dropdown, a polling listener).
-- **Sub-path i18n that crawlers can actually index.** `next-intl` serves pt (default, unprefixed), `/en`, and `/es` as genuinely distinct URLs via a `proxy.ts` routing middleware — not a cookie that only a browser ever sends. `sitemap.ts` emits entries with real `hreflang` alternates — for posts, only for locales the post is genuinely translated into. Content itself is per-locale too: posts *and* the About page store optional en/es variants next to the required pt text, falling back to pt with a visible notice when a translation is missing.
-- **Cross-domain OAuth via the Token Callback Pattern.** Google/GitHub login can't rely on vertex-api setting a cookie directly — it's on a different domain, so the cookie would be scoped to a domain this app's own `cookies()` calls could never see. Instead, the backend redirects the popup to `/auth/callback` with a short-lived, single-use exchange code (never the real token) in the URL; this app trades it for the real session token server-to-server and sets its own cookie. See `src/app/[locale]/auth/callback/` and `exchangeOAuthCodeAction`.
-- **Technical SEO.** Dynamic `sitemap.xml`/`robots.txt`, `BlogPosting` JSON-LD on post pages, locale-aware canonical URLs, and Open Graph metadata generated per post.
-- **Mobile-first, verified rather than assumed.** Responsive layout changes in this codebase were checked against real narrow-viewport renders, not just class names that look plausible.
+## What to look at
 
-## Tech stack
+| Area | What it does | Where |
+|---|---|---|
+| **Rendering** | Every public page is prerendered in the three locales: home, About, the OAuth callback and every post page. Pages built from API content revalidate every 60 s. Only the admin panel, the API route handlers and the sitemap render per request. | `src/app/[locale]/(blog)/`, `next build` |
+| **Auth** | The OAuth popup goes to vertex-api, which redirects back to `/auth/callback` with a short-lived, single-use exchange code, never the token. A Server Action trades the code server-to-server and sets an `HttpOnly` cookie, and a `BroadcastChannel` tells the page that opened the popup. | `src/app/[locale]/auth/callback/`, `src/features/auth/actions/auth-actions.ts` |
+| **Signed-in state on static pages** | Public pages never read cookies, so they stay prerendered. `CurrentUserProvider` asks `GET /api/me` once, and `useCurrentUser()` tells "not answered yet" apart from "signed out", so a signed-in reader does not get a logged-out flash. | `src/features/auth/components/CurrentUserProvider.tsx`, `src/app/api/me/` |
+| **i18n** | pt (unprefixed), `/en` and `/es` are real, crawlable URLs, routed by next-intl in `src/proxy.ts`. Posts and the About page carry per-locale slugs and content, fall back to pt with a visible notice, and advertise `hreflang` only for locales they are actually translated into. | `src/i18n/`, `src/proxy.ts`, `messages/` |
+| **Micro-frontends** | `/micro-frontends` loads a React component at runtime from another origin, `cygnus.samuelsantana.dev`, through `@module-federation/runtime`, with a switch that points it at a remote that does not exist, to show the failure path. `/embed-demo` embeds the same app with a script tag and an iframe. | `src/app/micro-frontends/`, `src/app/embed-demo/` |
+| **SEO** | Locale-aware canonicals, `BlogPosting` JSON-LD on posts, a `ProfilePage` schema on About, per-post Open Graph images, and a sitemap with `hreflang` alternates. | `src/app/sitemap.ts`, `src/app/robots.ts` |
+| **Tests** | 138 unit and component tests (Vitest, Testing Library). Playwright end-to-end specs run against a production build with no backend at all. Specs that reach the external remote are tagged `@external` and run as their own CI job, so "the remote is down" and "this change broke the site" are never the same red X. | `src/**/*.test.ts(x)`, `e2e/` |
+| **CI and security** | Lint and build, unit tests, end-to-end and federation jobs on every pull request. `npm audit` gates production dependencies with no exceptions, and the full tree through an allowlist where every entry carries its reason. `secretlint` runs in CI and on every commit. | `.github/workflows/`, `scripts/audit.mjs` |
 
-- [Next.js 16](https://nextjs.org) (App Router, Turbopack)
-- TypeScript (strict mode)
-- Tailwind CSS v4
-- [next-intl](https://next-intl.dev) for routing-based i18n
-- react-hook-form + zod
-- react-markdown (+ remark-gfm, rehype-highlight) for post content — Markdown stored in the database, not MDX files
-- `@next/third-parties` for Google Analytics
+## Architecture
 
-## Getting started
+```mermaid
+flowchart LR
+  browser([Browser])
+  web["vertex-web<br/>Next.js 16 on Vercel"]
+  api["vertex-api<br/>NestJS + Fastify<br/>AWS Lambda behind CloudFront"]
+  db[("Neon Postgres<br/>São Paulo")]
+  s3[("S3 media bucket<br/>sa-east-1")]
+  oauth["Google / GitHub<br/>OAuth"]
+  cygnus["cygnus.samuelsantana.dev<br/>federated remote"]
 
-### Prerequisites
+  browser --> web
+  web -- "REST, server-side" --> api
+  browser -- "OAuth popup" --> api
+  api --> oauth
+  api --> db
+  api -- "presigned upload URLs" --> s3
+  browser -- "covers, avatars, uploads" --> s3
+  browser -. "Module Federation, at runtime" .-> cygnus
+```
 
-- Node 20+
-- A running [vertex-api](https://github.com/samuelcsantana/vertex-api) instance (see its README for setup)
+The frontend and the API live on different domains, and that shaped the auth design. A cookie set by vertex-api would belong to the API's domain and be invisible to this app, so the API never sets the session: it hands over a single-use code, and this app sets its own cookie.
 
-### Setup
+The public site lives under `src/app/[locale]/(blog)/`. The admin panel lives in `src/app/admin/`, outside the locale segment, with its own root layout: it renders per request and takes its language from the `NEXT_LOCALE` cookie. `src/proxy.ts` gates `/admin/**` behind the session cookie and hands everything else to next-intl. Each domain under `src/features/` owns its own `actions`, `api`, `components`, `schemas` and `utils`.
+
+## Stack
+
+| | |
+|---|---|
+| **Framework** | Next.js 16 (App Router, Turbopack), React 19, TypeScript in strict mode |
+| **UI** | Tailwind CSS 4, shadcn/ui on Base UI, lucide icons |
+| **i18n** | next-intl 4, sub-path routing |
+| **Forms** | react-hook-form, zod 4 |
+| **Content** | Markdown stored in the database, rendered with react-markdown, remark-gfm and rehype-highlight |
+| **Micro-frontends** | `@module-federation/runtime` |
+| **Tests** | Vitest, Testing Library, Playwright |
+| **Delivery** | Vercel, GitHub Actions, Husky and lint-staged |
+
+## Running it locally
+
+You need Node 20 or later and a running [vertex-api](https://github.com/samuelcsantana/vertex-api) (port 3020 in its `.env.example`).
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in the values you need — see below
+cp .env.example .env.local
 npm run dev
 ```
 
-Visit [http://localhost:3021](http://localhost:3021). The default locale (pt) serves at the root; `/en` and `/es` are the other two.
+The app runs at [localhost:3021](http://localhost:3021): pt at the root, `/en` and `/es` beside it. Without the API the pages still build and render, just with no posts.
 
-### Other scripts
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server on port 3021 |
+| `npm run build` | Production build, which prints the rendering strategy of every route |
+| `npm run lint` | ESLint |
+| `npm test` | Unit and component tests |
+| `npm run test:coverage` | The same, with a coverage report |
+| `npm run test:e2e` | Playwright; starts the app itself and needs no backend |
 
-```bash
-npm run build          # production build
-npm run lint            # eslint
-npm test                 # unit/component tests (vitest)
-npm run test:watch       # vitest in watch mode
-npm run test:coverage    # vitest with a coverage report
-npm run test:e2e         # playwright — starts the dev server itself; vertex-api is not needed
-```
+`docker compose up -d --build` runs the app in a container for local development. Production deploys to Vercel.
 
-## Docker
+### Environment variables
 
-This repo pairs with [vertex-api](https://github.com/samuelcsantana/vertex-api) (the backend, on port `3020`) — vertex-web itself runs on port `3021` in local dev. This is a local-dev convenience only; production still deploys to Vercel, and the image is a plain `npm run build` + `npm start` (no `output: "standalone"`) specifically to keep that deployment untouched.
+| Variable | Notes |
+|---|---|
+| `VERTEX_API_URL` | Server-only base URL of vertex-api |
+| `NEXT_PUBLIC_VERTEX_API_URL` | The same API, read in the browser to open the OAuth popup |
+| `NEXT_PUBLIC_MEDIA_BASE_URL` | Base URL of the media bucket |
+| `NEXT_PUBLIC_SITE_URL` | Local override of the canonical origin; ignored in production builds |
+| `NEXT_PUBLIC_GA_ID` | Optional Google Analytics ID |
 
-```bash
-docker compose up -d --build
-```
+[`.env.example`](./.env.example) has working local values.
 
-There's no `api` service in this compose file — vertex-api is a separate repo/container; point the env vars below at wherever it's actually running. `NEXT_PUBLIC_VERTEX_API_URL` is inlined into the client bundle at **build** time (a Docker build `arg`, same as `VITE_*`-style Vite vars), while `VERTEX_API_URL` is server-only and read at **runtime** (a normal `environment:` var) — see `docker-compose.yml` and `Dockerfile`.
+## Related
 
-## Testing
+- [vertex-api](https://github.com/samuelcsantana/vertex-api): the NestJS backend, running on AWS Lambda in São Paulo.
+- [samuelsantana.dev/about](https://www.samuelsantana.dev/about): who I am and what I have built.
 
-Two layers, deliberately not one:
-
-- **Unit/component (Vitest + React Testing Library)** — pure logic (`src/features/*/utils`, `src/features/*/schemas`) and small components with real branching behavior worth locking in (e.g. `TopicPills`'s guard against a missing `topics` array). Fully self-contained, no backend needed, wired into CI (`tests.yml`). As of this writing this covers a handful of well-chosen files completely rather than the whole codebase shallowly — most of `src/features/**/actions` and `**/api` are Server Actions that just forward to vertex-api, and most components are thin composition over those; the better ROI for that code is the E2E layer below, not mocking every `fetch` call.
-- **E2E (Playwright)** — `e2e/`, covering locale routing, the language switcher, admin gating, the home page and the Module Federation demo. The suite does **not** need vertex-api: it runs in CI against a production build (`tests.yml`), with nothing listening on the API port. That also bounds what it covers — nothing here would notice vertex-api returning bad data. Specs tagged `@external` load the remote from `cygnus.samuelsantana.dev` and run as their own CI job, so "the remote was down" and "this change broke the site" are never the same failure.
-
-## Environment variables
-
-See [`.env.example`](./.env.example) for the full, documented list. In short:
-
-| Variable | Used by | Notes |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `src/lib/site-url.ts` | Local-development override only. The canonical origin used for canonical/OG/sitemap/robots URLs is a constant in `src/lib/site-url.ts`, and that constant wins in production builds; setting this locally just points generated URLs at the dev server. Do not set it in deployment. |
-| `VERTEX_API_URL` | Server Actions/Components | Server-only; never sent to the browser. |
-| `NEXT_PUBLIC_VERTEX_API_URL` | `LoginModal`, `LinkGithubButton` | Browser-readable — these open the OAuth popup directly against vertex-api. |
-| `NEXT_PUBLIC_GA_ID` | root layout | Optional; Analytics is skipped entirely if unset. |
-
-## Architecture notes
-
-- **Public site under the locale, admin outside it.** `src/app/[locale]/(blog)/` holds the home, post and About pages, each prerendered per locale; `blog/[slug]` is a plain segment inside the group because it needs the literal `/blog` URL prefix. The admin panel lives in `src/app/admin/`, outside the locale segment, with its own root layout: it is rendered per request and takes its language from the `NEXT_LOCALE` cookie instead of the URL.
-- **`proxy.ts`, not `middleware.ts`.** Next.js 16 deprecated the latter and hard-errors if both exist. This one file does double duty: gating `/admin/**` behind a session cookie check, and next-intl's locale routing for everything else — admin requests are matched so the gate sees them, but never reach next-intl.
-- **Auth never enters a public render.** The access token is an `HttpOnly` cookie, invisible to client code. Public pages learn who is signed in from `GET /api/me`, fetched once by `CurrentUserProvider`; components read `useCurrentUser()`, which distinguishes "not answered yet" from "signed out", so the owner never sees a logged-out flash. Reading `cookies()` in a public page would un-prerender it.
-
-## Related repository
-
-- [vertex-api](https://github.com/samuelcsantana/vertex-api) — the NestJS + Fastify + Drizzle backend this app talks to.
+Released under the [MIT License](./LICENSE).
