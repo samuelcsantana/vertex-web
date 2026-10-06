@@ -40,7 +40,7 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: "Samuel Santana | Software Engineer",
+      default: "Samuel Santana | Senior Software Engineer",
       template: "%s | Samuel Santana",
     },
     description: t("siteDescription"),

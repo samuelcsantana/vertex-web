@@ -227,7 +227,9 @@
     "profileGithub": "Perfil de GitHub",
     "profileLinkedin": "Perfil de LinkedIn",
     "profileEmail": "Enviar correo",
-    "connect": "conectar"
+    "connect": "conectar",
+    "metaTitle": "Sobre Samuel Santana | Senior Software Engineer",
+    "metaDescription": "Samuel Santana, Senior Software Engineer en Salvador, Brasil. Más de 12 años con Angular, React y Node.js/NestJS. Abierto a nuevas oportunidades."
   },
   "Metadata": {
     "siteDescription": "Blog técnico de Samuel Santana sobre arquitectura de software, rendimiento web e ingeniería frontend."

@@ -15,6 +15,8 @@ import { splitMarkdownSections } from "@/features/posts/utils/split-markdown-sec
 import { SITE_URL } from "@/lib/site-url";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-profiles";
 
+const JOB_TITLE = "Senior Software Engineer";
+
 export async function generateMetadata(): Promise<Metadata> {
   const about = await getAboutContent();
 
@@ -23,20 +25,37 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const locale = await getLocale();
+  const t = await getTranslations("About");
 
   const translatedLocales = getTranslatedLocales(about);
   const isTranslated = (translatedLocales as string[]).includes(locale);
   const canonicalLocale = isTranslated ? locale : "pt";
+  const canonicalUrl = `${SITE_URL}${getPathname({ href: "/about", locale: canonicalLocale })}`;
+  const title = t("metaTitle");
+  const description = t("metaDescription");
 
   return {
+    title: { absolute: title },
+    description,
     alternates: {
-      canonical: `${SITE_URL}${getPathname({ href: "/about", locale: canonicalLocale })}`,
+      canonical: canonicalUrl,
       languages: Object.fromEntries(
         translatedLocales.map((loc) => [
           loc,
           `${SITE_URL}${getPathname({ href: "/about", locale: loc })}`,
         ])
       ),
+    },
+    openGraph: {
+      type: "profile",
+      firstName: "Samuel",
+      lastName: "Santana",
+      username: "samuelcsantana",
+      siteName: "Samuel Santana",
+      title,
+      description,
+      url: canonicalUrl,
+      images: ["/og-fallback.png"],
     },
   };
 }
@@ -55,12 +74,38 @@ export default async function AboutPage() {
   const startsWithHeading = /^#\s+/.test(content.trimStart());
   const { intro, sections } = splitMarkdownSections(content);
 
+  const pageUrl = `${SITE_URL}${getPathname({ href: "/about", locale })}`;
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    name: "Samuel Santana",
-    url: `${SITE_URL}${getPathname({ href: "/about", locale })}`,
-    sameAs: SOCIAL_PROFILE_URLS,
+    "@type": "ProfilePage",
+    url: pageUrl,
+    ...(about ? { dateModified: about.updatedAt } : {}),
+    mainEntity: {
+      "@type": "Person",
+      name: "Samuel Santana",
+      alternateName: "samuelcsantana",
+      jobTitle: JOB_TITLE,
+      description: tAbout("metaDescription"),
+      image: `${SITE_URL}/samuel-santana.jpg`,
+      url: pageUrl,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Salvador",
+        addressRegion: "BA",
+        addressCountry: "BR",
+      },
+      knowsAbout: [
+        "Angular",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "NestJS",
+        "Micro-frontends",
+        "Module Federation",
+        "RxJS",
+      ],
+      sameAs: SOCIAL_PROFILE_URLS,
+    },
   };
 
   return (
