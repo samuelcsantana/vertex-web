@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="title desc">
+  <title id="title">vertex-web</title>
+  <desc id="desc">The Next.js 16 frontend of samuelsantana.dev, next to an excerpt of its next build route table: the public routes prerendered in three locales, the sitemap and the admin panel rendered per request.</desc>
+  <rect width="1280" height="400" fill="#161c2a"/>
+  <rect x="0" y="396" width="1280" height="4" fill="#3fd59b"/>
+
+  <text x="64" y="84" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="700" letter-spacing="4" fill="#3fd59b">SAMUELSANTANA.DEV</text>
+  <text x="64" y="164" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="700" fill="#e6ebf7">vertex-web</text>
+  <text x="64" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" fill="#9da8be">The Next.js 16 frontend of my engineering blog.</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" fill="#e6ebf7">
+    <text x="64" y="262"><tspan fill="#3fd59b">+</tspan> prerendered in pt, en and es</text>
+    <text x="64" y="292"><tspan fill="#3fd59b">+</tspan> OAuth with no token in the URL</text>
+    <text x="64" y="322"><tspan fill="#3fd59b">+</tspan> a Module Federation host, cross-origin</text>
+  </g>
+
+  <text x="64" y="370" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#9da8be">Samuel Santana · Senior Software Engineer · Salvador, Brazil</text>
+
+  <rect x="744" y="56" width="472" height="296" rx="10" fill="#1c2333" stroke="#2e3649" stroke-width="1.5"/>
+  <circle cx="770" cy="80" r="5" fill="#2e3649"/>
+  <circle cx="788" cy="80" r="5" fill="#2e3649"/>
+  <circle cx="806" cy="80" r="5" fill="#2e3649"/>
+  <text x="1192" y="85" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#9da8be">$ next build</text>
+  <line x1="744" y1="100" x2="1216" y2="100" stroke="#2e3649" stroke-width="1.5"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">
+    <text x="768" y="132" fill="#9da8be">Route (app)</text>
+    <text x="1192" y="132" text-anchor="end" fill="#9da8be">Revalidate</text>
+
+    <text x="768" y="168" fill="#e6ebf7"><tspan fill="#3fd59b">●</tspan> /pt</text>
+    <text x="1192" y="168" text-anchor="end" fill="#e6ebf7">1m</text>
+    <text x="768" y="196" fill="#e6ebf7"><tspan fill="#3fd59b">●</tspan> /en</text>
+    <text x="1192" y="196" text-anchor="end" fill="#e6ebf7">1m</text>
+    <text x="768" y="224" fill="#e6ebf7"><tspan fill="#3fd59b">●</tspan> /es</text>
+    <text x="1192" y="224" text-anchor="end" fill="#e6ebf7">1m</text>
+    <text x="768" y="252" fill="#e6ebf7"><tspan fill="#3fd59b">●</tspan> /pt/blog/[slug]</text>
+    <text x="1192" y="252" text-anchor="end" fill="#e6ebf7">1m</text>
+    <text x="768" y="280" fill="#9da8be"><tspan fill="#9da8be">ƒ</tspan> /sitemap.xml</text>
+    <text x="768" y="308" fill="#9da8be"><tspan fill="#9da8be">ƒ</tspan> /admin/**</text>
+  </g>
+  <text x="768" y="338" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#9da8be"><tspan fill="#3fd59b">●</tspan> prerendered, revalidated</text>
+  <text x="1000" y="338" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#9da8be">ƒ rendered per request</text>
+</svg>
