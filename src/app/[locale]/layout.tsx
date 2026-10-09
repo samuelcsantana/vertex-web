@@ -7,7 +7,6 @@ import {
   setRequestLocale,
 } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -97,9 +96,6 @@ export default async function RootLayout({
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
       </body>
     </html>
   );
