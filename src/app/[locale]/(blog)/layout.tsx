@@ -4,6 +4,7 @@ import { BlogBackground } from "@/components/blog-identity/BlogBackground";
 import { BlogHeader } from "@/components/blog-identity/BlogHeader";
 import { BlogFooter } from "@/components/blog-identity/BlogFooter";
 import { CurrentUserProvider } from "@/features/auth/components/CurrentUserProvider";
+import { UsageAnalytics } from "@/features/analytics/components/UsageAnalytics";
 
 export default async function BlogHomeLayout({
   children,
@@ -17,6 +18,7 @@ export default async function BlogHomeLayout({
 
   return (
     <CurrentUserProvider>
+      <UsageAnalytics />
       <div className="relative flex min-h-screen flex-col text-foreground">
         <BlogBackground />
         <BlogHeader />
