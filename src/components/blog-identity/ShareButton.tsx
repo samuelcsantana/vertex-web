@@ -4,12 +4,16 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Share2 } from "lucide-react";
 
+import { track } from "@/features/analytics/api/pyxis-client";
+import { shareClicked } from "@/features/analytics/utils/events";
+
 interface ShareButtonProps {
   title: string;
+  post: string;
   url?: string;
 }
 
-export function ShareButton({ title, url }: ShareButtonProps) {
+export function ShareButton({ title, post, url }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const t = useTranslations("Post");
 
@@ -17,6 +21,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
     const shareData = { title, url: url || window.location.href };
 
     if (navigator.share) {
+      track(shareClicked(post, "native"));
       try {
         await navigator.share(shareData);
       } catch (error) {
@@ -25,6 +30,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
       return;
     }
 
+    track(shareClicked(post, "copy"));
     try {
       await navigator.clipboard.writeText(shareData.url);
       setCopied(true);
