@@ -27,6 +27,7 @@ export const CodeBlock: Components["pre"] = (props) => {
       <button
         type="button"
         onClick={handleCopy}
+        data-track-event="code_copied"
         aria-label={copied ? t("codeCopied") : t("copyCode")}
         className="absolute top-2 right-2 inline-flex items-center justify-center rounded-lg border border-input bg-secondary/80 p-1.5 text-foreground backdrop-blur-sm transition-colors hover:border-primary/30 hover:text-primary focus:ring-2 focus:ring-ring/70 focus:outline-none"
       >

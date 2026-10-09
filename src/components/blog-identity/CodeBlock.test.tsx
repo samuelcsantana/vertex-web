@@ -48,6 +48,15 @@ describe("CodeBlock", () => {
     await screen.findByRole("button", { name: "Copied!" });
   });
 
+  it("marks the copy button for usage analytics as code_copied", () => {
+    renderCodeBlock();
+
+    expect(screen.getByRole("button", { name: "Copy code" })).toHaveAttribute(
+      "data-track-event",
+      "code_copied"
+    );
+  });
+
   it("does not touch inline code (no <pre>, so no button)", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>

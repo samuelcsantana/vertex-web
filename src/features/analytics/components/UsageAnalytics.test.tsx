@@ -6,6 +6,7 @@ import type { CurrentUser } from "@/features/auth/types";
 const client = vi.hoisted(() => ({
   startMeasuring: vi.fn(),
   stopMeasuring: vi.fn(),
+  track: vi.fn(),
 }));
 
 const auth = vi.hoisted(() => ({
@@ -83,6 +84,37 @@ describe("UsageAnalytics", () => {
     rerender(<UsageAnalytics />);
 
     expect(client.stopMeasuring).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports clicks on tracked elements and on links to other sites, and stops listening when unmounted", () => {
+    document.body.innerHTML = `
+      <a id="card" href="/blog/a-post" data-track-event="article_card_clicked" data-track-post="a-post" data-track-position="1" data-track-locale="pt">A post</a>
+      <a id="out" href="https://github.com/samuelcsantana">GitHub</a>
+      <a id="home" href="/">Home</a>
+    `;
+    const stayOnPage = (event: Event) => event.preventDefault();
+    document.body.addEventListener("click", stayOnPage);
+    const { unmount } = render(<UsageAnalytics />);
+
+    document.getElementById("card")!.click();
+    document.getElementById("out")!.click();
+    document.getElementById("home")!.click();
+
+    expect(client.track).toHaveBeenCalledTimes(2);
+    expect(client.track).toHaveBeenNthCalledWith(1, {
+      name: "article_card_clicked",
+      properties: { post: "a-post", position: 1, locale: "pt" },
+    });
+    expect(client.track).toHaveBeenNthCalledWith(2, {
+      name: "outbound_clicked",
+      properties: { host: "github.com" },
+    });
+
+    unmount();
+    document.getElementById("card")!.click();
+    expect(client.track).toHaveBeenCalledTimes(2);
+    document.body.removeEventListener("click", stayOnPage);
+    document.body.innerHTML = "";
   });
 
   it("starts only once across re-renders", () => {
