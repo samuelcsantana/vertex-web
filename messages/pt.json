@@ -279,5 +279,14 @@
   },
   "Footer": {
     "copyright": "© {year} Samuel Santana. Desenvolvido com Next.js & NestJS."
+  },
+  "UsageAnalytics": {
+    "on": "Medição de uso sem cookies e sem dado pessoal.",
+    "learnMore": "Saiba mais",
+    "optOut": "Não medir minhas visitas",
+    "off": "Medição desligada neste navegador.",
+    "optIn": "Medir de novo",
+    "blocked": "Medição desligada pelo seu navegador (“não rastrear”).",
+    "aboutAnchor": "privacidade"
   }
 }
