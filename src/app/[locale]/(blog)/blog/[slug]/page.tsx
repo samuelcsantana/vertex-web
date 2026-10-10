@@ -19,6 +19,8 @@ import { ShareButton } from "@/components/blog-identity/ShareButton";
 import { createHeadingComponents } from "@/components/blog-identity/markdownHeadingComponents";
 import { CodeBlock } from "@/components/blog-identity/CodeBlock";
 import { TableOfContents } from "@/components/blog-identity/TableOfContents";
+import { ArticleReadTracker } from "@/features/analytics/components/ArticleReadTracker";
+import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-time";
 import { stripMarkdown } from "@/features/posts/utils/strip-markdown";
 import { extractHeadings } from "@/features/posts/utils/extract-headings";
 import { formatPostDate } from "@/features/posts/utils/format-post-date";
@@ -173,6 +175,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
 
       <div
+        data-post={post.slug}
         className={
           hasToc
             ? "lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start lg:gap-8"
@@ -264,18 +267,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 md:gap-4">
             <TopicPills topics={post.topics} />
-            <ShareButton title={displayTitle} />
+            <ShareButton title={displayTitle} post={post.slug} />
           </div>
 
-          <div className="prose prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-              components={{ ...createHeadingComponents(headings), pre: CodeBlock }}
-            >
-              {displayContent}
-            </ReactMarkdown>
-          </div>
+          <ArticleReadTracker
+            key={post.slug}
+            post={post.slug}
+            locale={contentLocale}
+            readingMinutes={estimateReadingMinutes(displayContent)}
+          >
+            <div className="prose prose-sm mt-8 max-w-none sm:prose-base lg:prose-lg">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                components={{ ...createHeadingComponents(headings), pre: CodeBlock }}
+              >
+                {displayContent}
+              </ReactMarkdown>
+            </div>
+          </ArticleReadTracker>
 
           <CommentsSection
             postId={post.id}

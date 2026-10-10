@@ -11,6 +11,8 @@ import {
 } from "@/components/LanguageSwitcherView";
 import { getLocalizedSlug } from "@/features/posts/utils/localized-content";
 import type { Post } from "@/features/posts/types";
+import { track } from "@/features/analytics/api/pyxis-client";
+import { languageSwitched } from "@/features/analytics/utils/events";
 
 const API_URL = process.env.NEXT_PUBLIC_VERTEX_API_URL ?? "http://localhost:3333";
 
@@ -70,11 +72,13 @@ export function LanguageSwitcher() {
     if (currentSlug) {
       if (!post) return;
 
+      track(languageSwitched(locale, code));
       const targetSlug = getLocalizedSlug(post, code);
       router.replace(`/blog/${targetSlug}`, { locale: code });
       return;
     }
 
+    track(languageSwitched(locale, code));
     router.replace(pathname, { locale: code });
   }
 

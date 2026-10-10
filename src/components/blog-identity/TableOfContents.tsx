@@ -32,6 +32,8 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             <li key={heading.id} className={heading.level === 3 ? "pl-4" : ""}>
               <a
                 href={`#${heading.id}`}
+                data-track-event="toc_clicked"
+                data-track-heading={heading.id}
                 aria-current={isActive ? "location" : undefined}
                 className={`-ml-px block border-l-2 py-0.5 pl-3 transition-colors ${
                   isActive

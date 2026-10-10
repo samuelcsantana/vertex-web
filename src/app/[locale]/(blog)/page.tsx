@@ -21,6 +21,7 @@ import { estimateReadingMinutes } from "@/features/posts/utils/estimate-reading-
 import { formatPostDate } from "@/features/posts/utils/format-post-date";
 
 const EXCERPT_LENGTH = 180;
+const FEATURED_POSITION = 1;
 
 function getFullText(post: Post, locale: string): string {
   return stripMarkdown(getLocalizedContent(post, locale));
@@ -94,6 +95,10 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     <Link
                       href={`/blog/${featuredPost.slug}`}
                       title={displayTitle}
+                      data-track-event="article_card_clicked"
+                      data-track-post={featuredPost.slug}
+                      data-track-position={FEATURED_POSITION}
+                      data-track-locale={locale}
                       className="absolute inset-0"
                     >
                       <span className="sr-only">
@@ -145,7 +150,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
             })()}
 
           <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
-            {restPosts.map((post) => {
+            {restPosts.map((post, index) => {
               const displayTitle = getLocalizedTitle(post, locale);
               const displayCoverUrl = getLocalizedCoverUrl(post, locale);
               const displayCoverAlt = getLocalizedCoverAlt(post, locale);
@@ -177,6 +182,10 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     <Link
                       href={`/blog/${post.slug}`}
                       title={displayTitle}
+                      data-track-event="article_card_clicked"
+                      data-track-post={post.slug}
+                      data-track-position={FEATURED_POSITION + 1 + index}
+                      data-track-locale={locale}
                       className="absolute inset-0 rounded-3xl"
                     >
                       <span className="sr-only">
