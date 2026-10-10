@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 
 import { SOCIAL_PROFILES } from "@/lib/social-profiles";
+import { UsageAnalyticsSwitch } from "@/features/analytics/components/UsageAnalyticsSwitch";
 
 export function BlogFooter() {
   const t = useTranslations("Footer");
@@ -27,6 +28,7 @@ export function BlogFooter() {
           </a>
         </div>
         <span>{t("copyright", { year: new Date().getFullYear() })}</span>
+        <UsageAnalyticsSwitch />
       </div>
     </footer>
   );

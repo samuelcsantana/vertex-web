@@ -101,13 +101,15 @@ The app runs at [localhost:3021](http://localhost:3021): pt at the root, `/en` a
 | `NEXT_PUBLIC_VERTEX_API_URL` | The same API, read in the browser to open the OAuth popup |
 | `NEXT_PUBLIC_MEDIA_BASE_URL` | Base URL of the media bucket |
 | `NEXT_PUBLIC_SITE_URL` | Local override of the canonical origin; ignored in production builds |
-| `NEXT_PUBLIC_GA_ID` | Optional Google Analytics ID |
+| `NEXT_PUBLIC_PYXIS_KEY` | Public key of this site's project in [Pyxis](https://github.com/samuelcsantana/pyxis-api); empty means nothing is measured |
+| `NEXT_PUBLIC_PYXIS_ENDPOINT` | Base URL of the Pyxis API |
 
 [`.env.example`](./.env.example) has working local values.
 
 ## Related
 
 - [vertex-api](https://github.com/samuelcsantana/vertex-api): the NestJS backend, running on AWS Lambda in São Paulo.
+- [pyxis-sdk](https://github.com/samuelcsantana/pyxis-sdk): the tracker that measures this site without cookies, IP addresses or personal data; the footer switch turns it off.
 - [samuelsantana.dev/about](https://www.samuelsantana.dev/about): who I am and what I have built.
 
 Released under the [MIT License](./LICENSE).
