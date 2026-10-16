@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const NAVIGATOR_WEBDRIVER_OFF = "--disable-blink-features=AutomationControlled";
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -11,6 +13,7 @@ export default defineConfig({
     baseURL: "http://localhost:3021",
     trace: "on-first-retry",
     locale: "pt-BR",
+    launchOptions: { args: [NAVIGATOR_WEBDRIVER_OFF] },
   },
   projects: [
     {
