@@ -31,6 +31,14 @@ async function batchRequests(page: Page): Promise<string[]> {
 }
 
 test.describe("usage analytics", () => {
+  test("runs in a Chromium that does not report automation, as a visitor browser does", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    expect(await page.evaluate(() => navigator.webdriver)).toBe(false);
+  });
+
   test("a build without a Pyxis key measures nothing and shows no switch", async ({
     page,
   }) => {
