@@ -1,15 +1,6 @@
 import { spawnSync } from "node:child_process";
 
-const ALLOWLIST = new Map([
-  [
-    "GHSA-vfj7-8cjw-p6xm",
-    "braces <= 3.0.3 (CVE-2026-93687): stack exhaustion on deeply nested " +
-      "brace patterns, no patched release as of 2026-10-05. Reached only " +
-      "through dev tooling (the shadcn CLI and eslint-config-next, via " +
-      "fast-glob and micromatch), which expands glob patterns written in this " +
-      "repo's own config and commands. `npm audit --omit=dev` does not report it.",
-  ],
-]);
+const ALLOWLIST = new Map();
 
 const BLOCKING_SEVERITIES = new Set(["high", "critical"]);
 
