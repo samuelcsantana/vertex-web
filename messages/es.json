@@ -281,7 +281,7 @@
     "copyright": "© {year} Samuel Santana. Hecho con Next.js & NestJS."
   },
   "UsageAnalytics": {
-    "on": "Medición de uso sin cookies ni datos personales.",
+    "on": "Medición de uso sin cookies y sin guardar la IP.",
     "learnMore": "Saber más",
     "optOut": "No medir mis visitas",
     "off": "Medición desactivada en este navegador.",

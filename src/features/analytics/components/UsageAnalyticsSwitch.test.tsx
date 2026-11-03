@@ -55,7 +55,7 @@ import { UsageAnalyticsSwitch } from "./UsageAnalyticsSwitch";
 
 const messages = {
   UsageAnalytics: {
-    on: "Usage measured without cookies or personal data.",
+    on: "Usage measured without cookies or stored IP addresses.",
     learnMore: "Learn more",
     optOut: "Don't measure my visits",
     off: "Measurement is off in this browser.",
@@ -84,7 +84,7 @@ describe("UsageAnalyticsSwitch", () => {
     renderSwitch();
 
     expect(
-      screen.getByText("Usage measured without cookies or personal data.", { exact: false })
+      screen.getByText("Usage measured without cookies or stored IP addresses.", { exact: false })
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Learn more" })).toHaveAttribute(
       "href",
