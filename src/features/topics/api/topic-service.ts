@@ -7,7 +7,7 @@ export async function getTopics(): Promise<Topic[]> {
 
   try {
     response = await fetch(`${API_URL}/topics`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
   } catch {
     return [];

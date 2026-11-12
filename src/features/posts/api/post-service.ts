@@ -1,3 +1,4 @@
+import { PUBLIC_CONTENT_REVALIDATE } from "@/lib/public-content-cache";
 import { LOCALES } from "@/i18n/config";
 import type { Post } from "@/features/posts/types";
 import { getSlugSourceLocale } from "@/features/posts/utils/localized-content";
@@ -9,7 +10,7 @@ export async function getPosts(): Promise<Post[]> {
 
   try {
     response = await fetch(`${API_URL}/posts`, {
-      next: { revalidate: 60 },
+      next: { revalidate: PUBLIC_CONTENT_REVALIDATE },
     });
   } catch {
     return [];
@@ -32,7 +33,7 @@ export async function getPostBySlug(
     const url = new URL(`${API_URL}/posts/${slug}`);
     if (locale) url.searchParams.set("locale", locale);
     response = await fetch(url, {
-      next: { revalidate: 60 },
+      next: { revalidate: PUBLIC_CONTENT_REVALIDATE },
     });
   } catch {
     return null;
