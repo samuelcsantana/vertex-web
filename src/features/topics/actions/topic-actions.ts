@@ -94,6 +94,7 @@ export async function updateTopicAction(
 
   revalidatePath("/admin/dashboard/topics");
   revalidatePath("/admin/dashboard/posts");
+  revalidatePath("/", "layout");
 
   return { success: true };
 }
@@ -118,4 +119,5 @@ export async function deleteTopicAction(id: string): Promise<void> {
 
   revalidatePath("/admin/dashboard/topics");
   revalidatePath("/admin/dashboard/posts");
+  revalidatePath("/", "layout");
 }
